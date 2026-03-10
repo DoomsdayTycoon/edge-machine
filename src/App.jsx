@@ -357,6 +357,13 @@ export default function App() {
     surface:1, momentum:1, form:1, secondServe:1, pressure:1, ageSurface:1, rank:0.3,
   });
 
+  const [isMobile, setIsMobile] = useState(typeof window!=="undefined"&&window.innerWidth<640);
+  useEffect(()=>{
+    const fn=()=>setIsMobile(window.innerWidth<640);
+    window.addEventListener("resize",fn);
+    return ()=>window.removeEventListener("resize",fn);
+  },[]);
+
   useEffect(() => {
     if (!autoRefresh) return;
     const iv = setInterval(()=>setLastRefresh(Date.now()), 30000);
@@ -606,8 +613,8 @@ export default function App() {
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12,maxWidth:1440,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:14}}>
             <div>
-              <div style={{fontSize:15,fontWeight:800,letterSpacing:"4px",color:c.g}}>◆ EDGE MACHINE</div>
-              <div style={{fontSize:9,color:c.dim,letterSpacing:"2px"}}>TENNIS COMPOUNDING v4.0 · {allMatches.length} MATCHES</div>
+              <div style={{fontSize:isMobile?13:15,fontWeight:800,letterSpacing:"3px",color:c.g,whiteSpace:"nowrap"}}>◆ EDGE MACHINE</div>
+              <div style={{fontSize:8,color:c.dim,letterSpacing:"1.5px",whiteSpace:"nowrap"}}>v4.1 · {allMatches.length} MATCHES</div>
             </div>
             <div style={{width:1,height:28,background:c.brd,margin:"0 4px"}}/>
             <div style={{display:"flex",alignItems:"center",gap:6}}>
@@ -878,7 +885,7 @@ export default function App() {
                     <div style={{fontSize:12,color:c.y}}>{m.point}</div>
                   </div>}
                 </div>
-                <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginTop:14}}>
+                <div style={{display:"grid",gridTemplateColumns:isMobile?"repeat(2,1fr)":"repeat(4,1fr)",gap:8,marginTop:14}}>
                   {[
                     {l:"H2H",v1:m.p1.h2h,v2:m.p2.h2h},
                     {l:"NO-VIG PROB",v1:`${(nvp.p1*100).toFixed(1)}%`,v2:`${(nvp.p2*100).toFixed(1)}%`},
@@ -894,7 +901,7 @@ export default function App() {
               </div>
 
               {/* EV cards */}
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:14}}>
+              <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:12,marginBottom:14}}>
                 {[
                   {p:m.p1,val:sel.p1Val,trueP:sel.p1True,k:sel.p1K,ok:sel.p1Ok,bo:sel.bestP1,side:"p1"},
                   {p:m.p2,val:sel.p2Val,trueP:sel.p2True,k:sel.p2K,ok:sel.p2Ok,bo:sel.bestP2,side:"p2"},
@@ -1078,7 +1085,7 @@ export default function App() {
               )}
 
               {/* Edge factors */}
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+              <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:12}}>
                 {[{l:m.p1.name,e:sel.p1Edge},{l:m.p2.name,e:sel.p2Edge}].map(({l,e},idx)=>(
                   <div key={idx} style={{background:c.card,border:`1px solid ${c.brd}`,borderRadius:10,padding:16}}>
                     <div style={{fontSize:9,letterSpacing:"2px",color:c.dim,marginBottom:12}}>EDGE FACTORS — {l.toUpperCase()}</div>
@@ -1151,7 +1158,7 @@ export default function App() {
                       </div>
                     </div>
 
-                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:14}}>
+                    <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:12,marginBottom:14}}>
                       {[
                         {p:m.p1,bo:arb.bestP1,stake:s1,name:"P1",pct:(arb.stakeP1*100).toFixed(1)},
                         {p:m.p2,bo:arb.bestP2,stake:s2,name:"P2",pct:(arb.stakeP2*100).toFixed(1)},
@@ -1173,7 +1180,7 @@ export default function App() {
                       ))}
                     </div>
 
-                    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}}>
+                    <div style={{display:"grid",gridTemplateColumns:isMobile?"repeat(2,1fr)":"repeat(3,1fr)",gap:10}}>
                       {[
                         {l:"IMPLIED SUM",v:`${(arb.impliedSum*100).toFixed(2)}%`,col:c.g,note:"<100% = arb"},
                         {l:"PROFIT ON €1,000",v:`${settings.currency}${profit.toFixed(2)}`,col:c.arb,note:"guaranteed"},
@@ -1345,7 +1352,7 @@ export default function App() {
               <Btn variant="g" onClick={runSim} disabled={simRunning}>{simRunning?"RUNNING...":"RUN 1,000 SIMULATIONS"}</Btn>
             </div>
             {simResults&&(<>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:16}}>
+              <div style={{display:"grid",gridTemplateColumns:isMobile?"repeat(2,1fr)":"repeat(3,1fr)",gap:12,marginBottom:16}}>
                 {[
                   {l:"MEDIAN",v:`${settings.currency}${simResults.median.toLocaleString()}`,col:simResults.median>=bankroll?c.g:c.r},
                   {l:"AVERAGE",v:`${settings.currency}${simResults.avg.toLocaleString()}`,col:simResults.avg>=bankroll?c.g:c.r},
