@@ -38,7 +38,7 @@ function calcStyleClash(s1, s2, surface) {
 const MOCK_MATCHES = [
   {
     id:1, circuit:"CH", level:"Challenger 100", tournament:"Hersonissos 2 Challenger", surface:"Hard", round:"R32",
-    status:"LIVE", game:"3-6", point:"15-30", startTime:"14:30", updated:Date.now()-45000,
+    status:"LIVE", game:"3-6", point:"15-30", startTime:"Today 14:30", updated:Date.now()-45000,
     p1:{...BP,name:"P. Makk",rank:716,flag:"🇭🇺",age:24,hand:"R",
       first_pct:61,first_won:50,second_won:38,bp_saved:25,bp_faced:4,service_games:5,return_pts_won:32,
       tiebreak_wr:0.40,third_set_wr:0.38,bp_convert:28,style:"baseline",
@@ -49,12 +49,12 @@ const MOCK_MATCHES = [
       tiebreak_wr:0.58,third_set_wr:0.61,bp_convert:45,style:"serve-dom",
       fatigue:0.08,momentum:0.7,h2h:"0-0",recent_form:[1,1,0,1,1],
       surface_wr:0.54,travel_hrs:6,last_match_days:2,altitude_delta:50,sleep_zone_diff:0},
-    odds:{pinnacle:{p1:3.44,p2:1.30},epicbet:{p1:3.20,p2:1.32},bet365:{p1:3.20,p2:1.35},unibet:{p1:3.10,p2:1.38},
+    odds:{pinnacle:{p1:3.44,p2:1.30},epicbet:{p1:3.40,p2:1.30},bet365:{p1:3.20,p2:1.35},unibet:{p1:3.10,p2:1.38},
           williamhill:{p1:2.90,p2:1.40},betway:{p1:3.25,p2:1.34},bwin:{p1:3.00,p2:1.37}},
   },
   {
     id:2, circuit:"ATP", level:"Masters 1000", tournament:"Indian Wells Masters", surface:"Hard", round:"R16",
-    status:"PRE", game:"-", point:"-", startTime:"Tomorrow 20:00", updated:Date.now()-120000,
+    status:"PRE", game:"-", point:"-", startTime:"Mar 11, 20:00", updated:Date.now()-120000,
     p1:{...BP,name:"C. Alcaraz",rank:2,flag:"🇪🇸",age:22,hand:"R",
       tiebreak_wr:0.62,third_set_wr:0.68,bp_convert:52,style:"allcourt",
       fatigue:0.22,momentum:0.3,h2h:"4-2",recent_form:[1,1,1,0,1],
@@ -82,7 +82,7 @@ const MOCK_MATCHES = [
   },
   {
     id:3, circuit:"ATP", level:"ATP 500", tournament:"Dubai Open", surface:"Hard", round:"QF",
-    status:"LIVE", game:"6-4, 3-3", point:"40-40", startTime:"16:00", updated:Date.now()-10000,
+    status:"LIVE", game:"6-4, 3-3", point:"40-40", startTime:"Today 16:00", updated:Date.now()-10000,
     p1:{...BP,name:"J. Sinner",rank:1,flag:"🇮🇹",age:23,hand:"R",
       aces:8,df:2,first_pct:72,first_won:78,second_won:52,bp_saved:80,bp_faced:5,service_games:10,return_pts_won:45,
       tiebreak_wr:0.66,third_set_wr:0.72,bp_convert:54,style:"aggressive",
@@ -98,7 +98,7 @@ const MOCK_MATCHES = [
   },
   {
     id:4, circuit:"CH", level:"Challenger 100", tournament:"Hersonissos 2 Challenger", surface:"Hard", round:"R32",
-    status:"PRE", game:"-", point:"-", startTime:"11:00", updated:Date.now()-300000,
+    status:"PRE", game:"-", point:"-", startTime:"Mar 10, 11:00", updated:Date.now()-300000,
     p1:{...BP,name:"L. Djere",rank:112,flag:"🇷🇸",age:29,hand:"R",
       tiebreak_wr:0.46,third_set_wr:0.50,bp_convert:38,style:"baseline",
       fatigue:0.18,momentum:0.0,h2h:"1-0",recent_form:[0,0,1,1,0],
@@ -112,7 +112,7 @@ const MOCK_MATCHES = [
   },
   {
     id:5, circuit:"ATP", level:"Masters 1000", tournament:"Indian Wells Masters", surface:"Hard", round:"R32",
-    status:"LIVE", game:"4-5", point:"30-40", startTime:"18:30", updated:Date.now()-5000,
+    status:"LIVE", game:"4-5", point:"30-40", startTime:"Today 18:30", updated:Date.now()-5000,
     p1:{...BP,name:"T. Fritz",rank:4,flag:"🇺🇸",age:27,hand:"R",
       aces:5,df:1,first_pct:68,first_won:72,second_won:45,bp_saved:67,bp_faced:3,service_games:5,return_pts_won:38,
       tiebreak_wr:0.64,third_set_wr:0.60,bp_convert:42,style:"serve-dom",
@@ -127,22 +127,8 @@ const MOCK_MATCHES = [
           williamhill:{p1:1.43,p2:2.90},betway:{p1:1.44,p2:2.88},bwin:{p1:1.46,p2:2.82}},
   },
   {
-    id:6, circuit:"ATP", level:"ATP 500", tournament:"Barcelona Open", surface:"Clay", round:"QF",
-    status:"PRE", game:"-", point:"-", startTime:"13:00", updated:Date.now()-600000,
-    p1:{...BP,name:"R. Nadal",rank:678,flag:"🇪🇸",age:37,hand:"L",
-      tiebreak_wr:0.56,third_set_wr:0.71,bp_convert:58,style:"counter",
-      fatigue:0.45,momentum:0.6,h2h:"8-3",recent_form:[1,0,1,1,0],
-      surface_wr:0.93,travel_hrs:0,last_match_days:4,altitude_delta:0,sleep_zone_diff:0},
-    p2:{...BP,name:"C. Alcaraz",rank:2,flag:"🇪🇸",age:22,hand:"R",
-      tiebreak_wr:0.62,third_set_wr:0.68,bp_convert:52,style:"allcourt",
-      fatigue:0.18,momentum:0.8,h2h:"3-8",recent_form:[1,1,1,1,1],
-      surface_wr:0.82,travel_hrs:0,last_match_days:3,altitude_delta:0,sleep_zone_diff:0},
-    odds:{pinnacle:{p1:2.88,p2:1.44},epicbet:{p1:2.95,p2:1.42},bet365:{p1:3.00,p2:1.40},unibet:{p1:2.95,p2:1.42},
-          williamhill:{p1:2.80,p2:1.46},betway:{p1:2.90,p2:1.43},bwin:{p1:2.85,p2:1.45}},
-  },
-  {
     id:7, circuit:"ATP", level:"Masters 1000", tournament:"Madrid Open", surface:"Clay", round:"R64",
-    status:"PRE", game:"-", point:"-", startTime:"12:00", updated:Date.now()-900000,
+    status:"PRE", game:"-", point:"-", startTime:"Mar 11, 12:00", updated:Date.now()-900000,
     p1:{...BP,name:"A. Zverev",rank:3,flag:"🇩🇪",age:27,hand:"R",
       tiebreak_wr:0.58,third_set_wr:0.60,bp_convert:46,style:"aggressive",
       fatigue:0.08,momentum:0.4,h2h:"5-2",recent_form:[1,1,0,1,1],
@@ -156,7 +142,7 @@ const MOCK_MATCHES = [
   },
   {
     id:8, circuit:"ATP", level:"Grand Slam", tournament:"Wimbledon", surface:"Grass", round:"R128",
-    status:"PRE", game:"-", point:"-", startTime:"11:00", updated:Date.now()-1200000,
+    status:"PRE", game:"-", point:"-", startTime:"Jul 4, 11:00", updated:Date.now()-1200000,
     p1:{...BP,name:"J. Draper",rank:18,flag:"🇬🇧",age:23,hand:"L",
       tiebreak_wr:0.63,third_set_wr:0.65,bp_convert:48,style:"serve-dom",
       fatigue:0.05,momentum:0.7,h2h:"1-0",recent_form:[1,1,1,0,1],
@@ -170,7 +156,7 @@ const MOCK_MATCHES = [
   },
   {
     id:9, circuit:"ATP", level:"Grand Slam", tournament:"US Open", surface:"Hard", round:"R64",
-    status:"PRE", game:"-", point:"-", startTime:"17:00", updated:Date.now()-1800000,
+    status:"PRE", game:"-", point:"-", startTime:"Aug 27, 17:00", updated:Date.now()-1800000,
     p1:{...BP,name:"B. Shelton",rank:14,flag:"🇺🇸",age:22,hand:"L",
       tiebreak_wr:0.55,third_set_wr:0.57,bp_convert:44,style:"aggressive",
       fatigue:0.06,momentum:0.5,h2h:"0-0",recent_form:[1,0,1,1,0],
@@ -185,7 +171,7 @@ const MOCK_MATCHES = [
   {
     // Geneva: best p1=bet365@1.95, best p2=bwin@2.10 → sum=0.989 → +1.1% ARB
     id:10, circuit:"ATP", level:"ATP 250", tournament:"Geneva Open", surface:"Clay", round:"SF",
-    status:"LIVE", game:"6-7(4), 4-3", point:"30-15", startTime:"15:00", updated:Date.now()-3000,
+    status:"LIVE", game:"6-7(4), 4-3", point:"30-15", startTime:"Today 15:00", updated:Date.now()-3000,
     p1:{...BP,name:"T. Paul",rank:12,flag:"🇺🇸",age:27,hand:"R",
       aces:4,df:2,first_pct:63,first_won:68,second_won:44,bp_saved:55,bp_faced:4,service_games:11,return_pts_won:38,
       tiebreak_wr:0.52,third_set_wr:0.55,bp_convert:43,style:"allcourt",
@@ -216,7 +202,7 @@ const MOCK_MATCHES = [
     markets:[
       {key:"set_hcp",name:"Set Handicap",lines:[
         {p1_label:"Tiafoe +1.5 sets",p2_label:"Zverev -1.5 sets",
-         odds:{pinnacle:{p1:1.20,p2:4.20},epicbet:{p1:1.83,p2:1.95},bet365:{p1:1.22,p2:4.00},unibet:{p1:1.20,p2:4.10},williamhill:{p1:1.19,p2:4.30}}},
+         odds:{pinnacle:{p1:1.85,p2:2.00},epicbet:{p1:1.83,p2:1.95},bet365:{p1:1.83,p2:1.98},unibet:{p1:1.82,p2:2.02},williamhill:{p1:1.80,p2:2.05}}},
       ]},
       {key:"games_hcp",name:"Games Handicap",lines:[
         {p1_label:"Tiafoe +2.5",p2_label:"Zverev -2.5",
@@ -259,7 +245,7 @@ const MOCK_MATCHES = [
   },
   {
     id:14, circuit:"CH", level:"Challenger 125", tournament:"Cagliari Challenger", surface:"Clay", round:"R16",
-    status:"PRE", game:"-", point:"-", startTime:"11:00", updated:Date.now()-1800000,
+    status:"PRE", game:"-", point:"-", startTime:"Mar 10, 11:00", updated:Date.now()-1800000,
     p1:{...BP,name:"J. Sousa",rank:88,flag:"🇵🇹",age:35,hand:"R",
       tiebreak_wr:0.49,third_set_wr:0.56,bp_convert:41,style:"counter",
       fatigue:0.22,momentum:0.1,h2h:"2-0",recent_form:[1,0,1,1,0],
@@ -268,13 +254,13 @@ const MOCK_MATCHES = [
       tiebreak_wr:0.55,third_set_wr:0.57,bp_convert:46,style:"serve-dom",
       fatigue:0.10,momentum:0.6,h2h:"0-2",recent_form:[1,1,1,0,1],
       surface_wr:0.52,travel_hrs:12,last_match_days:3,altitude_delta:0,sleep_zone_diff:6},
-    odds:{pinnacle:{p1:2.10,p2:1.75},epicbet:{p1:2.25,p2:1.72},bet365:{p1:2.15,p2:1.75},unibet:{p1:2.30,p2:1.68},
+    odds:{pinnacle:{p1:2.10,p2:1.75},epicbet:{p1:2.18,p2:1.72},bet365:{p1:2.15,p2:1.75},unibet:{p1:2.30,p2:1.68},
           williamhill:{p1:2.10,p2:1.78},betway:{p1:2.20,p2:1.70},bwin:{p1:2.28,p2:1.69}},
   },
   {
     // ITF — no Pinnacle, high-margin soft books, pricing lag
     id:15, circuit:"ITF", level:"ITF M25", tournament:"ITF Sharm El Sheikh M25", surface:"Hard", round:"QF",
-    status:"PRE", game:"-", point:"-", startTime:"10:00", updated:Date.now()-5400000,
+    status:"PRE", game:"-", point:"-", startTime:"Mar 10, 10:00", updated:Date.now()-5400000,
     p1:{...BP,name:"D. Karlovskiy",rank:112,flag:"🇷🇺",age:28,hand:"R",
       tiebreak_wr:0.56,third_set_wr:0.58,bp_convert:43,style:"baseline",
       fatigue:0.08,momentum:0.2,h2h:"1-0",recent_form:[1,1,0,1,1],
@@ -298,12 +284,12 @@ const MOCK_MATCHES = [
       tiebreak_wr:0.50,third_set_wr:0.52,bp_convert:44,style:"allcourt",
       fatigue:0.20,momentum:-0.3,h2h:"1-4",recent_form:[0,1,1,0,1],
       surface_wr:0.64,travel_hrs:6,last_match_days:1,altitude_delta:0,sleep_zone_diff:1},
-    odds:{pinnacle:{p1:1.44,p2:2.94},epicbet:{p1:1.50,p2:2.85},bet365:{p1:1.52,p2:2.75},unibet:{p1:1.54,p2:2.68},
+    odds:{pinnacle:{p1:1.44,p2:2.94},epicbet:{p1:1.47,p2:2.79},bet365:{p1:1.52,p2:2.75},unibet:{p1:1.54,p2:2.68},
           williamhill:{p1:1.45,p2:2.90},betway:{p1:1.48,p2:2.80},bwin:{p1:1.46,p2:2.88}},
   },
   {
     id:17, circuit:"CH", level:"Challenger 100", tournament:"Tampere Open Challenger", surface:"Hard", round:"QF",
-    status:"PRE", game:"-", point:"-", startTime:"14:00", updated:Date.now()-2700000,
+    status:"PRE", game:"-", point:"-", startTime:"Mar 10, 14:00", updated:Date.now()-2700000,
     p1:{...BP,name:"M. Cressy",rank:55,flag:"🇺🇸",age:27,hand:"L",
       tiebreak_wr:0.62,third_set_wr:0.58,bp_convert:40,style:"serve-dom",
       fatigue:0.06,momentum:0.4,h2h:"2-1",recent_form:[1,0,1,1,1],
@@ -312,13 +298,13 @@ const MOCK_MATCHES = [
       tiebreak_wr:0.53,third_set_wr:0.50,bp_convert:38,style:"aggressive",
       fatigue:0.16,momentum:0.0,h2h:"1-2",recent_form:[0,1,0,1,0],
       surface_wr:0.55,travel_hrs:3,last_match_days:3,altitude_delta:0,sleep_zone_diff:0},
-    odds:{pinnacle:{p1:1.85,p2:1.98},epicbet:{p1:1.98,p2:1.90},bet365:{p1:1.92,p2:1.93},unibet:{p1:1.90,p2:1.95},
+    odds:{pinnacle:{p1:1.85,p2:1.98},epicbet:{p1:1.90,p2:1.93},bet365:{p1:1.92,p2:1.93},unibet:{p1:1.90,p2:1.95},
           williamhill:{p1:1.88,p2:1.97},betway:{p1:1.87,p2:2.02},bwin:{p1:1.96,p2:1.88}},
   },
   {
     // ITF M15 — very high margin, biggest mispricing potential
     id:18, circuit:"ITF", level:"ITF M15", tournament:"ITF Monastir M15", surface:"Clay", round:"R16",
-    status:"PRE", game:"-", point:"-", startTime:"11:00", updated:Date.now()-10800000,
+    status:"PRE", game:"-", point:"-", startTime:"Mar 10, 11:00", updated:Date.now()-10800000,
     p1:{...BP,name:"S. Benchetrit",rank:248,flag:"🇫🇷",age:26,hand:"R",
       tiebreak_wr:0.52,third_set_wr:0.56,bp_convert:42,style:"baseline",
       fatigue:0.04,momentum:0.3,h2h:"0-0",recent_form:[1,1,1,0,1],
@@ -331,7 +317,7 @@ const MOCK_MATCHES = [
   },
   {
     id:19, circuit:"ATP", level:"ATP 250", tournament:"Montpellier Open", surface:"Hard", round:"SF",
-    status:"PRE", game:"-", point:"-", startTime:"20:00", updated:Date.now()-3600000,
+    status:"PRE", game:"-", point:"-", startTime:"Mar 10, 20:00", updated:Date.now()-3600000,
     p1:{...BP,name:"U. Humbert",rank:23,flag:"🇫🇷",age:26,hand:"L",
       tiebreak_wr:0.58,third_set_wr:0.61,bp_convert:47,style:"aggressive",
       fatigue:0.08,momentum:0.7,h2h:"2-0",recent_form:[1,1,1,1,0],
@@ -340,12 +326,12 @@ const MOCK_MATCHES = [
       tiebreak_wr:0.50,third_set_wr:0.52,bp_convert:39,style:"serve-dom",
       fatigue:0.12,momentum:0.4,h2h:"0-2",recent_form:[1,0,1,1,1],
       surface_wr:0.55,travel_hrs:0,last_match_days:2,altitude_delta:0,sleep_zone_diff:0},
-    odds:{pinnacle:{p1:1.48,p2:2.82},epicbet:{p1:1.55,p2:2.72},bet365:{p1:1.57,p2:2.65},unibet:{p1:1.53,p2:2.70},
+    odds:{pinnacle:{p1:1.48,p2:2.82},epicbet:{p1:1.52,p2:2.66},bet365:{p1:1.57,p2:2.65},unibet:{p1:1.53,p2:2.70},
           williamhill:{p1:1.50,p2:2.78},betway:{p1:1.52,p2:2.74},bwin:{p1:1.56,p2:2.68}},
   },
   {
     id:20, circuit:"CH", level:"Challenger 50", tournament:"Tenerife Challenger", surface:"Clay", round:"SF",
-    status:"LIVE", game:"3-4", point:"15-30", startTime:"12:00", updated:Date.now()-15000,
+    status:"LIVE", game:"3-4", point:"15-30", startTime:"Today 12:00", updated:Date.now()-15000,
     p1:{...BP,name:"F. Gaio",rank:135,flag:"🇮🇹",age:29,hand:"R",
       aces:2,df:1,first_pct:62,first_won:66,second_won:44,bp_saved:67,bp_faced:3,service_games:7,return_pts_won:38,
       tiebreak_wr:0.47,third_set_wr:0.50,bp_convert:37,style:"baseline",
@@ -356,13 +342,13 @@ const MOCK_MATCHES = [
       tiebreak_wr:0.54,third_set_wr:0.57,bp_convert:43,style:"counter",
       fatigue:0.10,momentum:0.3,h2h:"1-0",recent_form:[1,1,0,1,1],
       surface_wr:0.63,travel_hrs:1,last_match_days:2,altitude_delta:0,sleep_zone_diff:0},
-    odds:{pinnacle:{p1:2.05,p2:1.82},epicbet:{p1:2.22,p2:1.75},bet365:{p1:2.12,p2:1.82},unibet:{p1:2.18,p2:1.78},
+    odds:{pinnacle:{p1:2.05,p2:1.82},epicbet:{p1:2.10,p2:1.80},bet365:{p1:2.12,p2:1.82},unibet:{p1:2.18,p2:1.78},
           williamhill:{p1:2.05,p2:1.90},betway:{p1:2.10,p2:1.85},bwin:{p1:2.20,p2:1.76}},
   },
   {
     // ITF M25 extreme mispricing — bwin is way off vs consensus
     id:21, circuit:"ITF", level:"ITF M25", tournament:"ITF Antalya M25", surface:"Clay", round:"QF",
-    status:"PRE", game:"-", point:"-", startTime:"10:30", updated:Date.now()-7200000,
+    status:"PRE", game:"-", point:"-", startTime:"Mar 10, 10:30", updated:Date.now()-7200000,
     p1:{...BP,name:"B. Altug",rank:332,flag:"🇹🇷",age:25,hand:"R",
       tiebreak_wr:0.50,third_set_wr:0.53,bp_convert:39,style:"baseline",
       fatigue:0.02,momentum:0.4,h2h:"1-0",recent_form:[1,1,0,1,1],
@@ -376,7 +362,7 @@ const MOCK_MATCHES = [
   },
   {
     id:22, circuit:"ATP", level:"Masters 1000", tournament:"Italian Open (Rome)", surface:"Clay", round:"R32",
-    status:"LIVE", game:"5-6", point:"30-30", startTime:"16:30", updated:Date.now()-3000,
+    status:"LIVE", game:"5-6", point:"30-30", startTime:"Today 16:30", updated:Date.now()-3000,
     p1:{...BP,name:"J. Sinner",rank:1,flag:"🇮🇹",age:23,hand:"R",
       aces:5,df:2,first_pct:68,first_won:74,second_won:50,bp_saved:70,bp_faced:5,service_games:11,return_pts_won:43,
       tiebreak_wr:0.66,third_set_wr:0.72,bp_convert:54,style:"aggressive",
@@ -393,7 +379,7 @@ const MOCK_MATCHES = [
   {
     // WTA ITF — small field, high margin, female circuit
     id:23, circuit:"ITF", level:"ITF W25", tournament:"ITF W25 Hammamet", surface:"Clay", round:"SF",
-    status:"PRE", game:"-", point:"-", startTime:"11:30", updated:Date.now()-9000000,
+    status:"PRE", game:"-", point:"-", startTime:"Mar 11, 11:30", updated:Date.now()-9000000,
     p1:{...BP,name:"C. Liu",rank:156,flag:"🇺🇸",age:24,hand:"R",
       tiebreak_wr:0.49,third_set_wr:0.50,bp_convert:38,style:"aggressive",
       fatigue:0.08,momentum:0.3,h2h:"0-0",recent_form:[1,1,0,1,0],
@@ -416,6 +402,12 @@ function getBestOdds(match) {
     if (v.p2 > bestP2.odds) bestP2={odds:v.p2,book:key};
   });
   return {bestP1,bestP2};
+}
+
+function getEpicbetOdds(match) {
+  const ep = match.odds.epicbet;
+  if (!ep) return null;
+  return {bestP1:{odds:ep.p1,book:"epicbet"}, bestP2:{odds:ep.p2,book:"epicbet"}};
 }
 
 function noVigProb(match) {
@@ -585,6 +577,9 @@ export default function App() {
   const [circuitFilter, setCircuitFilter] = useState("all");
   const [optimizing, setOptimizing] = useState(false);
   const [optimizerResult, setOptimizerResult] = useState(null);
+  const [epicbetMode, setEpicbetMode] = useState(false);
+  const [sortBy, setSortBy] = useState("ev");        // ev | time | circuit | surface
+  const [feedView, setFeedView] = useState("cards"); // cards | odds
 
   const [isMobile, setIsMobile] = useState(typeof window!=="undefined"&&window.innerWidth<640);
   useEffect(()=>{
@@ -616,11 +611,13 @@ export default function App() {
   const allMatches = apiStatus==="ok"&&apiData ? [...apiData, ...MOCK_MATCHES] : MOCK_MATCHES;
 
   // Compute edges for every match
-  const matchEdges = allMatches.map(m => {
+  const matchEdges = allMatches
+    .filter(m => !epicbetMode || !!m.odds.epicbet)   // hide no-epicbet matches in epicbet mode
+    .map(m => {
     const nvp = noVigProb(m);
     const p1E = calcEdge(m.p1, m.p2, m, weights);
     const p2E = calcEdge(m.p2, m.p1, m, weights);
-    const {bestP1,bestP2} = getBestOdds(m);
+    const {bestP1,bestP2} = epicbetMode ? getEpicbetOdds(m) : getBestOdds(m);
     // Edge = model adjustment on top of no-vig baseline
     const p1True = Math.min(0.95, Math.max(0.05, nvp.p1 + (p1E.score-p2E.score)*0.5));
     const p2True = 1-p1True;
@@ -669,7 +666,24 @@ export default function App() {
     if (feedFilter==="pre")  return e.match.status==="PRE";
     if (feedFilter==="value") return e.best!==null;
     return true;
-  }).sort((a,b) => b.bestEV - a.bestEV);
+  }).sort((a,b) => {
+    if (sortBy==="ev") return b.bestEV - a.bestEV;
+    if (sortBy==="time") {
+      // LIVE first, then by startTime string alphabetically
+      if (a.match.status==="LIVE" && b.match.status!=="LIVE") return -1;
+      if (b.match.status==="LIVE" && a.match.status!=="LIVE") return 1;
+      return a.match.startTime.localeCompare(b.match.startTime);
+    }
+    if (sortBy==="circuit") {
+      const order=["ATP","WTA","CH","ITF"];
+      return order.indexOf(a.match.circuit)-order.indexOf(b.match.circuit);
+    }
+    if (sortBy==="surface") {
+      const order=["Hard","Clay","Grass","Carpet"];
+      return order.indexOf(a.match.surface)-order.indexOf(b.match.surface);
+    }
+    return b.bestEV - a.bestEV;
+  });
 
   const arbList = matchEdges.filter(e=>e.arb.isArb).sort((a,b)=>b.arb.arbPct-a.arb.arbPct);
 
@@ -785,11 +799,11 @@ export default function App() {
     }, 80);
   }
 
-  // ── Color palette ──
+  // ── Color palette (comfortable dark mode — easier on eyes) ──
   const c = {
-    bg:"#06080d", card:"#0c1018", hover:"#101824", brd:"#151d2b", brdL:"#1c2840",
-    g:"#00e87b", r:"#ff3b5c", y:"#f0c030", b:"#3b8bff", o:"#ff7043",
-    txt:"#c8d0dc", dim:"#4a5670", dimm:"#2a3348", w:"#eef1f6",
+    bg:"#0d1117",   card:"#161b24",  hover:"#1c2334",  brd:"#243040",  brdL:"#2e3d55",
+    g:"#00e87b",    r:"#ff5272",     y:"#f5c842",       b:"#5b9cff",    o:"#ff7a50",
+    txt:"#d0d8e8",  dim:"#6b7a9a",   dimm:"#2e3d55",    w:"#eef2f8",
     arb:"#ffd700",
   };
 
@@ -857,14 +871,12 @@ export default function App() {
   );
 
   const TABS = [
-    {id:"feed",l:"📡 Match Feed"},
-    {id:"scanner",l:"⚡ Edge Scanner"},
-    {id:"arb",l:"🎰 Arb Scanner"},
-    {id:"odds",l:"📊 Live Odds"},
-    {id:"factors",l:"🧬 Factors"},
-    {id:"simulator",l:"📈 Monte Carlo"},
-    {id:"history",l:"📋 Bet Log"},
-    {id:"research",l:"🔬 Research"},
+    {id:"feed",    l:"📊 Matches",    hint:"Feed & odds comparison"},
+    {id:"scanner", l:"⚡ Analyze",    hint:"Deep dive on a match"},
+    {id:"arb",     l:"🎰 Arb",        hint:"Guaranteed profit opps"},
+    {id:"research",l:"🔬 Research",   hint:"EV leaderboard & mispricing"},
+    {id:"model",   l:"🧬 Model",      hint:"Factors, optimizer & simulation"},
+    {id:"bets",    l:"📋 Bets",       hint:"Track your bet history"},
   ];
 
   return (
@@ -877,7 +889,7 @@ export default function App() {
           <div style={{display:"flex",alignItems:"center",gap:14}}>
             <div>
               <div style={{fontSize:isMobile?13:15,fontWeight:800,letterSpacing:"3px",color:c.g,whiteSpace:"nowrap"}}>◆ EDGE MACHINE</div>
-              <div style={{fontSize:8,color:c.dim,letterSpacing:"1.5px",whiteSpace:"nowrap"}}>v5.0 · {allMatches.length} MATCHES</div>
+              <div style={{fontSize:8,color:c.dim,letterSpacing:"1.5px",whiteSpace:"nowrap"}}>v5.1 · {allMatches.length} MATCHES</div>
             </div>
             <div style={{width:1,height:28,background:c.brd,margin:"0 4px"}}/>
             <div style={{display:"flex",alignItems:"center",gap:6}}>
@@ -893,32 +905,32 @@ export default function App() {
               <span style={{fontSize:8,color:c.arb,fontWeight:700}}>◆ {arbList.length} ARB{arbList.length>1?"S":""} FOUND</span>
             </div>}
           </div>
-          <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
+          <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"nowrap"}}>
             {/* Editable bankroll */}
-            <div style={{background:c.card,border:`1px solid ${editingBankroll?c.g+"60":c.brd}`,borderRadius:8,padding:"6px 14px",display:"flex",alignItems:"center",gap:8,cursor:"pointer"}}
+            <div style={{background:c.card,border:`1px solid ${editingBankroll?c.g+"60":c.brd}`,borderRadius:8,padding:"6px 14px",display:"flex",alignItems:"center",gap:8,cursor:"pointer",flexShrink:0}}
               onClick={()=>{if(!editingBankroll){setBankrollInput(bankroll.toString());setEditingBankroll(true);}}}>
-              <span style={{fontSize:9,color:c.dim,letterSpacing:"1px"}}>BANKROLL</span>
+              {!isMobile&&<span style={{fontSize:8,color:c.dim,letterSpacing:"1px"}}>BANKROLL</span>}
               {editingBankroll
                 ? <input autoFocus value={bankrollInput} onChange={e=>setBankrollInput(e.target.value.replace(/[^0-9.]/g,""))}
                     onBlur={()=>{const v=parseFloat(bankrollInput);if(!isNaN(v)&&v>0)setBankroll(Math.round(v*100)/100);setEditingBankroll(false);}}
                     onKeyDown={e=>{if(e.key==="Enter"){const v=parseFloat(bankrollInput);if(!isNaN(v)&&v>0)setBankroll(Math.round(v*100)/100);setEditingBankroll(false);}else if(e.key==="Escape")setEditingBankroll(false);}}
                     onClick={e=>e.stopPropagation()}
-                    style={{fontSize:18,fontWeight:800,color:c.g,background:"transparent",border:"none",outline:"none",fontFamily:"inherit",width:100,textAlign:"right"}}/>
-                : <span style={{fontSize:18,fontWeight:800,color:bankroll>=1000?c.g:c.r}}>{settings.currency}{bankroll.toLocaleString()}</span>
+                    style={{fontSize:isMobile?14:18,fontWeight:800,color:c.g,background:"transparent",border:"none",outline:"none",fontFamily:"inherit",width:90,textAlign:"right"}}/>
+                : <span style={{fontSize:isMobile?14:18,fontWeight:800,color:bankroll>=1000?c.g:c.r}}>{settings.currency}{bankroll.toLocaleString()}</span>
               }
               {!editingBankroll&&<span style={{fontSize:9,color:c.dim}}>✏</span>}
             </div>
-            {[
-              {l:"ROI",v:`${((bankroll/1000-1)*100).toFixed(1)}%`,col:bankroll>=1000?c.g:c.r,fs:14},
-              {l:"BETS",v:betHistory.length,col:c.b,fs:14},
-              {l:"VALUE",v:matchEdges.filter(e=>e.best).length,col:c.y,fs:14},
+            {!isMobile&&[
+              {l:"ROI",v:`${((bankroll/1000-1)*100).toFixed(1)}%`,col:bankroll>=1000?c.g:c.r},
+              {l:"BETS",v:betHistory.length,col:c.b},
+              {l:"VALUE",v:matchEdges.filter(e=>e.best).length,col:c.y},
             ].map((x,i)=>(
-              <div key={i} style={{background:c.card,border:`1px solid ${c.brd}`,borderRadius:8,padding:"6px 14px",display:"flex",alignItems:"center",gap:10}}>
-                <span style={{fontSize:9,color:c.dim,letterSpacing:"1px"}}>{x.l}</span>
-                <span style={{fontSize:x.fs,fontWeight:800,color:x.col}}>{x.v}</span>
+              <div key={i} style={{background:c.card,border:`1px solid ${c.brd}`,borderRadius:8,padding:"6px 12px",display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
+                <span style={{fontSize:8,color:c.dim,letterSpacing:"1px"}}>{x.l}</span>
+                <span style={{fontSize:13,fontWeight:800,color:x.col}}>{x.v}</span>
               </div>
             ))}
-            <button onClick={()=>setShowSettings(!showSettings)} style={{background:showSettings?`${c.g}15`:c.card,border:`1px solid ${showSettings?c.g+"40":c.brd}`,borderRadius:8,padding:"8px 12px",cursor:"pointer",color:showSettings?c.g:c.dim,fontSize:14,fontFamily:"inherit"}}>⚙</button>
+            <button onClick={()=>setShowSettings(!showSettings)} style={{background:showSettings?`${c.g}15`:c.card,border:`1px solid ${showSettings?c.g+"40":c.brd}`,borderRadius:8,padding:"8px 12px",cursor:"pointer",color:showSettings?c.g:c.dim,fontSize:14,fontFamily:"inherit",flexShrink:0}}>⚙</button>
           </div>
         </div>
       </div>
@@ -988,19 +1000,37 @@ export default function App() {
       )}
 
       {/* ═══ NAV TABS ═══ */}
-      <div style={{borderBottom:`1px solid ${c.brd}`,background:c.bg,position:"sticky",top:0,zIndex:10}}>
-        <div style={{display:"flex",maxWidth:1440,margin:"0 auto",overflowX:"auto"}}>
-          {TABS.map(t=>(
-            <button key={t.id} onClick={()=>setActiveTab(t.id)} style={{padding:"12px 18px",cursor:"pointer",fontSize:10,
-              letterSpacing:"1.5px",textTransform:"uppercase",
-              color:activeTab===t.id?t.id==="arb"?c.arb:c.g:c.dim,
-              background:"transparent",border:"none",fontFamily:"inherit",
-              borderBottom:`2px solid ${activeTab===t.id?t.id==="arb"?c.arb:c.g:"transparent"}`,
-              transition:"all .15s",whiteSpace:"nowrap",position:"relative"}}>
-              {t.l}
-              {t.id==="arb"&&arbList.length>0&&<span style={{position:"absolute",top:8,right:8,width:6,height:6,borderRadius:"50%",background:c.arb,boxShadow:`0 0 6px ${c.arb}`}}/>}
-            </button>
-          ))}
+      <div style={{borderBottom:`1px solid ${c.brd}`,background:c.card,position:"sticky",top:0,zIndex:10}}>
+        <div style={{display:"flex",maxWidth:1440,margin:"0 auto",overflowX:"auto",alignItems:"stretch"}}>
+          {TABS.map(t=>{
+            const active = activeTab===t.id;
+            const accent = t.id==="arb"?c.arb:c.g;
+            return (
+              <button key={t.id} onClick={()=>setActiveTab(t.id)} title={t.hint}
+                style={{padding:"14px 22px",cursor:"pointer",fontSize:11,fontWeight:active?700:500,
+                  letterSpacing:"0.5px",color:active?accent:c.dim,
+                  background:active?`${accent}0d`:"transparent",border:"none",fontFamily:"inherit",
+                  borderBottom:`2px solid ${active?accent:"transparent"}`,
+                  transition:"all .15s",whiteSpace:"nowrap",position:"relative",flexShrink:0}}>
+                {t.l}
+                {t.id==="arb"&&arbList.length>0&&(
+                  <span style={{position:"absolute",top:10,right:10,minWidth:16,height:16,borderRadius:8,
+                    background:c.arb,color:"#000",fontSize:8,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 4px"}}>
+                    {arbList.length}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+          <div style={{flex:1}}/>
+          {/* Epicbet Mode Toggle — always visible in nav */}
+          <button onClick={()=>setEpicbetMode(!epicbetMode)} title="Show only Epicbet odds"
+            style={{padding:"0 18px",cursor:"pointer",fontSize:10,fontWeight:700,border:"none",fontFamily:"inherit",
+              background:epicbetMode?`${c.g}15`:"transparent",
+              color:epicbetMode?c.g:c.dim,borderBottom:`2px solid ${epicbetMode?c.g:"transparent"}`,
+              transition:"all .15s",whiteSpace:"nowrap",letterSpacing:"0.5px",flexShrink:0}}>
+            {epicbetMode?"✓ EPIC MODE":"EPIC"}
+          </button>
         </div>
       </div>
 
@@ -1050,15 +1080,102 @@ export default function App() {
               <Pill active={feedFilter==="all"} onClick={()=>setFeedFilter("all")} count={filtered.length}>All</Pill>
               <Pill active={feedFilter==="live"} onClick={()=>setFeedFilter("live")} count={matchEdges.filter(e=>e.match.status==="LIVE"&&(circuitFilter==="all"||e.match.circuit===circuitFilter)).length}>Live</Pill>
               <Pill active={feedFilter==="pre"} onClick={()=>setFeedFilter("pre")} count={matchEdges.filter(e=>e.match.status==="PRE"&&(circuitFilter==="all"||e.match.circuit===circuitFilter)).length}>Upcoming</Pill>
-              <Pill active={feedFilter==="value"} onClick={()=>setFeedFilter("value")} count={matchEdges.filter(e=>e.best&&(circuitFilter==="all"||e.match.circuit===circuitFilter)).length}>Value Only</Pill>
+              <Pill active={feedFilter==="value"} onClick={()=>setFeedFilter("value")} count={matchEdges.filter(e=>e.best&&(circuitFilter==="all"||e.match.circuit===circuitFilter)).length}>Value</Pill>
             </div>
-            <div style={{display:"flex",alignItems:"center",gap:8}}>
-              <span style={{fontSize:9,color:c.dim}}>Sorted by EV · Best odds across {BOOKS.length} books</span>
-              <button onClick={()=>setLastRefresh(Date.now())} style={{background:c.card,border:`1px solid ${c.brd}`,borderRadius:6,padding:"6px 12px",cursor:"pointer",color:c.g,fontSize:10,fontFamily:"inherit",fontWeight:600,letterSpacing:"1px"}}>↻ REFRESH</button>
+            <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+              {/* Sort controls */}
+              <div style={{display:"flex",alignItems:"center",gap:4}}>
+                <span style={{fontSize:9,color:c.dim,letterSpacing:"1px"}}>SORT:</span>
+                {[{v:"ev",l:"EV"},{v:"time",l:"Time"},{v:"circuit",l:"Circuit"},{v:"surface",l:"Surface"}].map(s=>(
+                  <button key={s.v} onClick={()=>setSortBy(s.v)}
+                    style={{padding:"4px 10px",borderRadius:10,fontSize:9,fontWeight:600,cursor:"pointer",fontFamily:"inherit",
+                      border:`1px solid ${sortBy===s.v?c.b+"60":c.brd}`,
+                      background:sortBy===s.v?`${c.b}14`:"transparent",
+                      color:sortBy===s.v?c.b:c.dim,transition:"all .15s"}}>
+                    {s.l}
+                  </button>
+                ))}
+              </div>
+              {/* View toggle: cards vs odds table */}
+              <div style={{display:"flex",background:c.card,borderRadius:8,border:`1px solid ${c.brd}`,overflow:"hidden"}}>
+                {[{v:"cards",l:"Cards"},{v:"odds",l:"Odds Table"}].map(v=>(
+                  <button key={v.v} onClick={()=>setFeedView(v.v)}
+                    style={{padding:"5px 12px",fontSize:9,fontWeight:600,cursor:"pointer",fontFamily:"inherit",border:"none",
+                      background:feedView===v.v?`${c.b}20`:"transparent",
+                      color:feedView===v.v?c.b:c.dim,transition:"all .15s"}}>
+                    {v.l}
+                  </button>
+                ))}
+              </div>
+              <button onClick={()=>setLastRefresh(Date.now())} style={{background:c.card,border:`1px solid ${c.brd}`,borderRadius:6,padding:"5px 12px",cursor:"pointer",color:c.g,fontSize:10,fontFamily:"inherit",fontWeight:600,letterSpacing:"1px"}}>↻</button>
             </div>
           </div>
 
-          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          {/* ── Odds Table View ── */}
+          {feedView==="odds"&&(
+            <div style={{marginBottom:8}}>
+              {filtered.map(m=>{
+                const {bestP1,bestP2}=getBestOdds(m.match);
+                const edge=m;
+                const sc=SURFACE_C[m.match.surface]||c.dim;
+                return (
+                  <div key={m.match.id} style={{background:c.card,border:`1px solid ${c.brd}`,borderRadius:10,marginBottom:8,overflow:"hidden"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 16px",borderBottom:`1px solid ${c.brd}`,cursor:"pointer",background:`${sc}08`}}
+                      onClick={()=>{setSelectedMatch(m.match.id);setActiveTab("scanner");}}>
+                      <SurfacePip surface={m.match.surface}/>
+                      <span style={{padding:"1px 6px",borderRadius:3,fontSize:8,background:m.match.status==="LIVE"?`${c.g}18`:`${c.b}12`,color:m.match.status==="LIVE"?c.g:c.b}}>
+                        {m.match.status==="LIVE"?"● LIVE":`◎ ${m.match.startTime}`}</span>
+                      <span style={{fontSize:11,fontWeight:600,color:c.w}}>{m.match.p1.flag} {m.match.p1.name} vs {m.match.p2.flag} {m.match.p2.name}</span>
+                      <span style={{fontSize:10,color:c.dim,marginLeft:4}}>{m.match.tournament} · {m.match.round}</span>
+                      {edge?.best&&<Badge value={edge.bestEV}/>}
+                    </div>
+                    <div style={{overflowX:"auto"}}>
+                      <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:460}}>
+                        <thead><tr style={{background:c.bg}}>
+                          <th style={{padding:"6px 16px",textAlign:"left",fontSize:8,color:c.dim,fontWeight:600,width:90}}>PLAYER</th>
+                          {BOOKS.filter(b=>m.match.odds[b.key]).map(b=>(
+                            <th key={b.key} style={{padding:"6px 12px",textAlign:"center",fontSize:8,
+                              color:epicbetMode&&b.key==="epicbet"?c.g:b.key==="pinnacle"?c.b:c.dim,fontWeight:600}}>
+                              {b.abbr}{epicbetMode&&b.key==="epicbet"&&<span style={{color:c.g}}> ✓</span>}
+                            </th>
+                          ))}
+                          <th style={{padding:"6px 12px",textAlign:"center",fontSize:8,color:c.g,fontWeight:600}}>BEST</th>
+                        </tr></thead>
+                        <tbody>
+                          {[{p:m.match.p1,side:"p1",best:bestP1},{p:m.match.p2,side:"p2",best:bestP2}].map(({p,side,best},ri)=>(
+                            <tr key={ri} style={{borderTop:`1px solid ${c.brd}`}}>
+                              <td style={{padding:"8px 16px",fontSize:10,fontWeight:600,color:c.txt,whiteSpace:"nowrap"}}>{p.flag} {p.name.split(" ").pop()}</td>
+                              {BOOKS.filter(b=>m.match.odds[b.key]).map(b=>{
+                                const odds=m.match.odds[b.key]?.[side];
+                                const isBest=odds&&odds===best.odds;
+                                const isEpic=b.key==="epicbet";
+                                return (
+                                  <td key={b.key} style={{padding:"8px 12px",textAlign:"center",
+                                    opacity:epicbetMode&&!isEpic?0.35:1,
+                                    background:isBest?`${c.g}10`:b.key==="pinnacle"?`${c.b}05`:"transparent"}}>
+                                    <span style={{fontWeight:700,fontSize:13,color:isBest?c.g:b.key==="pinnacle"?c.b:c.txt}}>
+                                      {odds?odds.toFixed(2):"–"}</span>
+                                    {isBest&&<div style={{fontSize:7,color:c.g}}>▲BEST</div>}
+                                  </td>
+                                );
+                              })}
+                              <td style={{padding:"8px 12px",textAlign:"center",background:`${c.g}08`}}>
+                                <span style={{fontWeight:800,fontSize:14,color:c.g}}>{best.odds.toFixed(2)}</span>
+                                <div style={{fontSize:8,color:c.g}}>{bookAbbr(best.book)}</div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* ── Cards View ── */}
+          <div style={{display:feedView==="cards"?"flex":"none",flexDirection:"column",gap:8}}>
             {filtered.map(edge=>{
               const m=edge.match, has=edge.best!==null, isArb=edge.arb.isArb;
               const sc=SURFACE_C[m.surface]||c.dim;
@@ -1124,16 +1241,56 @@ export default function App() {
 
         {/* ════ SCANNER ════ */}
         {activeTab==="scanner"&&(<>
-          <div style={{display:"flex",gap:8,marginBottom:16,flexWrap:"wrap"}}>
-            {allMatches.map(m=>(
-              <button key={m.id} onClick={()=>setSelectedMatch(m.id)} style={{padding:"8px 14px",borderRadius:8,fontFamily:"inherit",fontSize:11,cursor:"pointer",
-                border:`1px solid ${selectedMatch===m.id?c.g+"60":c.brd}`,
-                background:selectedMatch===m.id?`${c.g}10`:c.card,
-                color:selectedMatch===m.id?c.g:c.dim,transition:"all .15s"}}>
-                <SurfacePip surface={m.surface}/>{m.status==="LIVE"?"●":"◎"} {m.p1.name} vs {m.p2.name}
-              </button>
-            ))}
-          </div>
+          <div style={{display:"flex",gap:0,borderRadius:12,border:`1px solid ${c.brd}`,overflow:"hidden",minHeight:"75vh",flexDirection:isMobile?"column":"row"}}>
+
+            {/* ── Left sidebar: grouped by circuit ── */}
+            <div style={{width:isMobile?"100%":240,borderRight:isMobile?"none":`1px solid ${c.brd}`,borderBottom:isMobile?`1px solid ${c.brd}`:"none",background:c.card,flexShrink:0,overflowY:"auto",maxHeight:isMobile?260:"75vh"}}>
+              <div style={{padding:"10px 12px",borderBottom:`1px solid ${c.brd}`,background:c.bg}}>
+                <div style={{fontSize:8,color:c.dim,letterSpacing:"2px",marginBottom:4}}>SELECT MATCH</div>
+                <div style={{fontSize:9,color:c.dimm}}>{allMatches.length} matches · {allMatches.filter(m=>m.status==="LIVE").length} live</div>
+              </div>
+              {["ATP","WTA","CH","ITF"].map(circuit=>{
+                const cms = allMatches.filter(m=>m.circuit===circuit);
+                if(!cms.length) return null;
+                const cc = CIRCUIT_COLOR[circuit]||c.dim;
+                return (
+                  <div key={circuit}>
+                    <div style={{padding:"7px 14px",background:`${cc}0c`,borderBottom:`1px solid ${c.brd}`,display:"flex",alignItems:"center",gap:8}}>
+                      <span style={{fontSize:8,fontWeight:800,letterSpacing:"2px",color:cc}}>{circuit}</span>
+                      <span style={{fontSize:8,color:c.dimm}}>{cms.length}</span>
+                    </div>
+                    {cms.map(m=>{
+                      const isSelected=selectedMatch===m.id;
+                      const edge=matchEdges.find(e=>e.match.id===m.id);
+                      const hasVal=edge?.best!=null;
+                      return (
+                        <button key={m.id} onClick={()=>setSelectedMatch(m.id)}
+                          style={{width:"100%",textAlign:"left",padding:"10px 14px",cursor:"pointer",fontFamily:"inherit",border:"none",
+                            borderBottom:`1px solid ${c.brd}`,borderLeft:`3px solid ${isSelected?cc:"transparent"}`,
+                            background:isSelected?`${cc}12`:m.status==="LIVE"?`${c.g}05`:"transparent",
+                            color:isSelected?cc:c.txt,transition:"all .12s"}}>
+                          <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:3}}>
+                            <span style={{fontSize:9,fontWeight:700,
+                              color:m.status==="LIVE"?c.g:c.dim}}>
+                              {m.status==="LIVE"?"●":""} {m.status==="LIVE"?"LIVE":m.startTime}
+                            </span>
+                            <SurfacePip surface={m.surface}/>
+                            {hasVal&&<span style={{fontSize:7,fontWeight:700,color:c.g}}>EV</span>}
+                          </div>
+                          <div style={{fontSize:10,fontWeight:600,color:isSelected?cc:c.w,lineHeight:1.3}}>{m.p1.name}</div>
+                          <div style={{fontSize:10,color:isSelected?`${cc}cc`:c.dim,lineHeight:1.3}}>{m.p2.name}</div>
+                          <div style={{fontSize:8,color:c.dimm,marginTop:2}}>{m.tournament}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* ── Right analysis panel ── */}
+            <div style={{flex:1,padding:isMobile?14:20,overflowY:"auto"}}>
+
 
           {sel?(()=>{
             const m=sel.match;
@@ -1390,7 +1547,9 @@ export default function App() {
                 ))}
               </div>
             </>);
-          })() : <div style={{textAlign:"center",padding:"60px 20px",color:c.dim}}><div style={{fontSize:28,marginBottom:8}}>⚡</div><div style={{fontSize:12}}>Select a match to analyze.</div></div>}
+          })() : <div style={{textAlign:"center",padding:"80px 20px",color:c.dim}}><div style={{fontSize:32,marginBottom:10}}>⚡</div><div style={{fontSize:13,marginBottom:6}}>Select a match from the list</div><div style={{fontSize:10,color:c.dimm}}>Click any match in the sidebar to begin analysis</div></div>}
+            </div>{/* end right panel */}
+          </div>{/* end scanner container */}
         </>)}
 
         {/* ════ ARB SCANNER ════ */}
@@ -1497,8 +1656,8 @@ export default function App() {
           </div>
         </>)}
 
-        {/* ════ LIVE ODDS ════ */}
-        {activeTab==="odds"&&(<>
+        {/* Live Odds — now embedded in Matches feed as "Odds Table" view */}
+        {activeTab==="__odds_removed__"&&(<>
           <div style={{marginBottom:16,display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:12}}>
             <div>
               <div style={{fontSize:9,letterSpacing:"3px",color:c.b,marginBottom:6}}>ODDS COMPARISON TABLE — ALL BOOKMAKERS</div>
@@ -1576,8 +1735,8 @@ export default function App() {
           })}
         </>)}
 
-        {/* ════ FACTORS ════ */}
-        {activeTab==="factors"&&(
+        {/* ════ MODEL (Factors + Optimizer + Monte Carlo) ════ */}
+        {activeTab==="model"&&(
           <div>
             {/* Optimizer */}
             <div style={{background:c.card,border:`1px solid ${c.g}30`,borderRadius:10,padding:16,marginBottom:14}}>
@@ -1657,10 +1816,10 @@ export default function App() {
           </div>
         )}
 
-        {/* ════ SIMULATOR ════ */}
-        {activeTab==="simulator"&&(
-          <div style={{background:c.card,border:`1px solid ${c.brd}`,borderRadius:10,padding:20}}>
-            <div style={{fontSize:9,letterSpacing:"3px",color:c.dim,marginBottom:6}}>MONTE CARLO BANKROLL SIMULATOR</div>
+        {/* ════ MONTE CARLO (part of MODEL tab) ════ */}
+        {activeTab==="model"&&(
+          <div style={{background:c.card,border:`1px solid ${c.brd}`,borderRadius:10,padding:20,marginTop:14}}>
+            <div style={{fontSize:9,letterSpacing:"3px",color:c.b,marginBottom:6}}>📈 MONTE CARLO BANKROLL SIMULATOR</div>
             <p style={{fontSize:11,color:c.dim,marginBottom:16,lineHeight:1.6}}>1,000 parallel paths · 200 bets each · Current settings applied · Edge range: 3-7%</p>
             <div style={{display:"flex",gap:20,alignItems:"center",marginBottom:20,flexWrap:"wrap"}}>
               <div>
@@ -1709,8 +1868,8 @@ export default function App() {
           </div>
         )}
 
-        {/* ════ HISTORY ════ */}
-        {activeTab==="history"&&(
+        {/* ════ BETS ════ */}
+        {activeTab==="bets"&&(
           <div style={{background:c.card,border:`1px solid ${c.brd}`,borderRadius:10,padding:20}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:10}}>
               <div style={{fontSize:9,letterSpacing:"3px",color:c.dim}}>BET LOG</div>
