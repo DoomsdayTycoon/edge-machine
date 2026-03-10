@@ -13,33 +13,54 @@ const BOOKS = [
   { key: "bwin",        name: "bwin",          abbr: "BWIN", note: "" },
 ];
 const SURFACE_C = { Hard: "#3b8bff", Clay: "#ff7043", Grass: "#00c853", Carpet: "#ab47bc" };
-const BP = { aces:0,df:0,first_pct:0,first_won:0,second_won:0,bp_saved:0,bp_faced:0,service_games:0,return_pts_won:0 };
+const CIRCUIT_COLOR = { ATP:"#3b8bff", WTA:"#c77dff", CH:"#ff7043", ITF:"#26c6da" };
+const BP = { aces:0,df:0,first_pct:63,first_won:68,second_won:46,bp_saved:55,bp_faced:3,service_games:6,return_pts_won:40,
+  tiebreak_wr:0.50, third_set_wr:0.50, bp_convert:40, style:"allcourt" };
+
+// Style clash edge matrix: [attacker style][defender style] = edge for attacker
+const STYLE_CLASH_MTX = {
+  "serve-dom":   {"serve-dom":0,   "baseline":0.01, "counter":0.05,  "allcourt":0.02, "aggressive":-0.03},
+  "baseline":    {"serve-dom":-0.01,"baseline":0,   "counter":0.03,  "allcourt":0.01, "aggressive":0.01},
+  "counter":     {"serve-dom":-0.05,"baseline":-0.03,"counter":0,    "allcourt":-0.01,"aggressive":0.07},
+  "allcourt":    {"serve-dom":-0.02,"baseline":-0.01,"counter":0.01, "allcourt":0,    "aggressive":0.02},
+  "aggressive":  {"serve-dom":0.03, "baseline":-0.01,"counter":-0.07,"allcourt":-0.02,"aggressive":0},
+};
+function calcStyleClash(s1, s2, surface) {
+  const base = STYLE_CLASH_MTX[s1]?.[s2] ?? 0;
+  const surfBonus = surface==="Clay" ? (s1==="serve-dom"?-0.03:s1==="counter"?0.025:0)
+    : surface==="Grass" ? (s1==="serve-dom"?0.03:s1==="counter"?-0.025:0) : 0;
+  return base + surfBonus;
+}
 
 // ──────────────────────────────────────────────────
 // MOCK MATCH DATA  (10 matches across 6 tournaments)
 // ──────────────────────────────────────────────────
 const MOCK_MATCHES = [
   {
-    id:1, tournament:"Hersonissos 2 Challenger", surface:"Hard", round:"R32",
+    id:1, circuit:"CH", level:"Challenger 100", tournament:"Hersonissos 2 Challenger", surface:"Hard", round:"R32",
     status:"LIVE", game:"3-6", point:"15-30", startTime:"14:30", updated:Date.now()-45000,
     p1:{...BP,name:"P. Makk",rank:716,flag:"🇭🇺",age:24,hand:"R",
       first_pct:61,first_won:50,second_won:38,bp_saved:25,bp_faced:4,service_games:5,return_pts_won:32,
+      tiebreak_wr:0.40,third_set_wr:0.38,bp_convert:28,style:"baseline",
       fatigue:0.12,momentum:-0.6,h2h:"0-0",recent_form:[0,1,0,1,0],
       surface_wr:0.41,travel_hrs:18,last_match_days:3,altitude_delta:200,sleep_zone_diff:2},
     p2:{...BP,name:"P. Henning",rank:324,flag:"🇿🇦",age:26,hand:"R",
       first_pct:64,first_won:81,second_won:56,bp_saved:0,bp_faced:1,service_games:5,return_pts_won:58,
+      tiebreak_wr:0.58,third_set_wr:0.61,bp_convert:45,style:"serve-dom",
       fatigue:0.08,momentum:0.7,h2h:"0-0",recent_form:[1,1,0,1,1],
       surface_wr:0.54,travel_hrs:6,last_match_days:2,altitude_delta:50,sleep_zone_diff:0},
     odds:{pinnacle:{p1:3.44,p2:1.30},epicbet:{p1:3.20,p2:1.32},bet365:{p1:3.20,p2:1.35},unibet:{p1:3.10,p2:1.38},
           williamhill:{p1:2.90,p2:1.40},betway:{p1:3.25,p2:1.34},bwin:{p1:3.00,p2:1.37}},
   },
   {
-    id:2, tournament:"Indian Wells Masters", surface:"Hard", round:"R16",
+    id:2, circuit:"ATP", level:"Masters 1000", tournament:"Indian Wells Masters", surface:"Hard", round:"R16",
     status:"PRE", game:"-", point:"-", startTime:"Tomorrow 20:00", updated:Date.now()-120000,
     p1:{...BP,name:"C. Alcaraz",rank:2,flag:"🇪🇸",age:22,hand:"R",
+      tiebreak_wr:0.62,third_set_wr:0.68,bp_convert:52,style:"allcourt",
       fatigue:0.22,momentum:0.3,h2h:"4-2",recent_form:[1,1,1,0,1],
       surface_wr:0.78,travel_hrs:9,last_match_days:1,altitude_delta:400,sleep_zone_diff:9},
     p2:{...BP,name:"C. Ruud",rank:7,flag:"🇳🇴",age:25,hand:"R",
+      tiebreak_wr:0.48,third_set_wr:0.54,bp_convert:44,style:"baseline",
       fatigue:0.12,momentum:0.4,h2h:"2-4",recent_form:[1,1,0,1,0],
       surface_wr:0.62,travel_hrs:12,last_match_days:2,altitude_delta:0,sleep_zone_diff:1},
     odds:{pinnacle:{p1:1.42,p2:2.98},epicbet:{p1:1.44,p2:2.90},bet365:{p1:1.45,p2:2.85},unibet:{p1:1.47,p2:2.80},
@@ -60,88 +81,102 @@ const MOCK_MATCHES = [
     ],
   },
   {
-    id:3, tournament:"Dubai Open", surface:"Hard", round:"QF",
+    id:3, circuit:"ATP", level:"ATP 500", tournament:"Dubai Open", surface:"Hard", round:"QF",
     status:"LIVE", game:"6-4, 3-3", point:"40-40", startTime:"16:00", updated:Date.now()-10000,
     p1:{...BP,name:"J. Sinner",rank:1,flag:"🇮🇹",age:23,hand:"R",
       aces:8,df:2,first_pct:72,first_won:78,second_won:52,bp_saved:80,bp_faced:5,service_games:10,return_pts_won:45,
+      tiebreak_wr:0.66,third_set_wr:0.72,bp_convert:54,style:"aggressive",
       fatigue:0.31,momentum:0.4,h2h:"5-3",recent_form:[1,1,1,1,0],
       surface_wr:0.82,travel_hrs:5,last_match_days:1,altitude_delta:0,sleep_zone_diff:2},
     p2:{...BP,name:"D. Medvedev",rank:5,flag:"🇷🇺",age:29,hand:"R",
       aces:3,df:4,first_pct:65,first_won:70,second_won:48,bp_saved:60,bp_faced:5,service_games:9,return_pts_won:40,
+      tiebreak_wr:0.72,third_set_wr:0.58,bp_convert:42,style:"counter",
       fatigue:0.35,momentum:-0.2,h2h:"3-5",recent_form:[1,0,1,0,1],
       surface_wr:0.71,travel_hrs:8,last_match_days:0,altitude_delta:100,sleep_zone_diff:3},
     odds:{pinnacle:{p1:1.26,p2:4.10},epicbet:{p1:1.27,p2:3.95},bet365:{p1:1.28,p2:3.80},unibet:{p1:1.30,p2:3.75},
           williamhill:{p1:1.25,p2:4.00},betway:{p1:1.27,p2:3.90},bwin:{p1:1.29,p2:3.85}},
   },
   {
-    id:4, tournament:"Hersonissos 2 Challenger", surface:"Hard", round:"R32",
+    id:4, circuit:"CH", level:"Challenger 100", tournament:"Hersonissos 2 Challenger", surface:"Hard", round:"R32",
     status:"PRE", game:"-", point:"-", startTime:"11:00", updated:Date.now()-300000,
     p1:{...BP,name:"L. Djere",rank:112,flag:"🇷🇸",age:29,hand:"R",
+      tiebreak_wr:0.46,third_set_wr:0.50,bp_convert:38,style:"baseline",
       fatigue:0.18,momentum:0.0,h2h:"1-0",recent_form:[0,0,1,1,0],
       surface_wr:0.48,travel_hrs:4,last_match_days:5,altitude_delta:0,sleep_zone_diff:1},
     p2:{...BP,name:"G. Barrere",rank:198,flag:"🇫🇷",age:32,hand:"R",
+      tiebreak_wr:0.44,third_set_wr:0.42,bp_convert:33,style:"allcourt",
       fatigue:0.06,momentum:0.1,h2h:"0-1",recent_form:[1,0,0,0,1],
       surface_wr:0.39,travel_hrs:3,last_match_days:7,altitude_delta:0,sleep_zone_diff:0},
     odds:{pinnacle:{p1:1.78,p2:2.12},epicbet:{p1:1.80,p2:2.08},bet365:{p1:1.72,p2:2.20},unibet:{p1:1.75,p2:2.15},
           williamhill:{p1:1.70,p2:2.25},betway:{p1:1.73,p2:2.18},bwin:{p1:1.76,p2:2.10}},
   },
   {
-    id:5, tournament:"Indian Wells Masters", surface:"Hard", round:"R32",
+    id:5, circuit:"ATP", level:"Masters 1000", tournament:"Indian Wells Masters", surface:"Hard", round:"R32",
     status:"LIVE", game:"4-5", point:"30-40", startTime:"18:30", updated:Date.now()-5000,
     p1:{...BP,name:"T. Fritz",rank:4,flag:"🇺🇸",age:27,hand:"R",
       aces:5,df:1,first_pct:68,first_won:72,second_won:45,bp_saved:67,bp_faced:3,service_games:5,return_pts_won:38,
+      tiebreak_wr:0.64,third_set_wr:0.60,bp_convert:42,style:"serve-dom",
       fatigue:0.10,momentum:-0.3,h2h:"2-1",recent_form:[1,1,0,1,1],
       surface_wr:0.72,travel_hrs:1,last_match_days:2,altitude_delta:0,sleep_zone_diff:0},
     p2:{...BP,name:"S. Tsitsipas",rank:11,flag:"🇬🇷",age:26,hand:"R",
       aces:3,df:3,first_pct:60,first_won:65,second_won:50,bp_saved:50,bp_faced:4,service_games:5,return_pts_won:42,
+      tiebreak_wr:0.50,third_set_wr:0.55,bp_convert:47,style:"allcourt",
       fatigue:0.15,momentum:0.4,h2h:"1-2",recent_form:[0,1,1,0,1],
       surface_wr:0.62,travel_hrs:12,last_match_days:1,altitude_delta:300,sleep_zone_diff:10},
     odds:{pinnacle:{p1:1.42,p2:3.00},epicbet:{p1:1.44,p2:2.90},bet365:{p1:1.45,p2:2.85},unibet:{p1:1.47,p2:2.80},
           williamhill:{p1:1.43,p2:2.90},betway:{p1:1.44,p2:2.88},bwin:{p1:1.46,p2:2.82}},
   },
   {
-    id:6, tournament:"Barcelona Open", surface:"Clay", round:"QF",
+    id:6, circuit:"ATP", level:"ATP 500", tournament:"Barcelona Open", surface:"Clay", round:"QF",
     status:"PRE", game:"-", point:"-", startTime:"13:00", updated:Date.now()-600000,
     p1:{...BP,name:"R. Nadal",rank:678,flag:"🇪🇸",age:37,hand:"L",
+      tiebreak_wr:0.56,third_set_wr:0.71,bp_convert:58,style:"counter",
       fatigue:0.45,momentum:0.6,h2h:"8-3",recent_form:[1,0,1,1,0],
       surface_wr:0.93,travel_hrs:0,last_match_days:4,altitude_delta:0,sleep_zone_diff:0},
     p2:{...BP,name:"C. Alcaraz",rank:2,flag:"🇪🇸",age:22,hand:"R",
+      tiebreak_wr:0.62,third_set_wr:0.68,bp_convert:52,style:"allcourt",
       fatigue:0.18,momentum:0.8,h2h:"3-8",recent_form:[1,1,1,1,1],
       surface_wr:0.82,travel_hrs:0,last_match_days:3,altitude_delta:0,sleep_zone_diff:0},
     odds:{pinnacle:{p1:2.88,p2:1.44},epicbet:{p1:2.95,p2:1.42},bet365:{p1:3.00,p2:1.40},unibet:{p1:2.95,p2:1.42},
           williamhill:{p1:2.80,p2:1.46},betway:{p1:2.90,p2:1.43},bwin:{p1:2.85,p2:1.45}},
   },
   {
-    id:7, tournament:"Madrid Open", surface:"Clay", round:"R64",
+    id:7, circuit:"ATP", level:"Masters 1000", tournament:"Madrid Open", surface:"Clay", round:"R64",
     status:"PRE", game:"-", point:"-", startTime:"12:00", updated:Date.now()-900000,
     p1:{...BP,name:"A. Zverev",rank:3,flag:"🇩🇪",age:27,hand:"R",
+      tiebreak_wr:0.58,third_set_wr:0.60,bp_convert:46,style:"aggressive",
       fatigue:0.08,momentum:0.4,h2h:"5-2",recent_form:[1,1,0,1,1],
       surface_wr:0.69,travel_hrs:2,last_match_days:5,altitude_delta:650,sleep_zone_diff:0},
     p2:{...BP,name:"N. Jarry",rank:22,flag:"🇨🇱",age:28,hand:"R",
+      tiebreak_wr:0.55,third_set_wr:0.48,bp_convert:36,style:"serve-dom",
       fatigue:0.22,momentum:-0.1,h2h:"2-5",recent_form:[0,1,1,0,0],
       surface_wr:0.55,travel_hrs:14,last_match_days:2,altitude_delta:650,sleep_zone_diff:5},
     odds:{pinnacle:{p1:1.18,p2:5.80},epicbet:{p1:1.19,p2:5.60},bet365:{p1:1.20,p2:5.50},unibet:{p1:1.22,p2:5.30},
           williamhill:{p1:1.19,p2:5.60},betway:{p1:1.21,p2:5.40},bwin:{p1:1.20,p2:5.50}},
   },
   {
-    id:8, tournament:"Wimbledon", surface:"Grass", round:"R128",
+    id:8, circuit:"ATP", level:"Grand Slam", tournament:"Wimbledon", surface:"Grass", round:"R128",
     status:"PRE", game:"-", point:"-", startTime:"11:00", updated:Date.now()-1200000,
     p1:{...BP,name:"J. Draper",rank:18,flag:"🇬🇧",age:23,hand:"L",
+      tiebreak_wr:0.63,third_set_wr:0.65,bp_convert:48,style:"serve-dom",
       fatigue:0.05,momentum:0.7,h2h:"1-0",recent_form:[1,1,1,0,1],
       surface_wr:0.72,travel_hrs:0,last_match_days:7,altitude_delta:0,sleep_zone_diff:0},
     p2:{...BP,name:"R. Safiullin",rank:51,flag:"🇷🇺",age:27,hand:"R",
+      tiebreak_wr:0.49,third_set_wr:0.46,bp_convert:38,style:"allcourt",
       fatigue:0.14,momentum:0.2,h2h:"0-1",recent_form:[0,1,0,1,1],
       surface_wr:0.48,travel_hrs:6,last_match_days:3,altitude_delta:0,sleep_zone_diff:3},
     odds:{pinnacle:{p1:1.34,p2:3.28},epicbet:{p1:1.36,p2:3.15},bet365:{p1:1.36,p2:3.20},unibet:{p1:1.38,p2:3.10},
           williamhill:{p1:1.33,p2:3.30},betway:{p1:1.35,p2:3.25},bwin:{p1:1.37,p2:3.15}},
   },
   {
-    id:9, tournament:"US Open", surface:"Hard", round:"R64",
+    id:9, circuit:"ATP", level:"Grand Slam", tournament:"US Open", surface:"Hard", round:"R64",
     status:"PRE", game:"-", point:"-", startTime:"17:00", updated:Date.now()-1800000,
     p1:{...BP,name:"B. Shelton",rank:14,flag:"🇺🇸",age:22,hand:"L",
+      tiebreak_wr:0.55,third_set_wr:0.57,bp_convert:44,style:"aggressive",
       fatigue:0.06,momentum:0.5,h2h:"0-0",recent_form:[1,0,1,1,0],
       surface_wr:0.63,travel_hrs:0,last_match_days:4,altitude_delta:0,sleep_zone_diff:0},
     p2:{...BP,name:"L. Musetti",rank:16,flag:"🇮🇹",age:22,hand:"L",
+      tiebreak_wr:0.51,third_set_wr:0.48,bp_convert:40,style:"allcourt",
       fatigue:0.12,momentum:0.3,h2h:"0-0",recent_form:[1,1,0,0,1],
       surface_wr:0.58,travel_hrs:9,last_match_days:3,altitude_delta:0,sleep_zone_diff:6},
     odds:{pinnacle:{p1:1.76,p2:2.16},epicbet:{p1:1.78,p2:2.12},bet365:{p1:1.80,p2:2.10},unibet:{p1:1.78,p2:2.12},
@@ -149,14 +184,16 @@ const MOCK_MATCHES = [
   },
   {
     // Geneva: best p1=bet365@1.95, best p2=bwin@2.10 → sum=0.989 → +1.1% ARB
-    id:10, tournament:"Geneva Open", surface:"Clay", round:"SF",
+    id:10, circuit:"ATP", level:"ATP 250", tournament:"Geneva Open", surface:"Clay", round:"SF",
     status:"LIVE", game:"6-7(4), 4-3", point:"30-15", startTime:"15:00", updated:Date.now()-3000,
     p1:{...BP,name:"T. Paul",rank:12,flag:"🇺🇸",age:27,hand:"R",
       aces:4,df:2,first_pct:63,first_won:68,second_won:44,bp_saved:55,bp_faced:4,service_games:11,return_pts_won:38,
+      tiebreak_wr:0.52,third_set_wr:0.55,bp_convert:43,style:"allcourt",
       fatigue:0.25,momentum:0.6,h2h:"1-2",recent_form:[0,1,1,1,1],
       surface_wr:0.56,travel_hrs:8,last_match_days:1,altitude_delta:380,sleep_zone_diff:6},
     p2:{...BP,name:"L. Sonego",rank:44,flag:"🇮🇹",age:29,hand:"R",
       aces:2,df:3,first_pct:58,first_won:62,second_won:46,bp_saved:70,bp_faced:5,service_games:11,return_pts_won:42,
+      tiebreak_wr:0.47,third_set_wr:0.52,bp_convert:39,style:"counter",
       fatigue:0.20,momentum:-0.1,h2h:"2-1",recent_form:[1,0,1,0,1],
       surface_wr:0.61,travel_hrs:2,last_match_days:1,altitude_delta:380,sleep_zone_diff:0},
     odds:{pinnacle:{p1:1.88,p2:1.98},epicbet:{p1:1.92,p2:1.96},bet365:{p1:1.95,p2:1.95},unibet:{p1:1.92,p2:1.97},
@@ -164,12 +201,14 @@ const MOCK_MATCHES = [
   },
   {
     // Tiafoe vs Zverev — real Epicbet odds from screenshot
-    id:11, tournament:"ATP Miami Open", surface:"Hard", round:"R32",
+    id:11, circuit:"ATP", level:"Masters 1000", tournament:"ATP Miami Open", surface:"Hard", round:"R32",
     status:"PRE", game:"-", point:"-", startTime:"Today 21:05", updated:Date.now()-300000,
     p1:{...BP,name:"F. Tiafoe",rank:32,flag:"🇺🇸",age:26,hand:"R",
+      tiebreak_wr:0.50,third_set_wr:0.52,bp_convert:40,style:"aggressive",
       fatigue:0.08,momentum:0.3,h2h:"1-5",recent_form:[1,0,1,0,1],
       surface_wr:0.61,travel_hrs:0,last_match_days:3,altitude_delta:0,sleep_zone_diff:0},
     p2:{...BP,name:"A. Zverev",rank:3,flag:"🇩🇪",age:27,hand:"R",
+      tiebreak_wr:0.58,third_set_wr:0.60,bp_convert:46,style:"aggressive",
       fatigue:0.10,momentum:0.5,h2h:"5-1",recent_form:[1,1,0,1,1],
       surface_wr:0.69,travel_hrs:2,last_match_days:2,altitude_delta:0,sleep_zone_diff:0},
     odds:{pinnacle:{p1:3.25,p2:1.30},epicbet:{p1:3.35,p2:1.33},bet365:{p1:3.20,p2:1.32},unibet:{p1:3.10,p2:1.35},
@@ -177,7 +216,7 @@ const MOCK_MATCHES = [
     markets:[
       {key:"set_hcp",name:"Set Handicap",lines:[
         {p1_label:"Tiafoe +1.5 sets",p2_label:"Zverev -1.5 sets",
-         odds:{pinnacle:{p1:1.20,p2:4.20},epicbet:{p1:1.83,p2:6.00},bet365:{p1:1.22,p2:4.00},unibet:{p1:1.20,p2:4.10},williamhill:{p1:1.19,p2:4.30}}},
+         odds:{pinnacle:{p1:1.20,p2:4.20},epicbet:{p1:1.83,p2:1.95},bet365:{p1:1.22,p2:4.00},unibet:{p1:1.20,p2:4.10},williamhill:{p1:1.19,p2:4.30}}},
       ]},
       {key:"games_hcp",name:"Games Handicap",lines:[
         {p1_label:"Tiafoe +2.5",p2_label:"Zverev -2.5",
@@ -188,6 +227,182 @@ const MOCK_MATCHES = [
          odds:{pinnacle:{p1:1.40,p2:2.82},epicbet:{p1:1.44,p2:2.80},bet365:{p1:1.42,p2:2.80},unibet:{p1:1.42,p2:2.85}}},
       ]},
     ],
+  },
+  // ── New matches v5.0 ──────────────────────────────
+  {
+    id:12, circuit:"ATP", level:"ATP 500", tournament:"Basel Indoor", surface:"Hard", round:"QF",
+    status:"PRE", game:"-", point:"-", startTime:"Tomorrow 19:30", updated:Date.now()-3600000,
+    p1:{...BP,name:"N. Djokovic",rank:2,flag:"🇷🇸",age:37,hand:"R",
+      tiebreak_wr:0.69,third_set_wr:0.74,bp_convert:55,style:"counter",
+      fatigue:0.15,momentum:0.3,h2h:"6-3",recent_form:[1,1,0,1,1],
+      surface_wr:0.72,travel_hrs:3,last_match_days:2,altitude_delta:0,sleep_zone_diff:0},
+    p2:{...BP,name:"H. Hurkacz",rank:9,flag:"🇵🇱",age:27,hand:"R",
+      tiebreak_wr:0.61,third_set_wr:0.58,bp_convert:43,style:"serve-dom",
+      fatigue:0.18,momentum:0.5,h2h:"3-6",recent_form:[1,1,1,0,1],
+      surface_wr:0.68,travel_hrs:6,last_match_days:2,altitude_delta:0,sleep_zone_diff:0},
+    odds:{pinnacle:{p1:1.62,p2:2.38},epicbet:{p1:1.65,p2:2.32},bet365:{p1:1.65,p2:2.30},unibet:{p1:1.68,p2:2.25},
+          williamhill:{p1:1.63,p2:2.35},betway:{p1:1.64,p2:2.28},bwin:{p1:1.67,p2:2.22}},
+  },
+  {
+    id:13, circuit:"WTA", level:"WTA 1000", tournament:"WTA Cincinnati", surface:"Hard", round:"SF",
+    status:"PRE", game:"-", point:"-", startTime:"Tomorrow 21:00", updated:Date.now()-7200000,
+    p1:{...BP,name:"I. Swiatek",rank:1,flag:"🇵🇱",age:23,hand:"R",
+      tiebreak_wr:0.60,third_set_wr:0.66,bp_convert:56,style:"counter",
+      fatigue:0.08,momentum:0.7,h2h:"7-2",recent_form:[1,1,1,1,1],
+      surface_wr:0.79,travel_hrs:10,last_match_days:2,altitude_delta:0,sleep_zone_diff:6},
+    p2:{...BP,name:"A. Sabalenka",rank:2,flag:"🇧🇾",age:26,hand:"R",
+      tiebreak_wr:0.58,third_set_wr:0.60,bp_convert:50,style:"aggressive",
+      fatigue:0.12,momentum:0.4,h2h:"2-7",recent_form:[1,1,0,1,1],
+      surface_wr:0.73,travel_hrs:10,last_match_days:2,altitude_delta:0,sleep_zone_diff:6},
+    odds:{pinnacle:{p1:1.55,p2:2.60},epicbet:{p1:1.58,p2:2.52},bet365:{p1:1.60,p2:2.45},unibet:{p1:1.60,p2:2.48},
+          williamhill:{p1:1.57,p2:2.55},betway:{p1:1.59,p2:2.50},bwin:{p1:1.56,p2:2.58}},
+  },
+  {
+    id:14, circuit:"CH", level:"Challenger 125", tournament:"Cagliari Challenger", surface:"Clay", round:"R16",
+    status:"PRE", game:"-", point:"-", startTime:"11:00", updated:Date.now()-1800000,
+    p1:{...BP,name:"J. Sousa",rank:88,flag:"🇵🇹",age:35,hand:"R",
+      tiebreak_wr:0.49,third_set_wr:0.56,bp_convert:41,style:"counter",
+      fatigue:0.22,momentum:0.1,h2h:"2-0",recent_form:[1,0,1,1,0],
+      surface_wr:0.61,travel_hrs:5,last_match_days:2,altitude_delta:0,sleep_zone_diff:0},
+    p2:{...BP,name:"S. Korda",rank:44,flag:"🇺🇸",age:24,hand:"L",
+      tiebreak_wr:0.55,third_set_wr:0.57,bp_convert:46,style:"serve-dom",
+      fatigue:0.10,momentum:0.6,h2h:"0-2",recent_form:[1,1,1,0,1],
+      surface_wr:0.52,travel_hrs:12,last_match_days:3,altitude_delta:0,sleep_zone_diff:6},
+    odds:{pinnacle:{p1:2.10,p2:1.75},epicbet:{p1:2.25,p2:1.72},bet365:{p1:2.15,p2:1.75},unibet:{p1:2.30,p2:1.68},
+          williamhill:{p1:2.10,p2:1.78},betway:{p1:2.20,p2:1.70},bwin:{p1:2.28,p2:1.69}},
+  },
+  {
+    // ITF — no Pinnacle, high-margin soft books, pricing lag
+    id:15, circuit:"ITF", level:"ITF M25", tournament:"ITF Sharm El Sheikh M25", surface:"Hard", round:"QF",
+    status:"PRE", game:"-", point:"-", startTime:"10:00", updated:Date.now()-5400000,
+    p1:{...BP,name:"D. Karlovskiy",rank:112,flag:"🇷🇺",age:28,hand:"R",
+      tiebreak_wr:0.56,third_set_wr:0.58,bp_convert:43,style:"baseline",
+      fatigue:0.08,momentum:0.2,h2h:"1-0",recent_form:[1,1,0,1,1],
+      surface_wr:0.60,travel_hrs:8,last_match_days:3,altitude_delta:0,sleep_zone_diff:2},
+    p2:{...BP,name:"D. Istomin",rank:187,flag:"🇺🇿",age:36,hand:"R",
+      tiebreak_wr:0.48,third_set_wr:0.44,bp_convert:33,style:"serve-dom",
+      fatigue:0.30,momentum:-0.2,h2h:"0-1",recent_form:[0,1,1,0,0],
+      surface_wr:0.48,travel_hrs:3,last_match_days:4,altitude_delta:0,sleep_zone_diff:2},
+    odds:{bet365:{p1:1.60,p2:2.30},unibet:{p1:1.75,p2:2.15},williamhill:{p1:1.65,p2:2.25},betway:{p1:1.72,p2:2.18},bwin:{p1:1.70,p2:2.22}},
+  },
+  {
+    id:16, circuit:"WTA", level:"WTA 500", tournament:"Dubai Women's Open", surface:"Hard", round:"QF",
+    status:"LIVE", game:"4-6, 3-2", point:"40-15", startTime:"14:30", updated:Date.now()-8000,
+    p1:{...BP,name:"E. Rybakina",rank:4,flag:"🇰🇿",age:25,hand:"R",
+      aces:6,df:2,first_pct:70,first_won:74,second_won:54,bp_saved:75,bp_faced:4,service_games:9,return_pts_won:44,
+      tiebreak_wr:0.64,third_set_wr:0.67,bp_convert:50,style:"serve-dom",
+      fatigue:0.12,momentum:0.5,h2h:"4-1",recent_form:[1,1,0,1,1],
+      surface_wr:0.76,travel_hrs:0,last_match_days:2,altitude_delta:0,sleep_zone_diff:0},
+    p2:{...BP,name:"O. Jabeur",rank:8,flag:"🇹🇳",age:29,hand:"R",
+      aces:1,df:3,first_pct:58,first_won:64,second_won:48,bp_saved:50,bp_faced:4,service_games:8,return_pts_won:40,
+      tiebreak_wr:0.50,third_set_wr:0.52,bp_convert:44,style:"allcourt",
+      fatigue:0.20,momentum:-0.3,h2h:"1-4",recent_form:[0,1,1,0,1],
+      surface_wr:0.64,travel_hrs:6,last_match_days:1,altitude_delta:0,sleep_zone_diff:1},
+    odds:{pinnacle:{p1:1.44,p2:2.94},epicbet:{p1:1.50,p2:2.85},bet365:{p1:1.52,p2:2.75},unibet:{p1:1.54,p2:2.68},
+          williamhill:{p1:1.45,p2:2.90},betway:{p1:1.48,p2:2.80},bwin:{p1:1.46,p2:2.88}},
+  },
+  {
+    id:17, circuit:"CH", level:"Challenger 100", tournament:"Tampere Open Challenger", surface:"Hard", round:"QF",
+    status:"PRE", game:"-", point:"-", startTime:"14:00", updated:Date.now()-2700000,
+    p1:{...BP,name:"M. Cressy",rank:55,flag:"🇺🇸",age:27,hand:"L",
+      tiebreak_wr:0.62,third_set_wr:0.58,bp_convert:40,style:"serve-dom",
+      fatigue:0.06,momentum:0.4,h2h:"2-1",recent_form:[1,0,1,1,1],
+      surface_wr:0.67,travel_hrs:14,last_match_days:2,altitude_delta:0,sleep_zone_diff:9},
+    p2:{...BP,name:"A. Rinderknech",rank:78,flag:"🇫🇷",age:29,hand:"R",
+      tiebreak_wr:0.53,third_set_wr:0.50,bp_convert:38,style:"aggressive",
+      fatigue:0.16,momentum:0.0,h2h:"1-2",recent_form:[0,1,0,1,0],
+      surface_wr:0.55,travel_hrs:3,last_match_days:3,altitude_delta:0,sleep_zone_diff:0},
+    odds:{pinnacle:{p1:1.85,p2:1.98},epicbet:{p1:1.98,p2:1.90},bet365:{p1:1.92,p2:1.93},unibet:{p1:1.90,p2:1.95},
+          williamhill:{p1:1.88,p2:1.97},betway:{p1:1.87,p2:2.02},bwin:{p1:1.96,p2:1.88}},
+  },
+  {
+    // ITF M15 — very high margin, biggest mispricing potential
+    id:18, circuit:"ITF", level:"ITF M15", tournament:"ITF Monastir M15", surface:"Clay", round:"R16",
+    status:"PRE", game:"-", point:"-", startTime:"11:00", updated:Date.now()-10800000,
+    p1:{...BP,name:"S. Benchetrit",rank:248,flag:"🇫🇷",age:26,hand:"R",
+      tiebreak_wr:0.52,third_set_wr:0.56,bp_convert:42,style:"baseline",
+      fatigue:0.04,momentum:0.3,h2h:"0-0",recent_form:[1,1,1,0,1],
+      surface_wr:0.58,travel_hrs:3,last_match_days:4,altitude_delta:0,sleep_zone_diff:0},
+    p2:{...BP,name:"O. Vatutin",rank:391,flag:"🇷🇺",age:24,hand:"R",
+      tiebreak_wr:0.44,third_set_wr:0.40,bp_convert:31,style:"allcourt",
+      fatigue:0.10,momentum:0.1,h2h:"0-0",recent_form:[0,1,0,0,1],
+      surface_wr:0.42,travel_hrs:12,last_match_days:3,altitude_delta:0,sleep_zone_diff:2},
+    odds:{unibet:{p1:1.55,p2:2.60},williamhill:{p1:1.72,p2:2.20},betway:{p1:1.78,p2:2.12},bwin:{p1:1.82,p2:2.05}},
+  },
+  {
+    id:19, circuit:"ATP", level:"ATP 250", tournament:"Montpellier Open", surface:"Hard", round:"SF",
+    status:"PRE", game:"-", point:"-", startTime:"20:00", updated:Date.now()-3600000,
+    p1:{...BP,name:"U. Humbert",rank:23,flag:"🇫🇷",age:26,hand:"L",
+      tiebreak_wr:0.58,third_set_wr:0.61,bp_convert:47,style:"aggressive",
+      fatigue:0.08,momentum:0.7,h2h:"2-0",recent_form:[1,1,1,1,0],
+      surface_wr:0.64,travel_hrs:0,last_match_days:2,altitude_delta:0,sleep_zone_diff:0},
+    p2:{...BP,name:"A. Muller",rank:66,flag:"🇫🇷",age:26,hand:"R",
+      tiebreak_wr:0.50,third_set_wr:0.52,bp_convert:39,style:"serve-dom",
+      fatigue:0.12,momentum:0.4,h2h:"0-2",recent_form:[1,0,1,1,1],
+      surface_wr:0.55,travel_hrs:0,last_match_days:2,altitude_delta:0,sleep_zone_diff:0},
+    odds:{pinnacle:{p1:1.48,p2:2.82},epicbet:{p1:1.55,p2:2.72},bet365:{p1:1.57,p2:2.65},unibet:{p1:1.53,p2:2.70},
+          williamhill:{p1:1.50,p2:2.78},betway:{p1:1.52,p2:2.74},bwin:{p1:1.56,p2:2.68}},
+  },
+  {
+    id:20, circuit:"CH", level:"Challenger 50", tournament:"Tenerife Challenger", surface:"Clay", round:"SF",
+    status:"LIVE", game:"3-4", point:"15-30", startTime:"12:00", updated:Date.now()-15000,
+    p1:{...BP,name:"F. Gaio",rank:135,flag:"🇮🇹",age:29,hand:"R",
+      aces:2,df:1,first_pct:62,first_won:66,second_won:44,bp_saved:67,bp_faced:3,service_games:7,return_pts_won:38,
+      tiebreak_wr:0.47,third_set_wr:0.50,bp_convert:37,style:"baseline",
+      fatigue:0.15,momentum:-0.1,h2h:"0-1",recent_form:[0,1,0,1,0],
+      surface_wr:0.58,travel_hrs:2,last_match_days:2,altitude_delta:0,sleep_zone_diff:0},
+    p2:{...BP,name:"C. Taberner",rank:168,flag:"🇪🇸",age:28,hand:"R",
+      aces:1,df:2,first_pct:58,first_won:70,second_won:52,bp_saved:75,bp_faced:4,service_games:7,return_pts_won:42,
+      tiebreak_wr:0.54,third_set_wr:0.57,bp_convert:43,style:"counter",
+      fatigue:0.10,momentum:0.3,h2h:"1-0",recent_form:[1,1,0,1,1],
+      surface_wr:0.63,travel_hrs:1,last_match_days:2,altitude_delta:0,sleep_zone_diff:0},
+    odds:{pinnacle:{p1:2.05,p2:1.82},epicbet:{p1:2.22,p2:1.75},bet365:{p1:2.12,p2:1.82},unibet:{p1:2.18,p2:1.78},
+          williamhill:{p1:2.05,p2:1.90},betway:{p1:2.10,p2:1.85},bwin:{p1:2.20,p2:1.76}},
+  },
+  {
+    // ITF M25 extreme mispricing — bwin is way off vs consensus
+    id:21, circuit:"ITF", level:"ITF M25", tournament:"ITF Antalya M25", surface:"Clay", round:"QF",
+    status:"PRE", game:"-", point:"-", startTime:"10:30", updated:Date.now()-7200000,
+    p1:{...BP,name:"B. Altug",rank:332,flag:"🇹🇷",age:25,hand:"R",
+      tiebreak_wr:0.50,third_set_wr:0.53,bp_convert:39,style:"baseline",
+      fatigue:0.02,momentum:0.4,h2h:"1-0",recent_form:[1,1,0,1,1],
+      surface_wr:0.55,travel_hrs:0,last_match_days:3,altitude_delta:0,sleep_zone_diff:0},
+    p2:{...BP,name:"V. Buyukkapu",rank:488,flag:"🇹🇷",age:23,hand:"R",
+      tiebreak_wr:0.42,third_set_wr:0.40,bp_convert:29,style:"allcourt",
+      fatigue:0.08,momentum:0.0,h2h:"0-1",recent_form:[0,0,1,0,1],
+      surface_wr:0.44,travel_hrs:0,last_match_days:3,altitude_delta:0,sleep_zone_diff:0},
+    // bwin is heavily mispriced vs unibet consensus — snipe opportunity
+    odds:{unibet:{p1:1.52,p2:2.60},williamhill:{p1:1.70,p2:2.22},betway:{p1:1.68,p2:2.26},bwin:{p1:2.18,p2:1.82}},
+  },
+  {
+    id:22, circuit:"ATP", level:"Masters 1000", tournament:"Italian Open (Rome)", surface:"Clay", round:"R32",
+    status:"LIVE", game:"5-6", point:"30-30", startTime:"16:30", updated:Date.now()-3000,
+    p1:{...BP,name:"J. Sinner",rank:1,flag:"🇮🇹",age:23,hand:"R",
+      aces:5,df:2,first_pct:68,first_won:74,second_won:50,bp_saved:70,bp_faced:5,service_games:11,return_pts_won:43,
+      tiebreak_wr:0.66,third_set_wr:0.72,bp_convert:54,style:"aggressive",
+      fatigue:0.22,momentum:0.2,h2h:"3-7",recent_form:[1,1,1,0,1],
+      surface_wr:0.71,travel_hrs:0,last_match_days:1,altitude_delta:0,sleep_zone_diff:0},
+    p2:{...BP,name:"N. Djokovic",rank:2,flag:"🇷🇸",age:37,hand:"R",
+      aces:3,df:3,first_pct:64,first_won:70,second_won:48,bp_saved:80,bp_faced:5,service_games:11,return_pts_won:40,
+      tiebreak_wr:0.69,third_set_wr:0.74,bp_convert:55,style:"counter",
+      fatigue:0.35,momentum:0.6,h2h:"7-3",recent_form:[1,0,1,1,1],
+      surface_wr:0.68,travel_hrs:3,last_match_days:1,altitude_delta:0,sleep_zone_diff:0},
+    odds:{pinnacle:{p1:1.70,p2:2.28},epicbet:{p1:1.76,p2:2.18},bet365:{p1:1.73,p2:2.22},unibet:{p1:1.75,p2:2.18},
+          williamhill:{p1:1.68,p2:2.30},betway:{p1:1.72,p2:2.25},bwin:{p1:1.74,p2:2.20}},
+  },
+  {
+    // WTA ITF — small field, high margin, female circuit
+    id:23, circuit:"ITF", level:"ITF W25", tournament:"ITF W25 Hammamet", surface:"Clay", round:"SF",
+    status:"PRE", game:"-", point:"-", startTime:"11:30", updated:Date.now()-9000000,
+    p1:{...BP,name:"C. Liu",rank:156,flag:"🇺🇸",age:24,hand:"R",
+      tiebreak_wr:0.49,third_set_wr:0.50,bp_convert:38,style:"aggressive",
+      fatigue:0.08,momentum:0.3,h2h:"0-0",recent_form:[1,1,0,1,0],
+      surface_wr:0.52,travel_hrs:18,last_match_days:2,altitude_delta:0,sleep_zone_diff:6},
+    p2:{...BP,name:"V. Gracheva",rank:128,flag:"🇫🇷",age:24,hand:"R",
+      tiebreak_wr:0.55,third_set_wr:0.58,bp_convert:44,style:"counter",
+      fatigue:0.12,momentum:0.4,h2h:"0-0",recent_form:[0,1,1,1,1],
+      surface_wr:0.65,travel_hrs:3,last_match_days:2,altitude_delta:0,sleep_zone_diff:1},
+    odds:{unibet:{p1:2.25,p2:1.63},williamhill:{p1:2.12,p2:1.72},betway:{p1:2.30,p2:1.60},bwin:{p1:2.18,p2:1.68}},
   },
 ];
 
@@ -243,6 +458,16 @@ function calcEdge(player, opponent, match, weights) {
     add("Pressure Handling", ((player.bp_saved-(opponent.bp_saved||50))/100)*0.04*w.pressure, `BP saved: ${player.bp_saved}%`);
   add("Age Decay", player.age>28 ? (player.age-28)*-0.005*w.ageSurface : 0, `Age ${player.age}`);
   score += Math.log((opponent.rank||1)/(player.rank||1))*0.02*w.rank;
+  // ── v5.0 ADVANCED FACTORS ──────────────────────────
+  const tbDelta = (player.tiebreak_wr||0.5) - (opponent.tiebreak_wr||0.5);
+  add("Tiebreak Edge", tbDelta * 0.09 * (w.tiebreak??1), `TB WR: ${((player.tiebreak_wr||0.5)*100).toFixed(0)}% vs ${((opponent.tiebreak_wr||0.5)*100).toFixed(0)}%`);
+  const dsDelta = (player.third_set_wr||0.5) - (opponent.third_set_wr||0.5);
+  add("Deciding Set", dsDelta * 0.07 * (w.decidingSet??1), `3rd WR: ${((player.third_set_wr||0.5)*100).toFixed(0)}% vs ${((opponent.third_set_wr||0.5)*100).toFixed(0)}%`);
+  add("BP Conversion", ((player.bp_convert||40)-(opponent.bp_convert||40))/100 * 0.05 * (w.bpConvert??1), `BP conv: ${player.bp_convert||40}% vs ${opponent.bp_convert||40}%`);
+  const styleEdge = calcStyleClash(player.style||"allcourt", opponent.style||"allcourt", match.surface);
+  add("Style Clash", styleEdge * 0.8 * (w.styleClash??1), `${player.style||"allcourt"} vs ${opponent.style||"allcourt"}`);
+  if (player.first_pct>0&&player.first_won>0&&opponent.return_pts_won>0)
+    add("Serve+Return", (player.first_pct*player.first_won/10000 - opponent.return_pts_won/100) * 0.04 * (w.serveReturn??1), `Srv: ${player.first_pct}%×${player.first_won}% ret: ${opponent.return_pts_won}%`);
   return {score,factors};
 }
 
@@ -355,7 +580,11 @@ export default function App() {
   const [weights, setWeights] = useState({
     circadian:1, travel:1, altitude:1, fatigue:1, recovery:1,
     surface:1, momentum:1, form:1, secondServe:1, pressure:1, ageSurface:1, rank:0.3,
+    tiebreak:1, decidingSet:1, bpConvert:1, styleClash:1, serveReturn:1,
   });
+  const [circuitFilter, setCircuitFilter] = useState("all");
+  const [optimizing, setOptimizing] = useState(false);
+  const [optimizerResult, setOptimizerResult] = useState(null);
 
   const [isMobile, setIsMobile] = useState(typeof window!=="undefined"&&window.innerWidth<640);
   useEffect(()=>{
@@ -435,6 +664,7 @@ export default function App() {
   });
 
   const filtered = matchEdges.filter(e => {
+    if (circuitFilter!=="all" && e.match.circuit!==circuitFilter) return false;
     if (feedFilter==="live") return e.match.status==="LIVE";
     if (feedFilter==="pre")  return e.match.status==="PRE";
     if (feedFilter==="value") return e.best!==null;
@@ -495,6 +725,38 @@ export default function App() {
       updated[idx]={...updated[idx],win,profit,bankroll:nb,settled:true};
       return updated;
     });
+  }
+
+  function calcTotalEV(w) {
+    return allMatches.reduce((sum, m) => {
+      const nvp = noVigProb(m);
+      const p1E = calcEdge(m.p1, m.p2, m, w);
+      const p2E = calcEdge(m.p2, m.p1, m, w);
+      const {bestP1,bestP2} = getBestOdds(m);
+      const p1True = Math.min(0.95, Math.max(0.05, nvp.p1 + (p1E.score-p2E.score)*0.5));
+      const p2True = 1-p1True;
+      return sum + Math.max(0, p1True*bestP1.odds-1) + Math.max(0, p2True*bestP2.odds-1);
+    }, 0);
+  }
+
+  function runOptimizer() {
+    setOptimizing(true);
+    setOptimizerResult(null);
+    setTimeout(() => {
+      const wKeys = Object.keys(weights);
+      let bestW = {...weights}, bestScore = calcTotalEV(weights);
+      const baseline = bestScore;
+      for (let i = 0; i < 4000; i++) {
+        const trial = {...bestW};
+        const k = wKeys[Math.floor(Math.random() * wKeys.length)];
+        trial[k] = Math.max(0, Math.min(3, trial[k] + (Math.random()-0.5)*0.6));
+        const s = calcTotalEV(trial);
+        if (s > bestScore) { bestScore = s; bestW = {...trial}; }
+      }
+      setWeights(bestW);
+      setOptimizerResult({before:Math.round(baseline*1000)/1000, after:Math.round(bestScore*1000)/1000, weights:bestW});
+      setOptimizing(false);
+    }, 100);
   }
 
   function runSim() {
@@ -602,6 +864,7 @@ export default function App() {
     {id:"factors",l:"🧬 Factors"},
     {id:"simulator",l:"📈 Monte Carlo"},
     {id:"history",l:"📋 Bet Log"},
+    {id:"research",l:"🔬 Research"},
   ];
 
   return (
@@ -614,7 +877,7 @@ export default function App() {
           <div style={{display:"flex",alignItems:"center",gap:14}}>
             <div>
               <div style={{fontSize:isMobile?13:15,fontWeight:800,letterSpacing:"3px",color:c.g,whiteSpace:"nowrap"}}>◆ EDGE MACHINE</div>
-              <div style={{fontSize:8,color:c.dim,letterSpacing:"1.5px",whiteSpace:"nowrap"}}>v4.1 · {allMatches.length} MATCHES</div>
+              <div style={{fontSize:8,color:c.dim,letterSpacing:"1.5px",whiteSpace:"nowrap"}}>v5.0 · {allMatches.length} MATCHES</div>
             </div>
             <div style={{width:1,height:28,background:c.brd,margin:"0 4px"}}/>
             <div style={{display:"flex",alignItems:"center",gap:6}}>
@@ -768,12 +1031,26 @@ export default function App() {
             </div>
           )}
 
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10,flexWrap:"wrap",gap:8}}>
+            <div style={{display:"flex",gap:5,flexWrap:"wrap",alignItems:"center"}}>
+              <span style={{fontSize:8,color:c.dimm,letterSpacing:"1px",marginRight:2}}>CIRCUIT</span>
+              {["all","ATP","WTA","CH","ITF"].map(cf=>(
+                <button key={cf} onClick={()=>setCircuitFilter(cf)} style={{padding:"3px 10px",borderRadius:12,fontSize:9,fontWeight:700,cursor:"pointer",fontFamily:"inherit",transition:"all .15s",
+                  border:`1px solid ${circuitFilter===cf?(CIRCUIT_COLOR[cf]||c.g)+"55":c.brd}`,
+                  background:circuitFilter===cf?`${CIRCUIT_COLOR[cf]||c.g}18`:"transparent",
+                  color:circuitFilter===cf?(CIRCUIT_COLOR[cf]||c.g):c.dim}}>
+                  {cf==="all"?"ALL":cf}
+                  <span style={{marginLeft:4,fontSize:8,opacity:0.7}}>{cf==="all"?allMatches.length:allMatches.filter(m=>m.circuit===cf).length}</span>
+                </button>
+              ))}
+            </div>
+          </div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:10}}>
             <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-              <Pill active={feedFilter==="all"} onClick={()=>setFeedFilter("all")} count={matchEdges.length}>All</Pill>
-              <Pill active={feedFilter==="live"} onClick={()=>setFeedFilter("live")} count={matchEdges.filter(e=>e.match.status==="LIVE").length}>Live</Pill>
-              <Pill active={feedFilter==="pre"} onClick={()=>setFeedFilter("pre")} count={matchEdges.filter(e=>e.match.status==="PRE").length}>Upcoming</Pill>
-              <Pill active={feedFilter==="value"} onClick={()=>setFeedFilter("value")} count={matchEdges.filter(e=>e.best).length}>Value Only</Pill>
+              <Pill active={feedFilter==="all"} onClick={()=>setFeedFilter("all")} count={filtered.length}>All</Pill>
+              <Pill active={feedFilter==="live"} onClick={()=>setFeedFilter("live")} count={matchEdges.filter(e=>e.match.status==="LIVE"&&(circuitFilter==="all"||e.match.circuit===circuitFilter)).length}>Live</Pill>
+              <Pill active={feedFilter==="pre"} onClick={()=>setFeedFilter("pre")} count={matchEdges.filter(e=>e.match.status==="PRE"&&(circuitFilter==="all"||e.match.circuit===circuitFilter)).length}>Upcoming</Pill>
+              <Pill active={feedFilter==="value"} onClick={()=>setFeedFilter("value")} count={matchEdges.filter(e=>e.best&&(circuitFilter==="all"||e.match.circuit===circuitFilter)).length}>Value Only</Pill>
             </div>
             <div style={{display:"flex",alignItems:"center",gap:8}}>
               <span style={{fontSize:9,color:c.dim}}>Sorted by EV · Best odds across {BOOKS.length} books</span>
@@ -799,6 +1076,9 @@ export default function App() {
                           {m.status==="LIVE"?"● LIVE":`◎ ${m.startTime}`}</span>
                         <SurfacePip surface={m.surface}/>
                         <span style={{fontSize:10,color:c.dim}}>{m.tournament} · {m.round}</span>
+                        {m.circuit&&<span style={{padding:"1px 6px",borderRadius:4,fontSize:8,fontWeight:700,
+                          background:`${CIRCUIT_COLOR[m.circuit]||c.dim}18`,color:CIRCUIT_COLOR[m.circuit]||c.dim}}>
+                          {m.circuit} · {m.level}</span>}
                         {isArb&&<span style={{padding:"1px 7px",borderRadius:4,fontSize:9,fontWeight:800,background:`${c.arb}20`,color:c.arb,border:`1px solid ${c.arb}30`}}>ARB +{edge.arb.arbPct.toFixed(2)}%</span>}
                         {m.fromAPI&&<span style={{padding:"1px 5px",borderRadius:3,fontSize:8,background:`${c.b}15`,color:c.b}}>LIVE API</span>}
                       </div>
@@ -1298,39 +1578,81 @@ export default function App() {
 
         {/* ════ FACTORS ════ */}
         {activeTab==="factors"&&(
-          <div style={{background:c.card,border:`1px solid ${c.brd}`,borderRadius:10,padding:20}}>
-            <div style={{fontSize:9,letterSpacing:"3px",color:c.dim,marginBottom:6}}>UNORTHODOX EDGE FACTOR WEIGHTS</div>
-            <p style={{fontSize:11,color:c.dim,marginBottom:20,lineHeight:1.6}}>Variables bookmakers underprice. 1.0x = standard. Increase where the market is blind. Applied on top of Pinnacle no-vig baseline probabilities.</p>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:14}}>
-              {[
-                {key:"circadian",l:"🌙 Circadian Disruption",d:"Timezone shift degrades reaction time & focus. Almost never modeled by bookies."},
-                {key:"travel",l:"✈️ Travel Fatigue",d:"Long-haul flights compound with jet lag for hidden performance loss."},
-                {key:"altitude",l:"⛰️ Altitude Delta",d:"Elevation changes affect ball flight, breathing, serve speed."},
-                {key:"fatigue",l:"🔋 Accumulated Fatigue",d:"Deep runs create invisible carryover fatigue into next event."},
-                {key:"recovery",l:"💤 Recovery Window",d:"Back-to-back days favor younger players. 2+ rest = veteran edge."},
-                {key:"surface",l:"🎾 Surface Win Rate",d:"Market over-indexes recent form vs surface-specific skill."},
-                {key:"momentum",l:"📈 In-Match Momentum",d:"Live psychological shifts the odds react to slowly."},
-                {key:"form",l:"🔥 Form Trend (Weighted)",d:"Weighted last-5 results. Detects rising/declining players."},
-                {key:"secondServe",l:"🎯 2nd Serve Dominance",d:"Most undervalued stat in tennis. Predicts clutch play."},
-                {key:"pressure",l:"🧠 BP Resilience",d:"Break point mental toughness. Systematically underweighted."},
-                {key:"ageSurface",l:"⏳ Age-Surface Decay",d:"Players 28+ lose a step on fast surfaces. Not priced until obvious."},
-                {key:"rank",l:"📊 Rank Δ (Baseline)",d:"Market already prices this. Keep low to avoid double-counting."},
-              ].map(({key,l,d})=>(
-                <div key={key} style={{padding:"12px 14px",background:c.bg,borderRadius:8,border:`1px solid ${c.brd}`}}>
-                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-                    <span style={{fontSize:11,fontWeight:700,color:c.txt}}>{l}</span>
-                    <span style={{fontSize:14,fontWeight:800,color:weights[key]>1?c.g:weights[key]<1?c.r:c.y}}>{weights[key].toFixed(1)}x</span>
-                  </div>
-                  <p style={{fontSize:9,color:c.dim,lineHeight:1.5,marginBottom:8}}>{d}</p>
-                  <input type="range" min="0" max="3" step="0.1" value={weights[key]}
-                    onChange={e=>setWeights(p=>({...p,[key]:+e.target.value}))}
-                    style={{width:"100%",accentColor:c.g}}/>
-                  <div style={{display:"flex",justifyContent:"space-between",marginTop:2}}>
-                    <span style={{fontSize:8,color:c.dimm}}>0 (off)</span>
-                    <span style={{fontSize:8,color:c.dimm}}>3x (max)</span>
-                  </div>
+          <div>
+            {/* Optimizer */}
+            <div style={{background:c.card,border:`1px solid ${c.g}30`,borderRadius:10,padding:16,marginBottom:14}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12,marginBottom:8}}>
+                <div>
+                  <div style={{fontSize:9,letterSpacing:"3px",color:c.g,marginBottom:4}}>🤖 WEIGHT OPTIMIZER</div>
+                  <p style={{fontSize:10,color:c.dim}}>Gradient search (4,000 iterations) — finds weight combination that maximises total EV across all {allMatches.length} matches.</p>
                 </div>
-              ))}
+                <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
+                  {optimizerResult&&<div style={{fontSize:10,color:c.g}}>✓ EV: {optimizerResult.before.toFixed(2)} → <span style={{fontWeight:800}}>{optimizerResult.after.toFixed(2)}</span> (+{((optimizerResult.after-optimizerResult.before)/optimizerResult.before*100).toFixed(1)}%)</div>}
+                  <Btn variant="g" onClick={runOptimizer} disabled={optimizing} style={{padding:"8px 18px",fontSize:10}}>{optimizing?"OPTIMIZING...":"⚡ RUN OPTIMIZER"}</Btn>
+                  <Btn onClick={()=>{setWeights({circadian:1,travel:1,altitude:1,fatigue:1,recovery:1,surface:1,momentum:1,form:1,secondServe:1,pressure:1,ageSurface:1,rank:0.3,tiebreak:1,decidingSet:1,bpConvert:1,styleClash:1,serveReturn:1});setOptimizerResult(null);}} style={{padding:"8px 14px",fontSize:10}}>RESET</Btn>
+                </div>
+              </div>
+            </div>
+            <div style={{background:c.card,border:`1px solid ${c.brd}`,borderRadius:10,padding:20}}>
+              <div style={{fontSize:9,letterSpacing:"3px",color:c.dim,marginBottom:6}}>UNORTHODOX EDGE FACTOR WEIGHTS</div>
+              <p style={{fontSize:11,color:c.dim,marginBottom:16,lineHeight:1.6}}>Variables bookmakers underprice. 1.0x = standard. Increase where the market is blind. Applied on top of Pinnacle no-vig baseline probabilities.</p>
+              <div style={{fontSize:9,letterSpacing:"2px",color:c.b,marginBottom:10}}>── CORE FACTORS (12)</div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:14,marginBottom:20}}>
+                {[
+                  {key:"circadian",l:"🌙 Circadian Disruption",d:"Timezone shift degrades reaction time & focus. Almost never modeled by bookies."},
+                  {key:"travel",l:"✈️ Travel Fatigue",d:"Long-haul flights compound with jet lag for hidden performance loss."},
+                  {key:"altitude",l:"⛰️ Altitude Delta",d:"Elevation changes affect ball flight, breathing, serve speed."},
+                  {key:"fatigue",l:"🔋 Accumulated Fatigue",d:"Deep runs create invisible carryover fatigue into next event."},
+                  {key:"recovery",l:"💤 Recovery Window",d:"Back-to-back days favor younger players. 2+ rest = veteran edge."},
+                  {key:"surface",l:"🎾 Surface Win Rate",d:"Market over-indexes recent form vs surface-specific skill."},
+                  {key:"momentum",l:"📈 In-Match Momentum",d:"Live psychological shifts the odds react to slowly."},
+                  {key:"form",l:"🔥 Form Trend (Weighted)",d:"Weighted last-5 results. Detects rising/declining players."},
+                  {key:"secondServe",l:"🎯 2nd Serve Dominance",d:"Most undervalued stat in tennis. Predicts clutch play."},
+                  {key:"pressure",l:"🧠 BP Resilience",d:"Break point mental toughness. Systematically underweighted."},
+                  {key:"ageSurface",l:"⏳ Age-Surface Decay",d:"Players 28+ lose a step on fast surfaces. Not priced until obvious."},
+                  {key:"rank",l:"📊 Rank Δ (Baseline)",d:"Market already prices this. Keep low to avoid double-counting."},
+                ].map(({key,l,d})=>(
+                  <div key={key} style={{padding:"12px 14px",background:c.bg,borderRadius:8,border:`1px solid ${c.brd}`}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                      <span style={{fontSize:11,fontWeight:700,color:c.txt}}>{l}</span>
+                      <span style={{fontSize:14,fontWeight:800,color:weights[key]>1?c.g:weights[key]<1?c.r:c.y}}>{weights[key].toFixed(1)}x</span>
+                    </div>
+                    <p style={{fontSize:9,color:c.dim,lineHeight:1.5,marginBottom:8}}>{d}</p>
+                    <input type="range" min="0" max="3" step="0.1" value={weights[key]}
+                      onChange={e=>setWeights(p=>({...p,[key]:+e.target.value}))}
+                      style={{width:"100%",accentColor:c.g}}/>
+                    <div style={{display:"flex",justifyContent:"space-between",marginTop:2}}>
+                      <span style={{fontSize:8,color:c.dimm}}>0 (off)</span>
+                      <span style={{fontSize:8,color:c.dimm}}>3x (max)</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div style={{fontSize:9,letterSpacing:"2px",color:c.g,marginBottom:10}}>── ADVANCED ML FACTORS v5.0 (5 new)</div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:14}}>
+                {[
+                  {key:"tiebreak",l:"🎲 Tiebreak Dominance",d:"Players with high tiebreak WR are systematically underpriced in close matches. Bookies lag at updating TB stats."},
+                  {key:"decidingSet",l:"💪 Deciding Set Endurance",d:"3rd/5th set win rate reveals mental & physical stamina. Key variable in long matches — rarely priced correctly."},
+                  {key:"bpConvert",l:"🎯 Break Point Conversion",d:"Converting breaks under pressure is a skill, not luck. High converters vs low converters create consistent edge."},
+                  {key:"styleClash",l:"⚔️ Style Clash Matrix",d:"Serve-dom crushes counter-punchers on grass. Counter-punchers beat serve-dom on clay. Market doesn't adjust enough."},
+                  {key:"serveReturn",l:"🔁 Serve+Return Efficiency",d:"Combined serve efficiency vs opponent return skill. The single biggest predictor of set wins not captured in raw rank."},
+                ].map(({key,l,d})=>(
+                  <div key={key} style={{padding:"12px 14px",background:`${c.g}05`,borderRadius:8,border:`1px solid ${c.g}22`}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                      <span style={{fontSize:11,fontWeight:700,color:c.txt}}>{l}</span>
+                      <span style={{fontSize:14,fontWeight:800,color:weights[key]>1?c.g:weights[key]<1?c.r:c.y}}>{(weights[key]??1).toFixed(1)}x</span>
+                    </div>
+                    <p style={{fontSize:9,color:c.dim,lineHeight:1.5,marginBottom:8}}>{d}</p>
+                    <input type="range" min="0" max="3" step="0.1" value={weights[key]??1}
+                      onChange={e=>setWeights(p=>({...p,[key]:+e.target.value}))}
+                      style={{width:"100%",accentColor:c.g}}/>
+                    <div style={{display:"flex",justifyContent:"space-between",marginTop:2}}>
+                      <span style={{fontSize:8,color:c.dimm}}>0 (off)</span>
+                      <span style={{fontSize:8,color:c.dimm}}>3x (max)</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -1501,6 +1823,198 @@ export default function App() {
             </>)}
           </div>
         )}
+        {/* ════ RESEARCH ════ */}
+        {activeTab==="research"&&(()=>{
+          // All positive EV bets across all H2H markets
+          const allBets = matchEdges.flatMap(e => {
+            const bets = [];
+            const m = e.match;
+            if (e.p1Val>0&&e.p1Ok) bets.push({match:`${m.p1.name} vs ${m.p2.name}`,pick:m.p1.name,circuit:m.circuit,level:m.level,surface:m.surface,odds:e.bestP1.odds,book:e.bestP1.book,ev:e.p1Val,prob:e.p1True,kelly:(e.p1K*100).toFixed(1),status:m.status,id:m.id});
+            if (e.p2Val>0&&e.p2Ok) bets.push({match:`${m.p1.name} vs ${m.p2.name}`,pick:m.p2.name,circuit:m.circuit,level:m.level,surface:m.surface,odds:e.bestP2.odds,book:e.bestP2.book,ev:e.p2Val,prob:e.p2True,kelly:(e.p2K*100).toFixed(1),status:m.status,id:m.id});
+            return bets;
+          }).sort((a,b)=>b.ev-a.ev);
+          // Mispricing vs Pinnacle no-vig (or first book if no Pinnacle)
+          const mispricings = [];
+          allMatches.forEach(m => {
+            const nvp = noVigProb(m);
+            Object.entries(m.odds).forEach(([book,odds]) => {
+              if (book==="pinnacle") return;
+              const ev1 = (nvp.p1*odds.p1-1)*100;
+              const ev2 = (nvp.p2*odds.p2-1)*100;
+              if (ev1>1) mispricings.push({match:`${m.p1.name} vs ${m.p2.name}`,pick:m.p1.name,book,ev:ev1,odds:odds.p1,prob:nvp.p1,circuit:m.circuit,id:m.id});
+              if (ev2>1) mispricings.push({match:`${m.p1.name} vs ${m.p2.name}`,pick:m.p2.name,book,ev:ev2,odds:odds.p2,prob:nvp.p2,circuit:m.circuit,id:m.id});
+            });
+          });
+          mispricings.sort((a,b)=>b.ev-a.ev);
+          // Per-circuit stats
+          const circuitStats = ["ATP","WTA","CH","ITF"].map(circ=>{
+            const ms = allMatches.filter(m=>m.circuit===circ);
+            const es = matchEdges.filter(e=>e.match.circuit===circ);
+            const avgMargin = ms.length ? ms.reduce((sum,m)=>{const{bestP1,bestP2}=getBestOdds(m);return sum+bookMargin(bestP1.odds,bestP2.odds);},0)/ms.length : 0;
+            return {circ,matches:ms.length,valueBets:es.filter(e=>e.best).length,avgMargin,mispCount:mispricings.filter(x=>x.circuit===circ).length};
+          });
+          // Bookmaker performance
+          const bookStats = BOOKS.map(b=>{
+            let best=0,totalM=0,mCnt=0;
+            allMatches.forEach(m=>{const{bestP1,bestP2}=getBestOdds(m);if(bestP1.book===b.key)best++;if(bestP2.book===b.key)best++;if(m.odds[b.key]){totalM+=bookMargin(m.odds[b.key].p1,m.odds[b.key].p2);mCnt++;}});
+            return {key:b.key,name:b.abbr,best,avgMargin:mCnt?totalM/mCnt:0,alerts:mispricings.filter(x=>x.book===b.key).length};
+          }).filter(b=>b.avgMargin>0).sort((a,b)=>b.best-a.best);
+          return (
+            <div>
+              {/* Summary stats */}
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:10,marginBottom:20}}>
+                {[{l:"EV OPPORTUNITIES",v:allBets.length,col:c.g},{l:"MISPRICING ALERTS",v:mispricings.length,col:c.y},{l:"TOP EV",v:allBets.length?`+${allBets[0].ev.toFixed(1)}%`:"–",col:c.g},{l:"MATCHES SCANNED",v:allMatches.length,col:c.b}].map((s,i)=>(
+                  <div key={i} style={{textAlign:"center",padding:14,background:c.card,border:`1px solid ${c.brd}`,borderRadius:8}}>
+                    <div style={{fontSize:8,color:c.dim,letterSpacing:"1px"}}>{s.l}</div>
+                    <div style={{fontSize:22,fontWeight:800,color:s.col,marginTop:6}}>{s.v}</div>
+                  </div>
+                ))}
+              </div>
+              {/* EV Leaderboard */}
+              <div style={{background:c.card,border:`1px solid ${c.g}30`,borderRadius:10,marginBottom:14,overflow:"hidden"}}>
+                <div style={{padding:"12px 16px",borderBottom:`1px solid ${c.brd}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  <div style={{fontSize:9,letterSpacing:"3px",color:c.g}}>◆ EV LEADERBOARD — ALL POSITIVE EV BETS</div>
+                  <span style={{fontSize:9,color:c.dim}}>Click row → Edge Scanner</span>
+                </div>
+                <div style={{overflowX:"auto"}}>
+                  <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:600}}>
+                    <thead><tr style={{background:c.bg}}>
+                      {["#","Match","Pick","Circuit","Surface","Odds","Book","EV%","Prob","K%"].map(h=>(
+                        <th key={h} style={{padding:"6px 12px",textAlign:"left",fontSize:8,color:c.dim,fontWeight:600,letterSpacing:"1px"}}>{h}</th>
+                      ))}
+                    </tr></thead>
+                    <tbody>
+                      {allBets.slice(0,20).map((b,i)=>(
+                        <tr key={i} onClick={()=>{setSelectedMatch(b.id);setActiveTab("scanner");}}
+                          style={{borderTop:`1px solid ${c.brd}`,cursor:"pointer",background:i<3?`${c.g}05`:"transparent"}}>
+                          <td style={{padding:"6px 12px",color:i<3?c.g:c.dimm,fontWeight:700}}>{i+1}</td>
+                          <td style={{padding:"6px 12px",color:c.dim,fontSize:10,maxWidth:140,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{b.match}</td>
+                          <td style={{padding:"6px 12px",color:c.w,fontWeight:600,whiteSpace:"nowrap"}}>{b.pick}</td>
+                          <td style={{padding:"6px 12px"}}><span style={{padding:"2px 6px",borderRadius:4,fontSize:8,fontWeight:700,background:`${CIRCUIT_COLOR[b.circuit]||c.dim}20`,color:CIRCUIT_COLOR[b.circuit]||c.dim}}>{b.circuit}</span></td>
+                          <td style={{padding:"6px 12px",color:SURFACE_C[b.surface]||c.dim,fontSize:10}}>{b.surface}</td>
+                          <td style={{padding:"6px 12px"}}><OB odds={b.odds} ok={true}/></td>
+                          <td style={{padding:"6px 12px"}}><BookTag bookKey={b.book} highlight={true}/></td>
+                          <td style={{padding:"6px 12px"}}><Badge value={b.ev}/></td>
+                          <td style={{padding:"6px 12px",color:c.b}}>{(b.prob*100).toFixed(0)}%</td>
+                          <td style={{padding:"6px 12px",color:c.y}}>{b.kelly}%</td>
+                        </tr>
+                      ))}
+                      {allBets.length===0&&<tr><td colSpan={10} style={{padding:"30px",textAlign:"center",color:c.dim}}>No positive EV bets found — try adjusting settings or weights</td></tr>}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              {/* Mispricing Detector */}
+              <div style={{background:c.card,border:`1px solid ${c.y}30`,borderRadius:10,marginBottom:14,overflow:"hidden"}}>
+                <div style={{padding:"12px 16px",borderBottom:`1px solid ${c.brd}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  <div style={{fontSize:9,letterSpacing:"3px",color:c.y}}>⚡ MISPRICING DETECTOR — SOFT BOOK vs SHARP NO-VIG</div>
+                  <span style={{fontSize:9,color:c.dim}}>Where books haven't adjusted vs Pinnacle/reference</span>
+                </div>
+                <div style={{overflowX:"auto"}}>
+                  <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,minWidth:500}}>
+                    <thead><tr style={{background:c.bg}}>
+                      {["#","Match","Pick","Circuit","Soft Book","Book Odds","Sharp Prob","EV Edge"].map(h=>(
+                        <th key={h} style={{padding:"6px 12px",textAlign:"left",fontSize:8,color:c.dim,fontWeight:600}}>{h}</th>
+                      ))}
+                    </tr></thead>
+                    <tbody>
+                      {mispricings.slice(0,15).map((mp,i)=>(
+                        <tr key={i} onClick={()=>{setSelectedMatch(mp.id);setActiveTab("scanner");}}
+                          style={{borderTop:`1px solid ${c.brd}`,cursor:"pointer",background:mp.ev>10?`${c.r}06`:mp.ev>5?`${c.y}04`:"transparent"}}>
+                          <td style={{padding:"6px 12px",color:mp.ev>10?c.r:mp.ev>5?c.y:c.dimm,fontWeight:700}}>{i+1}</td>
+                          <td style={{padding:"6px 12px",color:c.dim,fontSize:10,maxWidth:130,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{mp.match}</td>
+                          <td style={{padding:"6px 12px",color:c.w,fontWeight:600,whiteSpace:"nowrap"}}>{mp.pick}</td>
+                          <td style={{padding:"6px 12px"}}><span style={{padding:"2px 6px",borderRadius:4,fontSize:8,fontWeight:700,background:`${CIRCUIT_COLOR[mp.circuit]||c.dim}20`,color:CIRCUIT_COLOR[mp.circuit]||c.dim}}>{mp.circuit}</span></td>
+                          <td style={{padding:"6px 12px"}}><BookTag bookKey={mp.book} highlight={mp.ev>5}/></td>
+                          <td style={{padding:"6px 12px"}}><OB odds={mp.odds} ok={true}/></td>
+                          <td style={{padding:"6px 12px",color:c.b}}>{(mp.prob*100).toFixed(1)}%</td>
+                          <td style={{padding:"6px 12px",fontWeight:700,color:mp.ev>10?c.r:mp.ev>5?c.y:c.g}}>+{mp.ev.toFixed(1)}%</td>
+                        </tr>
+                      ))}
+                      {mispricings.length===0&&<tr><td colSpan={8} style={{padding:"30px",textAlign:"center",color:c.dim}}>No mispricing found — all soft book odds within normal range of Pinnacle baseline</td></tr>}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              {/* Circuit Analysis + Bookmaker Rankings */}
+              <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:14,marginBottom:14}}>
+                <div style={{background:c.card,border:`1px solid ${c.brd}`,borderRadius:10,overflow:"hidden"}}>
+                  <div style={{padding:"12px 16px",borderBottom:`1px solid ${c.brd}`}}>
+                    <div style={{fontSize:9,letterSpacing:"3px",color:c.b}}>CIRCUIT ANALYSIS</div>
+                  </div>
+                  <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+                    <thead><tr style={{background:c.bg}}>
+                      {["Circuit","Matches","Value","Avg Margin","Mispricing"].map(h=>(
+                        <th key={h} style={{padding:"6px 12px",textAlign:"left",fontSize:8,color:c.dim}}>{h}</th>
+                      ))}
+                    </tr></thead>
+                    <tbody>
+                      {circuitStats.filter(r=>r.matches>0).map((r,i)=>(
+                        <tr key={i} style={{borderTop:`1px solid ${c.brd}`}}>
+                          <td style={{padding:"8px 12px"}}><span style={{padding:"2px 8px",borderRadius:4,fontSize:9,fontWeight:700,background:`${CIRCUIT_COLOR[r.circ]}20`,color:CIRCUIT_COLOR[r.circ]}}>{r.circ}</span></td>
+                          <td style={{padding:"8px 12px",color:c.txt}}>{r.matches}</td>
+                          <td style={{padding:"8px 12px",fontWeight:700,color:r.valueBets>0?c.g:c.dimm}}>{r.valueBets}</td>
+                          <td style={{padding:"8px 12px",color:r.avgMargin>6?c.r:r.avgMargin>3?c.y:c.g}}>{r.avgMargin.toFixed(1)}%</td>
+                          <td style={{padding:"8px 12px",color:r.mispCount>0?c.y:c.dimm}}>{r.mispCount}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div style={{background:c.card,border:`1px solid ${c.brd}`,borderRadius:10,overflow:"hidden"}}>
+                  <div style={{padding:"12px 16px",borderBottom:`1px solid ${c.brd}`}}>
+                    <div style={{fontSize:9,letterSpacing:"3px",color:c.b}}>BOOKMAKER RANKINGS</div>
+                  </div>
+                  <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+                    <thead><tr style={{background:c.bg}}>
+                      {["Book","Best Price×","Avg Margin","Alerts"].map(h=>(
+                        <th key={h} style={{padding:"6px 12px",textAlign:"left",fontSize:8,color:c.dim}}>{h}</th>
+                      ))}
+                    </tr></thead>
+                    <tbody>
+                      {bookStats.map((b,i)=>(
+                        <tr key={i} style={{borderTop:`1px solid ${c.brd}`}}>
+                          <td style={{padding:"8px 12px"}}><BookTag bookKey={b.key} highlight={i===0}/></td>
+                          <td style={{padding:"8px 12px",fontWeight:700,color:b.best>3?c.g:c.dimm}}>{b.best}×</td>
+                          <td style={{padding:"8px 12px",color:b.avgMargin>6?c.r:b.avgMargin>3?c.y:c.g}}>{b.avgMargin.toFixed(2)}%</td>
+                          <td style={{padding:"8px 12px",color:b.alerts>0?c.y:c.dimm}}>{b.alerts}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              {/* Style Clash Matrix */}
+              <div style={{background:c.card,border:`1px solid ${c.brd}`,borderRadius:10,padding:16}}>
+                <div style={{fontSize:9,letterSpacing:"3px",color:c.dim,marginBottom:8}}>⚔️ STYLE CLASH MATRIX — EDGE MODIFIER (HARD COURTS)</div>
+                <p style={{fontSize:10,color:c.dim,marginBottom:12}}>Row = attacker style · Column = opponent style. Values show edge bonus (%). Clay: serve-dom −3, counter +2.5. Grass: serve-dom +3, counter −2.5.</p>
+                <div style={{overflowX:"auto"}}>
+                  <table style={{borderCollapse:"collapse",fontSize:10}}>
+                    <thead>
+                      <tr>
+                        <th style={{padding:"4px 12px",fontSize:8,color:c.dim,textAlign:"left"}}>ATK ▷ vs ▼ DEF</th>
+                        {Object.keys(STYLE_CLASH_MTX).map(s=>(
+                          <th key={s} style={{padding:"4px 12px",fontSize:8,color:c.dim,textAlign:"center",whiteSpace:"nowrap"}}>{s}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.entries(STYLE_CLASH_MTX).map(([rowStyle,cols])=>(
+                        <tr key={rowStyle}>
+                          <td style={{padding:"5px 12px",fontSize:9,color:c.txt,fontWeight:600,whiteSpace:"nowrap",borderTop:`1px solid ${c.brd}`}}>{rowStyle}</td>
+                          {Object.entries(cols).map(([colStyle,val])=>{
+                            const col = val>0.03?c.g:val>0?`#00e87b80`:val<-0.03?c.r:val<0?`${c.r}80`:c.dimm;
+                            return <td key={colStyle} style={{padding:"5px 12px",textAlign:"center",fontWeight:700,color:col,background:`${col}14`,borderTop:`1px solid ${c.brd}`}}>{val>0?"+":""}{(val*100).toFixed(0)}</td>;
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
       </div>
 
       <style>{`
