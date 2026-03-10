@@ -38,7 +38,7 @@ function calcStyleClash(s1, s2, surface) {
 const MOCK_MATCHES = [
   {
     id:1, circuit:"CH", level:"Challenger 100", tournament:"Hersonissos 2 Challenger", surface:"Hard", round:"R32",
-    status:"LIVE", game:"3-6", point:"15-30", startTime:"Today 14:30", updated:Date.now()-45000,
+    status:"PRE", game:"-", point:"-", startTime:"Mar 11, 14:30", updated:Date.now()-45000,
     p1:{...BP,name:"P. Makk",rank:716,flag:"🇭🇺",age:24,hand:"R",
       first_pct:61,first_won:50,second_won:38,bp_saved:25,bp_faced:4,service_games:5,return_pts_won:32,
       tiebreak_wr:0.40,third_set_wr:0.38,bp_convert:28,style:"baseline",
@@ -82,7 +82,7 @@ const MOCK_MATCHES = [
   },
   {
     id:3, circuit:"ATP", level:"Masters 1000", tournament:"Indian Wells Masters", surface:"Hard", round:"R16",
-    status:"LIVE", game:"4-6, 3-2", point:"30-40", startTime:"Today 15:00", updated:Date.now()-12000,
+    status:"PRE", game:"-", point:"-", startTime:"Today 20:00", updated:Date.now()-12000,
     p1:{...BP,name:"J. Sinner",rank:1,flag:"🇮🇹",age:23,hand:"R",
       aces:6,df:1,first_pct:72,first_won:77,second_won:52,bp_saved:78,bp_faced:5,service_games:9,return_pts_won:44,
       tiebreak_wr:0.66,third_set_wr:0.72,bp_convert:54,style:"aggressive",
@@ -98,7 +98,7 @@ const MOCK_MATCHES = [
   },
   {
     id:4, circuit:"CH", level:"Challenger 100", tournament:"Hersonissos 2 Challenger", surface:"Hard", round:"R32",
-    status:"PRE", game:"-", point:"-", startTime:"Mar 10, 11:00", updated:Date.now()-300000,
+    status:"PRE", game:"-", point:"-", startTime:"Mar 11, 11:00", updated:Date.now()-300000,
     p1:{...BP,name:"L. Djere",rank:112,flag:"🇷🇸",age:29,hand:"R",
       tiebreak_wr:0.46,third_set_wr:0.50,bp_convert:38,style:"baseline",
       fatigue:0.18,momentum:0.0,h2h:"1-0",recent_form:[0,0,1,1,0],
@@ -112,7 +112,7 @@ const MOCK_MATCHES = [
   },
   {
     id:5, circuit:"ATP", level:"Masters 1000", tournament:"Indian Wells Masters", surface:"Hard", round:"R32",
-    status:"LIVE", game:"4-5", point:"30-40", startTime:"Today 18:30", updated:Date.now()-5000,
+    status:"PRE", game:"-", point:"-", startTime:"Tomorrow 18:30", updated:Date.now()-5000,
     p1:{...BP,name:"T. Fritz",rank:4,flag:"🇺🇸",age:27,hand:"R",
       aces:5,df:1,first_pct:68,first_won:72,second_won:45,bp_saved:67,bp_faced:3,service_games:5,return_pts_won:38,
       tiebreak_wr:0.64,third_set_wr:0.60,bp_convert:42,style:"serve-dom",
@@ -171,7 +171,7 @@ const MOCK_MATCHES = [
   {
     // Indian Wells R32: Wawrinka best p1=bet365@2.00, best p2=bwin@1.90 → arb opportunity
     id:10, circuit:"ATP", level:"Masters 1000", tournament:"Indian Wells Masters", surface:"Hard", round:"R32",
-    status:"LIVE", game:"3-6, 4-3", point:"40-30", startTime:"Today 17:30", updated:Date.now()-4000,
+    status:"PRE", game:"-", point:"-", startTime:"Today 21:30", updated:Date.now()-4000,
     p1:{...BP,name:"S. Wawrinka",rank:42,flag:"🇨🇭",age:40,hand:"R",
       aces:4,df:3,first_pct:62,first_won:66,second_won:46,bp_saved:60,bp_faced:5,service_games:10,return_pts_won:36,
       tiebreak_wr:0.55,third_set_wr:0.58,bp_convert:40,style:"allcourt",
@@ -187,7 +187,7 @@ const MOCK_MATCHES = [
   },
   {
     // Tiafoe vs Zverev — real Epicbet odds from screenshot
-    id:11, circuit:"ATP", level:"Masters 1000", tournament:"ATP Miami Open", surface:"Hard", round:"R32",
+    id:11, circuit:"ATP", level:"Masters 1000", tournament:"Indian Wells Masters", surface:"Hard", round:"R32",
     status:"PRE", game:"-", point:"-", startTime:"Today 21:05", updated:Date.now()-300000,
     p1:{...BP,name:"F. Tiafoe",rank:32,flag:"🇺🇸",age:26,hand:"R",
       tiebreak_wr:0.50,third_set_wr:0.52,bp_convert:40,style:"aggressive",
@@ -245,7 +245,7 @@ const MOCK_MATCHES = [
   },
   {
     id:14, circuit:"CH", level:"Challenger 125", tournament:"Cagliari Challenger", surface:"Clay", round:"R16",
-    status:"PRE", game:"-", point:"-", startTime:"Mar 10, 11:00", updated:Date.now()-1800000,
+    status:"PRE", game:"-", point:"-", startTime:"Mar 11, 11:00", updated:Date.now()-1800000,
     p1:{...BP,name:"J. Sousa",rank:88,flag:"🇵🇹",age:35,hand:"R",
       tiebreak_wr:0.49,third_set_wr:0.56,bp_convert:41,style:"counter",
       fatigue:0.22,momentum:0.1,h2h:"2-0",recent_form:[1,0,1,1,0],
@@ -260,7 +260,7 @@ const MOCK_MATCHES = [
   {
     // ITF — no Pinnacle, high-margin soft books, pricing lag
     id:15, circuit:"ITF", level:"ITF M25", tournament:"ITF Sharm El Sheikh M25", surface:"Hard", round:"QF",
-    status:"PRE", game:"-", point:"-", startTime:"Mar 10, 10:00", updated:Date.now()-5400000,
+    status:"PRE", game:"-", point:"-", startTime:"Mar 11, 10:00", updated:Date.now()-5400000,
     p1:{...BP,name:"D. Karlovskiy",rank:112,flag:"🇷🇺",age:28,hand:"R",
       tiebreak_wr:0.56,third_set_wr:0.58,bp_convert:43,style:"baseline",
       fatigue:0.08,momentum:0.2,h2h:"1-0",recent_form:[1,1,0,1,1],
@@ -273,7 +273,7 @@ const MOCK_MATCHES = [
   },
   {
     id:16, circuit:"WTA", level:"WTA 1000", tournament:"Indian Wells Masters (WTA)", surface:"Hard", round:"R32",
-    status:"LIVE", game:"4-6, 3-2", point:"40-15", startTime:"Today 14:30", updated:Date.now()-8000,
+    status:"PRE", game:"-", point:"-", startTime:"Today 19:30", updated:Date.now()-8000,
     p1:{...BP,name:"C. Gauff",rank:3,flag:"🇺🇸",age:21,hand:"R",
       aces:3,df:2,first_pct:66,first_won:70,second_won:52,bp_saved:72,bp_faced:4,service_games:9,return_pts_won:46,
       tiebreak_wr:0.58,third_set_wr:0.62,bp_convert:50,style:"allcourt",
@@ -289,7 +289,7 @@ const MOCK_MATCHES = [
   },
   {
     id:17, circuit:"CH", level:"Challenger 100", tournament:"Tampere Open Challenger", surface:"Hard", round:"QF",
-    status:"PRE", game:"-", point:"-", startTime:"Mar 10, 14:00", updated:Date.now()-2700000,
+    status:"PRE", game:"-", point:"-", startTime:"Mar 11, 14:00", updated:Date.now()-2700000,
     p1:{...BP,name:"M. Cressy",rank:55,flag:"🇺🇸",age:27,hand:"L",
       tiebreak_wr:0.62,third_set_wr:0.58,bp_convert:40,style:"serve-dom",
       fatigue:0.06,momentum:0.4,h2h:"2-1",recent_form:[1,0,1,1,1],
@@ -304,7 +304,7 @@ const MOCK_MATCHES = [
   {
     // ITF M15 — very high margin, biggest mispricing potential
     id:18, circuit:"ITF", level:"ITF M15", tournament:"ITF Monastir M15", surface:"Clay", round:"R16",
-    status:"PRE", game:"-", point:"-", startTime:"Mar 10, 11:00", updated:Date.now()-10800000,
+    status:"PRE", game:"-", point:"-", startTime:"Mar 11, 11:00", updated:Date.now()-10800000,
     p1:{...BP,name:"S. Benchetrit",rank:248,flag:"🇫🇷",age:26,hand:"R",
       tiebreak_wr:0.52,third_set_wr:0.56,bp_convert:42,style:"baseline",
       fatigue:0.04,momentum:0.3,h2h:"0-0",recent_form:[1,1,1,0,1],
@@ -331,7 +331,7 @@ const MOCK_MATCHES = [
   },
   {
     id:20, circuit:"CH", level:"Challenger 50", tournament:"Tenerife Challenger", surface:"Clay", round:"SF",
-    status:"LIVE", game:"3-4", point:"15-30", startTime:"Today 12:00", updated:Date.now()-15000,
+    status:"PRE", game:"-", point:"-", startTime:"Mar 11, 12:00", updated:Date.now()-15000,
     p1:{...BP,name:"F. Gaio",rank:135,flag:"🇮🇹",age:29,hand:"R",
       aces:2,df:1,first_pct:62,first_won:66,second_won:44,bp_saved:67,bp_faced:3,service_games:7,return_pts_won:38,
       tiebreak_wr:0.47,third_set_wr:0.50,bp_convert:37,style:"baseline",
@@ -348,7 +348,7 @@ const MOCK_MATCHES = [
   {
     // ITF M25 extreme mispricing — bwin is way off vs consensus
     id:21, circuit:"ITF", level:"ITF M25", tournament:"ITF Antalya M25", surface:"Clay", round:"QF",
-    status:"PRE", game:"-", point:"-", startTime:"Mar 10, 10:30", updated:Date.now()-7200000,
+    status:"PRE", game:"-", point:"-", startTime:"Mar 11, 10:30", updated:Date.now()-7200000,
     p1:{...BP,name:"B. Altug",rank:332,flag:"🇹🇷",age:25,hand:"R",
       tiebreak_wr:0.50,third_set_wr:0.53,bp_convert:39,style:"baseline",
       fatigue:0.02,momentum:0.4,h2h:"1-0",recent_form:[1,1,0,1,1],
@@ -362,7 +362,7 @@ const MOCK_MATCHES = [
   },
   {
     id:22, circuit:"ATP", level:"Masters 1000", tournament:"Indian Wells Masters", surface:"Hard", round:"R32",
-    status:"LIVE", game:"5-6", point:"30-30", startTime:"Today 19:30", updated:Date.now()-4000,
+    status:"PRE", game:"-", point:"-", startTime:"Today 22:00", updated:Date.now()-4000,
     p1:{...BP,name:"J. Mensik",rank:24,flag:"🇨🇿",age:19,hand:"R",
       aces:7,df:3,first_pct:67,first_won:72,second_won:48,bp_saved:65,bp_faced:5,service_games:11,return_pts_won:38,
       tiebreak_wr:0.58,third_set_wr:0.54,bp_convert:44,style:"aggressive",
@@ -552,7 +552,7 @@ export default function App() {
   const [kellyFrac, setKellyFrac] = useState(0.25);
   const [simRunning, setSimRunning] = useState(false);
   const [simResults, setSimResults] = useState(null);
-  const [feedFilter, setFeedFilter] = useState("all");
+  const [feedFilter, setFeedFilter] = useState("pre");
   const [lastRefresh, setLastRefresh] = useState(Date.now());
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
@@ -890,7 +890,7 @@ export default function App() {
           <div style={{display:"flex",alignItems:"center",gap:14}}>
             <div>
               <div style={{fontSize:isMobile?13:15,fontWeight:800,letterSpacing:"3px",color:c.g,whiteSpace:"nowrap"}}>◆ EDGE MACHINE</div>
-              <div style={{fontSize:8,color:c.dim,letterSpacing:"1.5px",whiteSpace:"nowrap"}}>v5.2 · {allMatches.length} MATCHES</div>
+              <div style={{fontSize:8,color:c.dim,letterSpacing:"1.5px",whiteSpace:"nowrap"}}>v5.3 · {allMatches.length} MATCHES</div>
             </div>
             <div style={{width:1,height:28,background:c.brd,margin:"0 4px"}}/>
             <div style={{display:"flex",alignItems:"center",gap:6}}>
@@ -1076,12 +1076,18 @@ export default function App() {
               ))}
             </div>
           </div>
+          {apiStatus!=="ok"&&(
+            <div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",borderRadius:8,background:`${c.b}08`,border:`1px solid ${c.b}20`,marginBottom:12}}>
+              <span style={{fontSize:9,color:c.b}}>📡</span>
+              <span style={{fontSize:9,color:c.dim}}>Showing <span style={{color:c.w,fontWeight:600}}>scheduled upcoming matches</span> — no live scores without API. Connect The Odds API in ⚙ settings for real-time data.</span>
+            </div>
+          )}
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:10}}>
             <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-              <Pill active={feedFilter==="all"} onClick={()=>setFeedFilter("all")} count={filtered.length}>All</Pill>
-              <Pill active={feedFilter==="live"} onClick={()=>setFeedFilter("live")} count={matchEdges.filter(e=>e.match.status==="LIVE"&&(circuitFilter==="all"||e.match.circuit===circuitFilter)).length}>Live</Pill>
               <Pill active={feedFilter==="pre"} onClick={()=>setFeedFilter("pre")} count={matchEdges.filter(e=>e.match.status==="PRE"&&(circuitFilter==="all"||e.match.circuit===circuitFilter)).length}>Upcoming</Pill>
               <Pill active={feedFilter==="value"} onClick={()=>setFeedFilter("value")} count={matchEdges.filter(e=>e.best&&(circuitFilter==="all"||e.match.circuit===circuitFilter)).length}>Value</Pill>
+              <Pill active={feedFilter==="all"} onClick={()=>setFeedFilter("all")} count={allMatches.length}>All</Pill>
+              {apiStatus==="ok"&&<Pill active={feedFilter==="live"} onClick={()=>setFeedFilter("live")} count={matchEdges.filter(e=>e.match.status==="LIVE"&&(circuitFilter==="all"||e.match.circuit===circuitFilter)).length}>🔴 Live</Pill>}
             </div>
             <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
               {/* Sort controls */}
