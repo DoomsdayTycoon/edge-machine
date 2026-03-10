@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 // ──────────────────────────────────────────────────
 const BOOKS = [
   { key: "pinnacle",    name: "Pinnacle",      abbr: "PIN",  note: "sharpest" },
+  { key: "epicbet",     name: "Epicbet",       abbr: "EPIC", note: "" },
   { key: "bet365",      name: "Bet365",        abbr: "B365", note: "" },
   { key: "unibet",      name: "Unibet",        abbr: "UNI",  note: "" },
   { key: "williamhill", name: "William Hill",  abbr: "WH",   note: "" },
@@ -29,20 +30,34 @@ const MOCK_MATCHES = [
       first_pct:64,first_won:81,second_won:56,bp_saved:0,bp_faced:1,service_games:5,return_pts_won:58,
       fatigue:0.08,momentum:0.7,h2h:"0-0",recent_form:[1,1,0,1,1],
       surface_wr:0.54,travel_hrs:6,last_match_days:2,altitude_delta:50,sleep_zone_diff:0},
-    odds:{pinnacle:{p1:3.44,p2:1.30},bet365:{p1:3.20,p2:1.35},unibet:{p1:3.10,p2:1.38},
+    odds:{pinnacle:{p1:3.44,p2:1.30},epicbet:{p1:3.20,p2:1.32},bet365:{p1:3.20,p2:1.35},unibet:{p1:3.10,p2:1.38},
           williamhill:{p1:2.90,p2:1.40},betway:{p1:3.25,p2:1.34},bwin:{p1:3.00,p2:1.37}},
   },
   {
     id:2, tournament:"Indian Wells Masters", surface:"Hard", round:"R16",
-    status:"PRE", game:"-", point:"-", startTime:"20:00", updated:Date.now()-120000,
+    status:"PRE", game:"-", point:"-", startTime:"Tomorrow 20:00", updated:Date.now()-120000,
     p1:{...BP,name:"C. Alcaraz",rank:2,flag:"🇪🇸",age:22,hand:"R",
-      fatigue:0.22,momentum:0.3,h2h:"3-2",recent_form:[1,1,1,0,1],
+      fatigue:0.22,momentum:0.3,h2h:"4-2",recent_form:[1,1,1,0,1],
       surface_wr:0.78,travel_hrs:9,last_match_days:1,altitude_delta:400,sleep_zone_diff:9},
-    p2:{...BP,name:"H. Rune",rank:8,flag:"🇩🇰",age:22,hand:"R",
-      fatigue:0.05,momentum:0.5,h2h:"2-3",recent_form:[1,0,1,1,1],
-      surface_wr:0.65,travel_hrs:3,last_match_days:3,altitude_delta:0,sleep_zone_diff:0},
-    odds:{pinnacle:{p1:1.52,p2:2.62},bet365:{p1:1.55,p2:2.50},unibet:{p1:1.57,p2:2.45},
-          williamhill:{p1:1.50,p2:2.55},betway:{p1:1.54,p2:2.48},bwin:{p1:1.53,p2:2.60}},
+    p2:{...BP,name:"C. Ruud",rank:7,flag:"🇳🇴",age:25,hand:"R",
+      fatigue:0.12,momentum:0.4,h2h:"2-4",recent_form:[1,1,0,1,0],
+      surface_wr:0.62,travel_hrs:12,last_match_days:2,altitude_delta:0,sleep_zone_diff:1},
+    odds:{pinnacle:{p1:1.42,p2:2.98},epicbet:{p1:1.44,p2:2.90},bet365:{p1:1.45,p2:2.85},unibet:{p1:1.47,p2:2.80},
+          williamhill:{p1:1.40,p2:3.00},betway:{p1:1.44,p2:2.88},bwin:{p1:1.43,p2:2.92}},
+    markets:[
+      {key:"set_hcp",name:"Set Handicap",lines:[
+        {p1_label:"Alcaraz -1.5 sets",p2_label:"Ruud +1.5 sets",
+         odds:{pinnacle:{p1:1.90,p2:1.88},epicbet:{p1:1.95,p2:1.83},bet365:{p1:1.92,p2:1.85},unibet:{p1:1.88,p2:1.90}}},
+      ]},
+      {key:"games_hcp",name:"Games Handicap",lines:[
+        {p1_label:"Alcaraz -2.5",p2_label:"Ruud +2.5",
+         odds:{pinnacle:{p1:1.58,p2:2.30},epicbet:{p1:1.60,p2:2.25},bet365:{p1:1.62,p2:2.22},unibet:{p1:1.60,p2:2.28}}},
+        {p1_label:"Alcaraz -3.5",p2_label:"Ruud +3.5",
+         odds:{pinnacle:{p1:1.92,p2:1.88},epicbet:{p1:1.95,p2:1.85},bet365:{p1:1.93,p2:1.87},unibet:{p1:1.90,p2:1.90}}},
+        {p1_label:"Alcaraz -4.5",p2_label:"Ruud +4.5",
+         odds:{pinnacle:{p1:2.60,p2:1.46},epicbet:{p1:2.65,p2:1.44},bet365:{p1:2.60,p2:1.48}}},
+      ]},
+    ],
   },
   {
     id:3, tournament:"Dubai Open", surface:"Hard", round:"QF",
@@ -55,7 +70,7 @@ const MOCK_MATCHES = [
       aces:3,df:4,first_pct:65,first_won:70,second_won:48,bp_saved:60,bp_faced:5,service_games:9,return_pts_won:40,
       fatigue:0.35,momentum:-0.2,h2h:"3-5",recent_form:[1,0,1,0,1],
       surface_wr:0.71,travel_hrs:8,last_match_days:0,altitude_delta:100,sleep_zone_diff:3},
-    odds:{pinnacle:{p1:1.26,p2:4.10},bet365:{p1:1.28,p2:3.80},unibet:{p1:1.30,p2:3.75},
+    odds:{pinnacle:{p1:1.26,p2:4.10},epicbet:{p1:1.27,p2:3.95},bet365:{p1:1.28,p2:3.80},unibet:{p1:1.30,p2:3.75},
           williamhill:{p1:1.25,p2:4.00},betway:{p1:1.27,p2:3.90},bwin:{p1:1.29,p2:3.85}},
   },
   {
@@ -67,7 +82,7 @@ const MOCK_MATCHES = [
     p2:{...BP,name:"G. Barrere",rank:198,flag:"🇫🇷",age:32,hand:"R",
       fatigue:0.06,momentum:0.1,h2h:"0-1",recent_form:[1,0,0,0,1],
       surface_wr:0.39,travel_hrs:3,last_match_days:7,altitude_delta:0,sleep_zone_diff:0},
-    odds:{pinnacle:{p1:1.78,p2:2.12},bet365:{p1:1.72,p2:2.20},unibet:{p1:1.75,p2:2.15},
+    odds:{pinnacle:{p1:1.78,p2:2.12},epicbet:{p1:1.80,p2:2.08},bet365:{p1:1.72,p2:2.20},unibet:{p1:1.75,p2:2.15},
           williamhill:{p1:1.70,p2:2.25},betway:{p1:1.73,p2:2.18},bwin:{p1:1.76,p2:2.10}},
   },
   {
@@ -81,7 +96,7 @@ const MOCK_MATCHES = [
       aces:3,df:3,first_pct:60,first_won:65,second_won:50,bp_saved:50,bp_faced:4,service_games:5,return_pts_won:42,
       fatigue:0.15,momentum:0.4,h2h:"1-2",recent_form:[0,1,1,0,1],
       surface_wr:0.62,travel_hrs:12,last_match_days:1,altitude_delta:300,sleep_zone_diff:10},
-    odds:{pinnacle:{p1:1.42,p2:3.00},bet365:{p1:1.45,p2:2.85},unibet:{p1:1.47,p2:2.80},
+    odds:{pinnacle:{p1:1.42,p2:3.00},epicbet:{p1:1.44,p2:2.90},bet365:{p1:1.45,p2:2.85},unibet:{p1:1.47,p2:2.80},
           williamhill:{p1:1.43,p2:2.90},betway:{p1:1.44,p2:2.88},bwin:{p1:1.46,p2:2.82}},
   },
   {
@@ -93,7 +108,7 @@ const MOCK_MATCHES = [
     p2:{...BP,name:"C. Alcaraz",rank:2,flag:"🇪🇸",age:22,hand:"R",
       fatigue:0.18,momentum:0.8,h2h:"3-8",recent_form:[1,1,1,1,1],
       surface_wr:0.82,travel_hrs:0,last_match_days:3,altitude_delta:0,sleep_zone_diff:0},
-    odds:{pinnacle:{p1:2.88,p2:1.44},bet365:{p1:3.00,p2:1.40},unibet:{p1:2.95,p2:1.42},
+    odds:{pinnacle:{p1:2.88,p2:1.44},epicbet:{p1:2.95,p2:1.42},bet365:{p1:3.00,p2:1.40},unibet:{p1:2.95,p2:1.42},
           williamhill:{p1:2.80,p2:1.46},betway:{p1:2.90,p2:1.43},bwin:{p1:2.85,p2:1.45}},
   },
   {
@@ -105,7 +120,7 @@ const MOCK_MATCHES = [
     p2:{...BP,name:"N. Jarry",rank:22,flag:"🇨🇱",age:28,hand:"R",
       fatigue:0.22,momentum:-0.1,h2h:"2-5",recent_form:[0,1,1,0,0],
       surface_wr:0.55,travel_hrs:14,last_match_days:2,altitude_delta:650,sleep_zone_diff:5},
-    odds:{pinnacle:{p1:1.18,p2:5.80},bet365:{p1:1.20,p2:5.50},unibet:{p1:1.22,p2:5.30},
+    odds:{pinnacle:{p1:1.18,p2:5.80},epicbet:{p1:1.19,p2:5.60},bet365:{p1:1.20,p2:5.50},unibet:{p1:1.22,p2:5.30},
           williamhill:{p1:1.19,p2:5.60},betway:{p1:1.21,p2:5.40},bwin:{p1:1.20,p2:5.50}},
   },
   {
@@ -117,7 +132,7 @@ const MOCK_MATCHES = [
     p2:{...BP,name:"R. Safiullin",rank:51,flag:"🇷🇺",age:27,hand:"R",
       fatigue:0.14,momentum:0.2,h2h:"0-1",recent_form:[0,1,0,1,1],
       surface_wr:0.48,travel_hrs:6,last_match_days:3,altitude_delta:0,sleep_zone_diff:3},
-    odds:{pinnacle:{p1:1.34,p2:3.28},bet365:{p1:1.36,p2:3.20},unibet:{p1:1.38,p2:3.10},
+    odds:{pinnacle:{p1:1.34,p2:3.28},epicbet:{p1:1.36,p2:3.15},bet365:{p1:1.36,p2:3.20},unibet:{p1:1.38,p2:3.10},
           williamhill:{p1:1.33,p2:3.30},betway:{p1:1.35,p2:3.25},bwin:{p1:1.37,p2:3.15}},
   },
   {
@@ -129,7 +144,7 @@ const MOCK_MATCHES = [
     p2:{...BP,name:"L. Musetti",rank:16,flag:"🇮🇹",age:22,hand:"L",
       fatigue:0.12,momentum:0.3,h2h:"0-0",recent_form:[1,1,0,0,1],
       surface_wr:0.58,travel_hrs:9,last_match_days:3,altitude_delta:0,sleep_zone_diff:6},
-    odds:{pinnacle:{p1:1.76,p2:2.16},bet365:{p1:1.80,p2:2.10},unibet:{p1:1.78,p2:2.12},
+    odds:{pinnacle:{p1:1.76,p2:2.16},epicbet:{p1:1.78,p2:2.12},bet365:{p1:1.80,p2:2.10},unibet:{p1:1.78,p2:2.12},
           williamhill:{p1:1.75,p2:2.18},betway:{p1:1.77,p2:2.14},bwin:{p1:1.79,p2:2.08}},
   },
   {
@@ -144,8 +159,35 @@ const MOCK_MATCHES = [
       aces:2,df:3,first_pct:58,first_won:62,second_won:46,bp_saved:70,bp_faced:5,service_games:11,return_pts_won:42,
       fatigue:0.20,momentum:-0.1,h2h:"2-1",recent_form:[1,0,1,0,1],
       surface_wr:0.61,travel_hrs:2,last_match_days:1,altitude_delta:380,sleep_zone_diff:0},
-    odds:{pinnacle:{p1:1.88,p2:1.98},bet365:{p1:1.95,p2:1.95},unibet:{p1:1.92,p2:1.97},
+    odds:{pinnacle:{p1:1.88,p2:1.98},epicbet:{p1:1.92,p2:1.96},bet365:{p1:1.95,p2:1.95},unibet:{p1:1.92,p2:1.97},
           williamhill:{p1:1.85,p2:2.05},betway:{p1:1.90,p2:1.96},bwin:{p1:1.87,p2:2.10}},
+  },
+  {
+    // Tiafoe vs Zverev — real Epicbet odds from screenshot
+    id:11, tournament:"ATP Miami Open", surface:"Hard", round:"R32",
+    status:"PRE", game:"-", point:"-", startTime:"Today 21:05", updated:Date.now()-300000,
+    p1:{...BP,name:"F. Tiafoe",rank:32,flag:"🇺🇸",age:26,hand:"R",
+      fatigue:0.08,momentum:0.3,h2h:"1-5",recent_form:[1,0,1,0,1],
+      surface_wr:0.61,travel_hrs:0,last_match_days:3,altitude_delta:0,sleep_zone_diff:0},
+    p2:{...BP,name:"A. Zverev",rank:3,flag:"🇩🇪",age:27,hand:"R",
+      fatigue:0.10,momentum:0.5,h2h:"5-1",recent_form:[1,1,0,1,1],
+      surface_wr:0.69,travel_hrs:2,last_match_days:2,altitude_delta:0,sleep_zone_diff:0},
+    odds:{pinnacle:{p1:3.25,p2:1.30},epicbet:{p1:3.35,p2:1.33},bet365:{p1:3.20,p2:1.32},unibet:{p1:3.10,p2:1.35},
+          williamhill:{p1:3.00,p2:1.36},betway:{p1:3.15,p2:1.34},bwin:{p1:3.20,p2:1.33}},
+    markets:[
+      {key:"set_hcp",name:"Set Handicap",lines:[
+        {p1_label:"Tiafoe +1.5 sets",p2_label:"Zverev -1.5 sets",
+         odds:{pinnacle:{p1:1.20,p2:4.20},epicbet:{p1:1.83,p2:6.00},bet365:{p1:1.22,p2:4.00},unibet:{p1:1.20,p2:4.10},williamhill:{p1:1.19,p2:4.30}}},
+      ]},
+      {key:"games_hcp",name:"Games Handicap",lines:[
+        {p1_label:"Tiafoe +2.5",p2_label:"Zverev -2.5",
+         odds:{pinnacle:{p1:2.05,p2:1.68},epicbet:{p1:2.30,p2:1.60},bet365:{p1:2.15,p2:1.65},unibet:{p1:2.10,p2:1.67}}},
+        {p1_label:"Tiafoe +3.5",p2_label:"Zverev -3.5",
+         odds:{pinnacle:{p1:1.75,p2:2.00},epicbet:{p1:1.83,p2:1.95},bet365:{p1:1.78,p2:1.97},unibet:{p1:1.76,p2:2.00}}},
+        {p1_label:"Tiafoe +4.5",p2_label:"Zverev -4.5",
+         odds:{pinnacle:{p1:1.40,p2:2.82},epicbet:{p1:1.44,p2:2.80},bet365:{p1:1.42,p2:2.80},unibet:{p1:1.42,p2:2.85}}},
+      ]},
+    ],
   },
 ];
 
@@ -218,6 +260,33 @@ function timeAgo(ts) {
 
 function bookAbbr(key) { return BOOKS.find(b=>b.key===key)?.abbr || key.slice(0,4).toUpperCase(); }
 
+// Evaluate all market lines for a match — returns array of bet candidates
+function calcMarketBets(match) {
+  if (!match.markets) return [];
+  const bets = [];
+  match.markets.forEach(mkt => {
+    mkt.lines.forEach(line => {
+      // No-vig probability from Pinnacle (or first book)
+      const ref = line.odds.pinnacle || Object.values(line.odds)[0];
+      const sum = 1/ref.p1 + 1/ref.p2;
+      const trueP1 = (1/ref.p1) / sum;
+      const trueP2 = (1/ref.p2) / sum;
+      // Best odds across books
+      let bestP1={odds:0,book:""}, bestP2={odds:0,book:""};
+      Object.entries(line.odds).forEach(([k,v]) => {
+        if (v.p1>bestP1.odds) bestP1={odds:v.p1,book:k};
+        if (v.p2>bestP2.odds) bestP2={odds:v.p2,book:k};
+      });
+      const ev1 = (trueP1 * bestP1.odds - 1) * 100;
+      const ev2 = (trueP2 * bestP2.odds - 1) * 100;
+      // Push both sides if positive EV
+      if (ev1 > 0) bets.push({market:mkt.name,line:line.p1_label,odds:bestP1.odds,book:bestP1.book,ev:ev1,prob:trueP1,side:"p1"});
+      if (ev2 > 0) bets.push({market:mkt.name,line:line.p2_label,odds:bestP2.odds,book:bestP2.book,ev:ev2,prob:trueP2,side:"p2"});
+    });
+  });
+  return bets;
+}
+
 // ──────────────────────────────────────────────────
 // THE ODDS API INTEGRATION
 // ──────────────────────────────────────────────────
@@ -274,6 +343,10 @@ export default function App() {
   const [apiData, setApiData] = useState(null);
   const [apiStatus, setApiStatus] = useState("idle"); // idle|loading|ok|error
   const [apiError, setApiError] = useState("");
+  const [editingBankroll, setEditingBankroll] = useState(false);
+  const [bankrollInput, setBankrollInput] = useState("");
+  const [showBetForm, setShowBetForm] = useState(false);
+  const [betForm, setBetForm] = useState({match:"",pick:"",odds:"",stake:"",book:"epicbet"});
 
   const [settings, setSettings] = useState({
     minOdds:1.60, maxOdds:10.0, minEV:0, maxKellyPct:15,
@@ -321,17 +394,36 @@ export default function App() {
     const p2Ok = bestP2.odds >= settings.minOdds && bestP2.odds <= settings.maxOdds;
     const p1K = kellyFraction(p1True - 1/bestP1.odds, bestP1.odds, kellyFrac);
     const p2K = kellyFraction(p2True - 1/bestP2.odds, bestP2.odds, kellyFrac);
-    let best = null;
-    if (p1Val>p2Val && p1Val>settings.minEV && p1Ok) best="p1";
-    else if (p2Val>=p1Val && p2Val>settings.minEV && p2Ok) best="p2";
+    // Lower-risk strategy: among positive EV bets, prefer the higher-probability side
+    const candidates = [];
+    if (p1Val>settings.minEV && p1Ok) candidates.push({side:"p1",ev:p1Val,prob:p1True,k:p1K,odds:bestP1.odds,book:bestP1.book});
+    if (p2Val>settings.minEV && p2Ok) candidates.push({side:"p2",ev:p2Val,prob:p2True,k:p2K,odds:bestP2.odds,book:bestP2.book});
+    // Sort by probability (lower risk) — highest prob positive-EV bet wins
+    candidates.sort((a,b) => b.prob - a.prob);
+    const topH2H = candidates[0] || null;
+    let best = topH2H?.side || null;
+
+    // Also evaluate market bets (handicap lines)
+    const marketBets = calcMarketBets(m).filter(b =>
+      b.ev>settings.minEV && b.odds>=settings.minOdds && b.odds<=settings.maxOdds
+    ).sort((a,b) => b.prob - a.prob); // prefer higher probability market bets too
+
     const arb = calcArb(m);
+    // Best rec = highest-prob positive-EV bet across H2H + markets
+    const allCandidates = [
+      ...(topH2H ? [{...topH2H,isMarket:false,label:topH2H.side==="p1"?m.p1.name:m.p2.name}] : []),
+      ...marketBets.map(b=>({...b,isMarket:true,label:b.line})),
+    ].sort((a,b) => b.prob - a.prob);
+    const topRec = allCandidates[0] || null;
+
     return { match:m, p1Edge:p1E, p2Edge:p2E, p1True, p2True, p1Val, p2Val,
-      p1K, p2K, p1Ok, p2Ok, best, bestP1, bestP2, arb,
+      p1K, p2K, p1Ok, p2Ok, best, bestP1, bestP2, arb, marketBets,
       bestPlayer: best==="p1"?m.p1:best==="p2"?m.p2:null,
-      bestEV: best==="p1"?p1Val:best==="p2"?p2Val:Math.max(p1Val,p2Val),
-      bestK: best==="p1"?p1K:best==="p2"?p2K:0,
-      bestOdds: best==="p1"?bestP1.odds:best==="p2"?bestP2.odds:0,
-      bestBook: best==="p1"?bestP1.book:best==="p2"?bestP2.book:"",
+      bestEV: topRec?.ev ?? Math.max(p1Val,p2Val),
+      bestK: topH2H?.k || 0,
+      bestOdds: topRec?.odds || (best==="p1"?bestP1.odds:bestP2.odds),
+      bestBook: topRec?.book || (best==="p1"?bestP1.book:bestP2.book),
+      topRec,
     };
   });
 
@@ -365,11 +457,37 @@ export default function App() {
     const nb = Math.round((bankroll+profit)*100)/100;
     setBankroll(nb);
     setBetHistory(p=>[...p,{
+      id:Date.now(), type:"sim", settled:true,
       match:`${m.p1.name} vs ${m.p2.name}`, tournament:m.tournament,
       pick: edge.best==="p1"?m.p1.name:m.p2.name, odds, stake, book:bookAbbr(book),
       profit:Math.round(profit*100)/100, bankroll:nb,
       value:edge.bestEV.toFixed(1)+"%", win, ts:Date.now(),
     }]);
+  }
+
+  function logManualBet() {
+    const odds=parseFloat(betForm.odds), stake=parseFloat(betForm.stake);
+    if(!betForm.match||!betForm.pick||isNaN(odds)||isNaN(stake)||odds<=1||stake<=0) return;
+    setBetHistory(p=>[...p,{
+      id:Date.now(), type:"manual", settled:false, win:null,
+      match:betForm.match, tournament:"", pick:betForm.pick,
+      odds, stake, book:bookAbbr(betForm.book),
+      profit:null, bankroll:null, value:"–", ts:Date.now(),
+    }]);
+    setBetForm({match:"",pick:"",odds:"",stake:"",book:"epicbet"});
+    setShowBetForm(false);
+  }
+
+  function settleBet(idx, win) {
+    const bet=betHistory[idx];
+    const profit=win?Math.round(bet.stake*(bet.odds-1)*100)/100:-bet.stake;
+    const nb=Math.round((bankroll+profit)*100)/100;
+    setBankroll(nb);
+    setBetHistory(p=>{
+      const updated=[...p];
+      updated[idx]={...updated[idx],win,profit,bankroll:nb,settled:true};
+      return updated;
+    });
   }
 
   function runSim() {
@@ -506,8 +624,21 @@ export default function App() {
             </div>}
           </div>
           <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
+            {/* Editable bankroll */}
+            <div style={{background:c.card,border:`1px solid ${editingBankroll?c.g+"60":c.brd}`,borderRadius:8,padding:"6px 14px",display:"flex",alignItems:"center",gap:8,cursor:"pointer"}}
+              onClick={()=>{if(!editingBankroll){setBankrollInput(bankroll.toString());setEditingBankroll(true);}}}>
+              <span style={{fontSize:9,color:c.dim,letterSpacing:"1px"}}>BANKROLL</span>
+              {editingBankroll
+                ? <input autoFocus value={bankrollInput} onChange={e=>setBankrollInput(e.target.value.replace(/[^0-9.]/g,""))}
+                    onBlur={()=>{const v=parseFloat(bankrollInput);if(!isNaN(v)&&v>0)setBankroll(Math.round(v*100)/100);setEditingBankroll(false);}}
+                    onKeyDown={e=>{if(e.key==="Enter"){const v=parseFloat(bankrollInput);if(!isNaN(v)&&v>0)setBankroll(Math.round(v*100)/100);setEditingBankroll(false);}else if(e.key==="Escape")setEditingBankroll(false);}}
+                    onClick={e=>e.stopPropagation()}
+                    style={{fontSize:18,fontWeight:800,color:c.g,background:"transparent",border:"none",outline:"none",fontFamily:"inherit",width:100,textAlign:"right"}}/>
+                : <span style={{fontSize:18,fontWeight:800,color:bankroll>=1000?c.g:c.r}}>{settings.currency}{bankroll.toLocaleString()}</span>
+              }
+              {!editingBankroll&&<span style={{fontSize:9,color:c.dim}}>✏</span>}
+            </div>
             {[
-              {l:"BANKROLL",v:`${settings.currency}${bankroll.toLocaleString()}`,col:bankroll>=1000?c.g:c.r,fs:18},
               {l:"ROI",v:`${((bankroll/1000-1)*100).toFixed(1)}%`,col:bankroll>=1000?c.g:c.r,fs:14},
               {l:"BETS",v:betHistory.length,col:c.b,fs:14},
               {l:"VALUE",v:matchEdges.filter(e=>e.best).length,col:c.y,fs:14},
@@ -851,20 +982,97 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Rec bet */}
-              {sel.best&&sel[sel.best==="p1"?"p1Ok":"p2Ok"]&&(
+              {/* Handicap markets panel */}
+              {sel.match.markets&&sel.match.markets.length>0&&(
+                <div style={{background:c.card,border:`1px solid ${c.brd}`,borderRadius:10,padding:16,marginBottom:14}}>
+                  <div style={{fontSize:9,letterSpacing:"3px",color:c.b,marginBottom:14}}>📐 HANDICAP & SPREAD MARKETS</div>
+                  {sel.match.markets.map((mkt,mi)=>(
+                    <div key={mi} style={{marginBottom:mi<sel.match.markets.length-1?16:0}}>
+                      <div style={{fontSize:9,color:c.dim,letterSpacing:"2px",marginBottom:8}}>{mkt.name.toUpperCase()}</div>
+                      <div style={{overflowX:"auto"}}>
+                        <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+                          <thead>
+                            <tr>
+                              <th style={{padding:"5px 8px",textAlign:"left",fontSize:8,color:c.dim,fontWeight:600}}>LINE</th>
+                              {BOOKS.filter(b=>mkt.lines[0]?.odds[b.key]).map(b=>(
+                                <th key={b.key} style={{padding:"5px 10px",textAlign:"center",fontSize:8,color:b.key==="pinnacle"?c.b:c.dim,fontWeight:600}}>{b.abbr}</th>
+                              ))}
+                              <th style={{padding:"5px 10px",textAlign:"center",fontSize:8,color:c.g,fontWeight:600}}>BEST</th>
+                              <th style={{padding:"5px 10px",textAlign:"right",fontSize:8,color:c.y,fontWeight:600}}>EV</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {mkt.lines.map((line,li)=>{
+                              const ref=line.odds.pinnacle||Object.values(line.odds)[0];
+                              const sum=1/ref.p1+1/ref.p2;
+                              const tp1=(1/ref.p1)/sum, tp2=(1/ref.p2)/sum;
+                              let bst1={odds:0,book:""}, bst2={odds:0,book:""};
+                              Object.entries(line.odds).forEach(([k,v])=>{
+                                if(v.p1>bst1.odds) bst1={odds:v.p1,book:k};
+                                if(v.p2>bst2.odds) bst2={odds:v.p2,book:k};
+                              });
+                              const ev1=(tp1*bst1.odds-1)*100, ev2=(tp2*bst2.odds-1)*100;
+                              return [
+                                <tr key={`${li}a`} style={{borderBottom:`1px solid ${c.bg}`,background:`${c.b}04`}}>
+                                  <td style={{padding:"6px 8px",fontSize:10,color:c.txt,fontWeight:600}}>{line.p1_label}</td>
+                                  {BOOKS.filter(b=>mkt.lines[0]?.odds[b.key]).map(b=>{
+                                    const o=line.odds[b.key]?.p1;
+                                    return <td key={b.key} style={{padding:"6px 10px",textAlign:"center",background:o&&o===bst1.odds?`${c.g}12`:"transparent"}}>
+                                      <span style={{fontWeight:700,color:o&&o===bst1.odds?c.g:b.key==="pinnacle"?c.b:c.txt}}>{o?o.toFixed(2):"–"}</span>
+                                    </td>;
+                                  })}
+                                  <td style={{padding:"6px 10px",textAlign:"center"}}>
+                                    <span style={{fontWeight:800,color:c.g,fontSize:13}}>{bst1.odds.toFixed(2)}</span>
+                                    <div style={{fontSize:7,color:c.g}}>{bookAbbr(bst1.book)}</div>
+                                  </td>
+                                  <td style={{padding:"6px 10px",textAlign:"right"}}>
+                                    <span style={{fontWeight:700,fontSize:11,color:ev1>3?c.g:ev1>0?c.y:c.r}}>{ev1>0?"+":""}{ev1.toFixed(1)}%</span>
+                                  </td>
+                                </tr>,
+                                <tr key={`${li}b`} style={{borderBottom:`1px solid ${c.brd}`}}>
+                                  <td style={{padding:"6px 8px",fontSize:10,color:c.dim}}>{line.p2_label}</td>
+                                  {BOOKS.filter(b=>mkt.lines[0]?.odds[b.key]).map(b=>{
+                                    const o=line.odds[b.key]?.p2;
+                                    return <td key={b.key} style={{padding:"6px 10px",textAlign:"center",background:o&&o===bst2.odds?`${c.g}12`:"transparent"}}>
+                                      <span style={{fontWeight:700,color:o&&o===bst2.odds?c.g:b.key==="pinnacle"?c.b:c.txt}}>{o?o.toFixed(2):"–"}</span>
+                                    </td>;
+                                  })}
+                                  <td style={{padding:"6px 10px",textAlign:"center"}}>
+                                    <span style={{fontWeight:800,color:ev2>0?c.g:c.dim,fontSize:13}}>{bst2.odds.toFixed(2)}</span>
+                                    <div style={{fontSize:7,color:c.g}}>{bookAbbr(bst2.book)}</div>
+                                  </td>
+                                  <td style={{padding:"6px 10px",textAlign:"right"}}>
+                                    <span style={{fontWeight:700,fontSize:11,color:ev2>3?c.g:ev2>0?c.y:c.r}}>{ev2>0?"+":""}{ev2.toFixed(1)}%</span>
+                                  </td>
+                                </tr>,
+                              ];
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Rec bet — lower-risk: highest probability positive EV across all markets */}
+              {sel.topRec&&(
                 <div style={{background:`linear-gradient(135deg,#0a1a12,${c.card})`,border:`1px solid ${c.g}30`,borderRadius:10,padding:16,marginBottom:14}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}}>
                     <div>
-                      <div style={{fontSize:9,letterSpacing:"3px",color:c.g}}>◆ RECOMMENDED BET</div>
-                      <div style={{fontSize:16,fontWeight:800,color:c.w,marginTop:4}}>
-                        {sel.bestPlayer.name} @ {sel.bestOdds.toFixed(2)} <span style={{fontSize:11,color:c.dim}}>via <BookTag bookKey={sel.bestBook} highlight={true}/></span>
+                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+                        <span style={{fontSize:9,letterSpacing:"3px",color:c.g}}>◆ RECOMMENDED BET</span>
+                        {sel.topRec.isMarket&&<span style={{padding:"1px 7px",borderRadius:3,fontSize:8,background:`${c.b}18`,color:c.b,fontWeight:700}}>HANDICAP</span>}
+                        <span style={{padding:"1px 7px",borderRadius:3,fontSize:8,background:`${c.g}12`,color:c.g,fontWeight:700}}>{(sel.topRec.prob*100).toFixed(0)}% PROB · LOWER RISK</span>
+                      </div>
+                      <div style={{fontSize:16,fontWeight:800,color:c.w}}>
+                        {sel.topRec.label} @ {sel.topRec.odds.toFixed(2)} <span style={{fontSize:11,color:c.dim}}>via <BookTag bookKey={sel.topRec.book} highlight={true}/></span>
                       </div>
                       <div style={{fontSize:11,color:c.dim,marginTop:2}}>
-                        EV: +{sel.bestEV.toFixed(1)}% · Kelly: {(sel.bestK*100).toFixed(1)}% · Stake: {settings.currency}{calcStake(sel)} · True prob: {((sel.best==="p1"?sel.p1True:sel.p2True)*100).toFixed(1)}%
+                        EV: +{sel.topRec.ev.toFixed(1)}% · Win prob: {(sel.topRec.prob*100).toFixed(1)}%{!sel.topRec.isMarket?` · Kelly: ${(sel.bestK*100).toFixed(1)}% · Stake: ${settings.currency}${calcStake(sel)}`:""}
                       </div>
                     </div>
-                    <Btn variant="g" onClick={()=>placeBet(sel)}>PLACE BET — {settings.currency}{calcStake(sel)}</Btn>
+                    {!sel.topRec.isMarket&&<Btn variant="g" onClick={()=>placeBet(sel)}>PLACE BET — {settings.currency}{calcStake(sel)}</Btn>}
                   </div>
                 </div>
               )}
@@ -1175,10 +1383,46 @@ export default function App() {
         {/* ════ HISTORY ════ */}
         {activeTab==="history"&&(
           <div style={{background:c.card,border:`1px solid ${c.brd}`,borderRadius:10,padding:20}}>
-            <div style={{display:"flex",justifyContent:"space-between",marginBottom:14}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:10}}>
               <div style={{fontSize:9,letterSpacing:"3px",color:c.dim}}>BET LOG</div>
-              {betHistory.length>0&&<Btn variant="r" onClick={()=>{setBetHistory([]);setBankroll(1000);}} style={{padding:"6px 14px",fontSize:10}}>RESET</Btn>}
+              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                <Btn variant="g" onClick={()=>setShowBetForm(!showBetForm)} style={{padding:"6px 14px",fontSize:10}}>{showBetForm?"CANCEL":"+ LOG REAL BET"}</Btn>
+                {betHistory.length>0&&<Btn variant="r" onClick={()=>{setBetHistory([]);setBankroll(1000);}} style={{padding:"6px 14px",fontSize:10}}>RESET</Btn>}
+              </div>
             </div>
+            {/* Manual bet form */}
+            {showBetForm&&(
+              <div style={{background:c.bg,border:`1px solid ${c.g}30`,borderRadius:10,padding:16,marginBottom:16}}>
+                <div style={{fontSize:9,letterSpacing:"3px",color:c.g,marginBottom:12}}>LOG BET FROM ACCOUNT</div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:10,marginBottom:12}}>
+                  {[
+                    {k:"match",l:"Match",ph:"e.g. Tiafoe vs Zverev"},
+                    {k:"pick",l:"Your Pick",ph:"e.g. Tiafoe +1.5 sets"},
+                    {k:"odds",l:"Odds",ph:"e.g. 1.83"},
+                    {k:"stake",l:"Stake ("+settings.currency+")",ph:"e.g. 50"},
+                  ].map(({k,l,ph})=>(
+                    <div key={k}>
+                      <div style={{fontSize:8,color:c.dim,letterSpacing:"1px",marginBottom:4}}>{l.toUpperCase()}</div>
+                      <input value={betForm[k]} onChange={e=>setBetForm(p=>({...p,[k]:e.target.value}))}
+                        placeholder={ph}
+                        style={{width:"100%",padding:"8px 10px",borderRadius:6,background:c.card,border:`1px solid ${c.brdL}`,
+                          color:c.w,fontFamily:"inherit",fontSize:11,outline:"none"}}/>
+                    </div>
+                  ))}
+                  <div>
+                    <div style={{fontSize:8,color:c.dim,letterSpacing:"1px",marginBottom:4}}>BOOKMAKER</div>
+                    <select value={betForm.book} onChange={e=>setBetForm(p=>({...p,book:e.target.value}))}
+                      style={{width:"100%",padding:"8px 10px",borderRadius:6,background:c.card,border:`1px solid ${c.brdL}`,color:c.w,fontFamily:"inherit",fontSize:11}}>
+                      {BOOKS.map(b=><option key={b.key} value={b.key}>{b.name}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                  <Btn variant="g" onClick={logManualBet} style={{padding:"8px 18px",fontSize:10}}>LOG BET (PENDING)</Btn>
+                  <span style={{fontSize:9,color:c.dim}}>Result will be settable once the match is over</span>
+                </div>
+              </div>
+            )}
             {betHistory.length===0?(
               <div style={{textAlign:"center",padding:"50px 20px",color:c.dim}}><div style={{fontSize:28,marginBottom:8}}>◇</div><div style={{fontSize:12}}>No bets yet. Place bets from the Feed or Scanner tab.</div></div>
             ):(<>
@@ -1186,12 +1430,10 @@ export default function App() {
               <div style={{marginBottom:14,padding:"10px 14px",background:c.bg,borderRadius:8,border:`1px solid ${c.brd}`}}>
                 <div style={{fontSize:8,color:c.dim,letterSpacing:"1px",marginBottom:6}}>BANKROLL HISTORY</div>
                 <div style={{display:"flex",height:50,alignItems:"flex-end",gap:2}}>
-                  {[1000,...betHistory.map(b=>b.bankroll)].map((v,i)=>{
-                    const all=[1000,...betHistory.map(b=>b.bankroll)];
-                    const mn=Math.min(...all), mx=Math.max(...all), rng=mx-mn||1;
-                    const h=((v-mn)/rng*100);
-                    return <div key={i} style={{flex:1,height:`${Math.max(2,h)}%`,background:v>=1000?c.g:c.r,borderRadius:"1px 1px 0 0",opacity:.8}}/>;
-                  })}
+                  {(()=>{const vals=[1000,...betHistory.filter(b=>b.bankroll!=null).map(b=>b.bankroll)];
+                    const mn=Math.min(...vals),mx=Math.max(...vals),rng=mx-mn||1;
+                    return vals.map((v,i)=><div key={i} style={{flex:1,height:`${Math.max(2,(v-mn)/rng*100)}%`,background:v>=1000?c.g:c.r,borderRadius:"1px 1px 0 0",opacity:.8}}/>);
+                  })()}
                 </div>
               </div>
               <div style={{overflowX:"auto"}}>
@@ -1200,33 +1442,55 @@ export default function App() {
                     <th key={h} style={{padding:8,textAlign:"left",color:c.dim,fontWeight:600,letterSpacing:"1px",fontSize:8,borderBottom:`1px solid ${c.brd}`}}>{h}</th>
                   ))}</tr></thead>
                   <tbody>{betHistory.map((b,i)=>(
-                    <tr key={i} style={{borderBottom:`1px solid ${c.bg}`}}>
+                    <tr key={i} style={{borderBottom:`1px solid ${c.bg}`,background:b.settled===false?`${c.y}06`:"transparent"}}>
                       <td style={{padding:"7px 8px",color:c.dimm}}>{i+1}</td>
-                      <td style={{padding:"7px 8px",color:c.txt,maxWidth:130,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{b.match}</td>
+                      <td style={{padding:"7px 8px",color:c.txt,maxWidth:140,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                        {b.match}{b.type==="manual"&&<span style={{fontSize:7,color:c.y,marginLeft:5,fontWeight:700}}>MANUAL</span>}
+                      </td>
                       <td style={{padding:"7px 8px",color:c.w,fontWeight:600}}>{b.pick}</td>
                       <td style={{padding:"7px 8px"}}><BookTag bookKey={b.book?.toLowerCase()||""}/></td>
                       <td style={{padding:"7px 8px",color:c.b}}>{b.odds.toFixed(2)}</td>
                       <td style={{padding:"7px 8px",color:c.y}}>{b.value}</td>
                       <td style={{padding:"7px 8px",color:c.txt}}>{settings.currency}{b.stake}</td>
-                      <td style={{padding:"7px 8px",color:b.win?c.g:c.r,fontWeight:700}}>{b.profit>0?"+":""}{settings.currency}{b.profit}</td>
-                      <td style={{padding:"7px 8px",color:b.bankroll>=1000?c.g:c.r,fontWeight:700}}>{settings.currency}{b.bankroll}</td>
+                      <td style={{padding:"7px 8px",fontWeight:700}}>
+                        {b.settled===false
+                          ? <div style={{display:"flex",gap:4}}>
+                              <button onClick={()=>settleBet(i,true)} style={{padding:"2px 9px",borderRadius:4,fontSize:9,fontWeight:700,cursor:"pointer",border:"none",background:`${c.g}25`,color:c.g,fontFamily:"inherit"}}>WIN</button>
+                              <button onClick={()=>settleBet(i,false)} style={{padding:"2px 9px",borderRadius:4,fontSize:9,fontWeight:700,cursor:"pointer",border:"none",background:`${c.r}25`,color:c.r,fontFamily:"inherit"}}>LOSS</button>
+                            </div>
+                          : <span style={{color:b.win?c.g:c.r}}>{b.profit>0?"+":""}{settings.currency}{b.profit}</span>
+                        }
+                      </td>
+                      <td style={{padding:"7px 8px",fontWeight:700}}>
+                        {b.settled===false
+                          ? <span style={{fontSize:9,color:c.dim}}>pending</span>
+                          : <span style={{color:b.bankroll>=1000?c.g:c.r}}>{settings.currency}{b.bankroll}</span>
+                        }
+                      </td>
                     </tr>
                   ))}</tbody>
                 </table>
               </div>
-              <div style={{marginTop:14,display:"flex",gap:20,flexWrap:"wrap"}}>
-                {[
-                  {l:"WIN RATE",v:`${(betHistory.filter(b=>b.win).length/betHistory.length*100).toFixed(0)}%`,col:c.y},
-                  {l:"TOTAL P/L",v:`${bankroll>=1000?"+":""}${settings.currency}${(bankroll-1000).toFixed(0)}`,col:bankroll>=1000?c.g:c.r},
-                  {l:"AVG EV",v:`${(betHistory.reduce((a,b)=>a+parseFloat(b.value),0)/betHistory.length).toFixed(1)}%`,col:c.b},
-                  {l:"AVG STAKE",v:`${settings.currency}${Math.round(betHistory.reduce((a,b)=>a+b.stake,0)/betHistory.length)}`,col:c.b},
-                ].map(({l,v,col},i)=>(
-                  <div key={i} style={{background:c.bg,borderRadius:6,padding:"8px 14px",border:`1px solid ${c.brd}`}}>
-                    <span style={{fontSize:9,color:c.dim}}>{l}: </span>
-                    <span style={{fontSize:13,fontWeight:700,color:col}}>{v}</span>
+              {(()=>{
+                const sb=betHistory.filter(b=>b.settled!==false);
+                const wins=sb.filter(b=>b.win).length;
+                const pending=betHistory.filter(b=>b.settled===false).length;
+                return (
+                  <div style={{marginTop:14,display:"flex",gap:12,flexWrap:"wrap"}}>
+                    {[
+                      {l:"WIN RATE",v:sb.length?`${(wins/sb.length*100).toFixed(0)}% (${wins}/${sb.length})`:"–",col:c.y},
+                      {l:"TOTAL P/L",v:`${bankroll>=1000?"+":""}${settings.currency}${(bankroll-1000).toFixed(0)}`,col:bankroll>=1000?c.g:c.r},
+                      {l:"AVG STAKE",v:`${settings.currency}${Math.round(betHistory.reduce((a,b)=>a+b.stake,0)/betHistory.length)}`,col:c.b},
+                      {l:"PENDING",v:pending,col:pending>0?c.y:c.dimm},
+                    ].map(({l,v,col},i)=>(
+                      <div key={i} style={{background:c.bg,borderRadius:6,padding:"8px 14px",border:`1px solid ${c.brd}`}}>
+                        <span style={{fontSize:9,color:c.dim}}>{l}: </span>
+                        <span style={{fontSize:13,fontWeight:700,color:col}}>{v}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                );
+              })()}
             </>)}
           </div>
         )}
