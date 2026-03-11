@@ -216,8 +216,8 @@ const MOCK_MATCHES = [
       tiebreak_wr:0.44,third_set_wr:0.46,bp_convert:35,style:"baseline",
       fatigue:0.16,momentum:0.1,h2h:"1-2",recent_form:[0,1,0,0,1],
       surface_wr:0.50,travel_hrs:11,last_match_days:2,altitude_delta:0,sleep_zone_diff:9},
-    odds:{pinnacle:{p1:1.58,p2:2.48},epicbet:{p1:1.62,p2:2.40},bet365:{p1:1.65,p2:2.35},unibet:{p1:1.67,p2:2.28},
-          williamhill:{p1:1.60,p2:2.44},betway:{p1:1.63,p2:2.38},bwin:{p1:1.62,p2:2.40}},
+    odds:{pinnacle:{p1:1.40,p2:2.95},epicbet:{p1:1.43,p2:2.80},bet365:{p1:1.44,p2:2.75},unibet:{p1:1.45,p2:2.70},
+          williamhill:{p1:1.42,p2:2.85},betway:{p1:1.44,p2:2.78},bwin:{p1:1.43,p2:2.80}},
   },
   {
     id:12, circuit:"CH", level:"Challenger 50", tournament:"Cherbourg Open Challenger", surface:"Hard", round:"R16",
@@ -2158,57 +2158,85 @@ export default function App() {
                             </div>
                             {/* Selections */}
                             <div style={{padding:"0 14px"}}>
-                              {(b.selections||[]).map((s,j)=>{
-                                const spl = (s.player||'').toLowerCase();
-                                const linked = spl.length>2 ? allMatches.find(m=>{
-                                  const n1=m.p1.name.toLowerCase(), n2=m.p2.name.toLowerCase();
-                                  const last1=(n1.split(' ')[1]||n1), last2=(n2.split(' ')[1]||n2);
-                                  return n1.includes(spl)||n2.includes(spl)||spl.includes(last1)||spl.includes(last2);
-                                }) : null;
-                                const nvp = linked ? noVigProb(linked) : null;
-                                const p1n = linked ? linked.p1.name.toLowerCase() : '';
-                                const isp1 = p1n && (spl.includes(p1n.split(' ')[1]||p1n) || p1n.includes(spl));
-                                const betterProb = nvp ? (isp1 ? nvp.p1 : nvp.p2) : null;
-                                const ev = betterProb&&s.odds ? ((betterProb*s.odds)-1)*100 : null;
-                                return (
-                                  <div key={j} style={{padding:"10px 0",borderBottom:j<(b.selections.length-1)?`1px solid ${c.brd}`:"none"}}>
-                                    {/* Leg number + player + odds */}
-                                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:10}}>
-                                      <div style={{display:"flex",gap:8,alignItems:"flex-start",flex:1,minWidth:0}}>
-                                        {b.legs>1&&<span style={{fontSize:8,color:c.dimm,minWidth:14,paddingTop:2}}>#{j+1}</span>}
-                                        <div style={{flex:1,minWidth:0}}>
-                                          <div style={{fontSize:12,color:c.w,fontWeight:700,marginBottom:2}}>{s.player||"–"}</div>
-                                          {s.market&&<div style={{fontSize:9,color:c.dim,marginBottom:1}}>{s.market}</div>}
-                                          {s.match&&<div style={{fontSize:9,color:c.dimm,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{s.match}</div>}
-                                          {s.datetime&&<div style={{fontSize:8,color:c.dimm,marginTop:1}}>{s.datetime}</div>}
-                                          {linked&&(
-                                            <div style={{display:"flex",gap:5,marginTop:5,flexWrap:"wrap"}}>
-                                              <span style={{fontSize:7,color:c.b,padding:"1px 7px",background:`${c.b}15`,border:`1px solid ${c.b}25`,borderRadius:3}}>
-                                                {linked.circuit} · {linked.surface}
-                                              </span>
-                                              {betterProb!=null&&<span style={{fontSize:7,color:c.dim,padding:"1px 7px",background:c.card,border:`1px solid ${c.brd}`,borderRadius:3}}>
-                                                MODEL {(betterProb*100).toFixed(0)}%
-                                              </span>}
-                                              {ev!=null&&<span style={{fontSize:7,fontWeight:700,padding:"1px 7px",borderRadius:3,
-                                                background:ev>=0?`${c.g}20`:`${c.r}20`,border:`1px solid ${ev>=0?c.g:c.r}40`,
-                                                color:ev>=0?c.g:c.r}}>
-                                                EV {ev>=0?"+":""}{ ev.toFixed(1)}%
-                                              </span>}
+                              {(()=>{
+                                // Compute per-leg model probabilities for combo EV
+                                const legProbs = (b.selections||[]).map(s => {
+                                  const spl = (s.player||'').toLowerCase();
+                                  const linked = spl.length>2 ? allMatches.find(m=>{
+                                    const n1=m.p1.name.toLowerCase(), n2=m.p2.name.toLowerCase();
+                                    const last1=(n1.split(' ')[1]||n1), last2=(n2.split(' ')[1]||n2);
+                                    return n1.includes(spl)||n2.includes(spl)||spl.includes(last1)||spl.includes(last2);
+                                  }) : null;
+                                  const nvp = linked ? noVigProb(linked) : null;
+                                  const p1n = linked ? linked.p1.name.toLowerCase() : '';
+                                  const isp1 = p1n && (spl.includes(p1n.split(' ')[1]||p1n) || p1n.includes(spl));
+                                  return { linked, nvp, prob: nvp ? (isp1 ? nvp.p1 : nvp.p2) : null };
+                                });
+                                const allProbs = legProbs.map(x=>x.prob).filter(p=>p!=null);
+                                const comboProb = allProbs.length === (b.selections||[]).length && allProbs.length>1
+                                  ? allProbs.reduce((a,b)=>a*b, 1) : null;
+                                const comboEV = comboProb && b.totalOdds
+                                  ? ((comboProb * b.totalOdds) - 1) * 100 : null;
+
+                                return (<>
+                                  {(b.selections||[]).map((s,j)=>{
+                                    const { linked, prob: betterProb } = legProbs[j] || {};
+                                    const ev = betterProb&&s.odds ? ((betterProb*s.odds)-1)*100 : null;
+                                    return (
+                                      <div key={j} style={{padding:"10px 0",borderBottom:j<(b.selections||[]).length-1?`1px solid ${c.brd}`:"none"}}>
+                                        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:10}}>
+                                          <div style={{display:"flex",gap:8,alignItems:"flex-start",flex:1,minWidth:0}}>
+                                            {b.legs>1&&<span style={{fontSize:8,color:c.dimm,minWidth:14,paddingTop:2}}>#{j+1}</span>}
+                                            <div style={{flex:1,minWidth:0}}>
+                                              <div style={{fontSize:12,color:c.w,fontWeight:700,marginBottom:2}}>{s.player||"–"}</div>
+                                              {s.market&&<div style={{fontSize:9,color:c.dim,marginBottom:1}}>{s.market}</div>}
+                                              {s.match&&<div style={{fontSize:9,color:c.dimm,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{s.match}</div>}
+                                              {s.datetime&&<div style={{fontSize:8,color:c.dimm,marginTop:1}}>{s.datetime}</div>}
+                                              {(linked||betterProb!=null||ev!=null)&&(
+                                                <div style={{display:"flex",gap:5,marginTop:5,flexWrap:"wrap"}}>
+                                                  {linked&&<span style={{fontSize:7,color:c.b,padding:"1px 7px",background:`${c.b}15`,border:`1px solid ${c.b}25`,borderRadius:3}}>
+                                                    {linked.circuit} · {linked.surface}
+                                                  </span>}
+                                                  {betterProb!=null&&<span style={{fontSize:7,color:c.dim,padding:"1px 7px",background:c.card,border:`1px solid ${c.brd}`,borderRadius:3}}>
+                                                    {(betterProb*100).toFixed(0)}% model
+                                                  </span>}
+                                                  {ev!=null&&<span style={{fontSize:7,fontWeight:700,padding:"1px 7px",borderRadius:3,
+                                                    background:ev>=0?`${c.g}20`:`${c.r}20`,border:`1px solid ${ev>=0?c.g:c.r}40`,
+                                                    color:ev>=0?c.g:c.r}}>
+                                                    {ev>=0?"+":""}{ ev.toFixed(1)}% EV
+                                                  </span>}
+                                                </div>
+                                              )}
                                             </div>
-                                          )}
+                                          </div>
+                                          <div style={{fontSize:14,fontWeight:800,color:c.b,flexShrink:0,paddingTop:2}}>{s.odds?.toFixed(2)||"–"}</div>
                                         </div>
                                       </div>
-                                      <div style={{fontSize:14,fontWeight:800,color:c.b,flexShrink:0,paddingTop:2}}>{s.odds?.toFixed(2)||"–"}</div>
+                                    );
+                                  })}
+                                  {/* Combo summary row */}
+                                  {comboProb!=null&&(
+                                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderTop:`1px solid ${c.brd}`,marginTop:2}}>
+                                      <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
+                                        <span style={{fontSize:8,color:c.dimm,letterSpacing:"1px"}}>COMBO PROB</span>
+                                        <span style={{fontSize:11,fontWeight:700,color:c.y}}>{(comboProb*100).toFixed(1)}%</span>
+                                        {comboEV!=null&&<span style={{fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:3,
+                                          background:comboEV>=0?`${c.g}20`:`${c.r}20`,border:`1px solid ${comboEV>=0?c.g:c.r}40`,
+                                          color:comboEV>=0?c.g:c.r}}>
+                                          COMBO EV {comboEV>=0?"+":""}{ comboEV.toFixed(1)}%
+                                        </span>}
+                                      </div>
+                                      <span style={{fontSize:8,color:c.dimm}}>{allProbs.length}/{(b.selections||[]).length} legs modelled</span>
                                     </div>
-                                  </div>
-                                );
-                              })}
-                              {/* Empty state if no selections parsed yet */}
-                              {(!b.selections||b.selections.length===0)&&(
-                                <div style={{padding:"12px 0",fontSize:9,color:c.dimm,textAlign:"center"}}>
-                                  Reload Epicbet to capture full bet details
-                                </div>
-                              )}
+                                  )}
+                                  {/* Empty state */}
+                                  {(!b.selections||b.selections.length===0)&&(
+                                    <div style={{padding:"12px 0",fontSize:9,color:c.dimm,textAlign:"center"}}>
+                                      Reload Epicbet tab to capture full bet details
+                                    </div>
+                                  )}
+                                </>);
+                              })()}
                             </div>
                           </div>
                         ))}
