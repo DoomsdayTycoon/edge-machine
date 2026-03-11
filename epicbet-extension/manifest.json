@@ -13,7 +13,7 @@
     {
       "matches": [
         "*://edge-machine-opal.vercel.app/*",
-        "*://localhost:5173/*"
+        "http://localhost/*"
       ],
       "js": ["content_edgemachine.js"],
       "run_at": "document_idle"
