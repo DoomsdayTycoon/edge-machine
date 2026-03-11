@@ -496,6 +496,7 @@ export default function App() {
   const [showBetForm, setShowBetForm] = useState(false);
   const [betForm, setBetForm] = useState({match:"",pick:"",odds:"",stake:"",book:"epicbet"});
   const [epicbetData, setEpicbetData] = useState(null);
+  const [epicbetStaging, setEpicbetStaging] = useState(null); // pending import waiting for approval
   const [epicbetTab, setEpicbetTab] = useState("overview"); // overview|open|history
 
   const [settings, setSettings] = useState({
@@ -527,23 +528,35 @@ export default function App() {
     return () => clearInterval(iv);
   }, [autoRefresh]);
 
-  // ── Epicbet sync: read from localStorage (written by Chrome extension) ──
+  // ── Epicbet: watch for staged data (written by extension, waits for user approval) ──
   useEffect(() => {
-    const SYNC_KEY = '__epicbet_sync__';
-    const load = () => {
+    const STAGING_KEY = '__epicbet_staging__';
+    const checkStaging = () => {
       try {
-        const raw = localStorage.getItem(SYNC_KEY);
-        if (raw) setEpicbetData(JSON.parse(raw));
+        const raw = localStorage.getItem(STAGING_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          setEpicbetStaging(parsed);
+        }
       } catch(e) {}
     };
-    load();
-    // Listen for updates pushed by the extension content script
-    const handler = (e) => { if (e.key === SYNC_KEY) load(); };
+    checkStaging();
+    const handler = (e) => { if (!e.key || e.key === '__epicbet_staging__') checkStaging(); };
     window.addEventListener('storage', handler);
-    // Also poll every 10s in case StorageEvent doesn't fire (same-tab)
-    const iv = setInterval(load, 10000);
+    const iv = setInterval(checkStaging, 3000);
     return () => { window.removeEventListener('storage', handler); clearInterval(iv); };
   }, []);
+
+  const approveEpicbetImport = () => {
+    if (!epicbetStaging) return;
+    setEpicbetData(epicbetStaging);
+    setEpicbetStaging(null);
+    localStorage.removeItem('__epicbet_staging__');
+  };
+  const dismissEpicbetImport = () => {
+    setEpicbetStaging(null);
+    localStorage.removeItem('__epicbet_staging__');
+  };
 
   // ── Persistence: load on login ──
   useEffect(() => {
@@ -896,6 +909,9 @@ export default function App() {
                 {epicbetData&&<span style={{color:"#00e87b",fontSize:7,letterSpacing:"1px",padding:"1px 6px",border:"1px solid #00e87b40",borderRadius:4}}>
                   🔗 EPIC {epicbetData.balance!=null?`€${epicbetData.balance.toFixed(2)}`:""}
                 </span>}
+                {epicbetStaging&&!epicbetData&&<span style={{color:c.y,fontSize:7,letterSpacing:"1px",padding:"1px 6px",border:"1px solid #f0c03040",borderRadius:4,cursor:"pointer"}} onClick={()=>setActiveTab("bets")}>
+                  🔗 EPIC SYNC READY ↑
+                </span>}
               </div>
             </div>
             <div style={{width:1,height:28,background:c.brd,margin:"0 4px"}}/>
@@ -1046,6 +1062,41 @@ export default function App() {
           </button>
         </div>
       </div>
+
+      {/* ═══ EPICBET IMPORT BANNER ═══ */}
+      {epicbetStaging&&(()=>{
+        const s = epicbetStaging;
+        const openCount = (s.openBets||[]).length;
+        const settledCount = (s.settledBets||[]).length;
+        const syncAge = s.lastSync ? Math.round((Date.now()-s.lastSync)/60000) : null;
+        return (
+          <div style={{background:`linear-gradient(90deg,#0a1a0f,${c.card})`,borderBottom:`2px solid ${c.g}50`,padding:"10px 20px"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",maxWidth:1440,margin:"0 auto",gap:12,flexWrap:"wrap"}}>
+              <div style={{display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
+                <span style={{fontSize:9,color:c.g,fontWeight:800,letterSpacing:"2px"}}>🔗 EPICBET SYNC READY</span>
+                {syncAge!=null&&<span style={{fontSize:8,color:c.dimm}}>{syncAge}m ago</span>}
+                <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                  {s.balance!=null&&<span style={{fontSize:10,fontWeight:700,color:c.g,padding:"2px 8px",background:`${c.g}15`,borderRadius:4}}>
+                    €{s.balance.toFixed(2)} balance
+                  </span>}
+                  {openCount>0&&<span style={{fontSize:10,fontWeight:700,color:c.y,padding:"2px 8px",background:`${c.y}15`,borderRadius:4}}>
+                    {openCount} open bet{openCount>1?"s":""}
+                  </span>}
+                  {settledCount>0&&<span style={{fontSize:10,color:c.dim,padding:"2px 8px",background:`${c.brd}`,borderRadius:4}}>
+                    {settledCount} settled
+                  </span>}
+                  {openCount===0&&settledCount===0&&<span style={{fontSize:9,color:c.dimm}}>bet slips detected</span>}
+                </div>
+              </div>
+              <div style={{display:"flex",gap:8}}>
+                <Btn variant="g" onClick={approveEpicbetImport} style={{padding:"6px 18px",fontSize:10,letterSpacing:"1px"}}>IMPORT</Btn>
+                <button onClick={dismissEpicbetImport} style={{padding:"6px 14px",borderRadius:6,fontSize:10,cursor:"pointer",
+                  border:`1px solid ${c.brd}`,background:"transparent",color:c.dim,fontFamily:"inherit"}}>Dismiss</button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       <div style={{padding:20,maxWidth:1440,margin:"0 auto"}}>
 
@@ -2007,7 +2058,7 @@ export default function App() {
                 <div style={{fontSize:22,marginBottom:8}}>🔗</div>
                 <div style={{fontSize:11,color:c.w,fontWeight:700,marginBottom:6}}>Connect Epicbet</div>
                 <div style={{fontSize:10,color:c.dim,lineHeight:1.6,maxWidth:400,margin:"0 auto"}}>
-                  Install the <span style={{color:c.g}}>Edge Machine Chrome Extension</span> and visit epicbet.com while logged in — your balance, open bets and results will appear here automatically.
+                  Install the <span style={{color:c.g}}>Edge Machine Chrome Extension</span>, visit epicbet.com while logged in, then click <span style={{color:c.g,fontWeight:700}}>IMPORT</span> in the banner that appears at the top of this page.
                 </div>
                 <div style={{marginTop:14,fontSize:9,color:c.dimm}}>Extension folder: <span style={{color:c.y}}>epicbet-extension/</span> · Load via chrome://extensions → Developer mode → Load unpacked</div>
               </div>
