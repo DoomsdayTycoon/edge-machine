@@ -19,46 +19,15 @@ window.addEventListener('__epicbet_api__', (e) => {
   } catch (err) {}
 });
 
-// ── 2. DOM SCRAPER — balance + bets ──────────────────────────────────────────
+// ── 2. DOM SCRAPER — bets only (balance comes from API interceptor only) ──────
 
 function scrapeDOM() {
   const result = {};
   if (!document.body) return result;
 
-  // ── Balance: look in HEADER/NAV only (excludes bet slip drawers) ──
-  const amounts = [];
-  const headerRoot = document.querySelector(
-    'header, nav, [role="banner"], [role="navigation"], .header, .navbar, .topbar'
-  ) || document.body;
-
-  const walker = document.createTreeWalker(headerRoot, NodeFilter.SHOW_TEXT, null);
-  let node;
-  while ((node = walker.nextNode())) {
-    const el = node.parentElement;
-    if (!el) continue;
-    // Skip hidden elements
-    try {
-      const s = window.getComputedStyle(el);
-      if (s.display === 'none' || s.visibility === 'hidden') continue;
-      const rect = el.getBoundingClientRect();
-      if (rect.width < 5) continue;
-    } catch (e) { continue; }
-
-    const txt = node.textContent.trim();
-    if (!txt || txt.length > 20) continue;
-
-    // € on left or right (e.g. "€40.00" or "40.00€")
-    let m = txt.match(/^€\s*([\d,]+(?:[.,]\d{1,2})?)\s*$/) ||
-             txt.match(/^([\d,]+(?:[.,]\d{1,2})?)\s*€\s*$/);
-    if (m) {
-      const val = parseFloat((m[1] || m[2]).replace(/,/g, '.'));
-      if (!isNaN(val) && val >= 0 && val < 500000) amounts.push(val);
-    }
-  }
-
-  if (amounts.length > 0) {
-    result.balance = Math.max(...amounts);
-  }
+  // Balance is intentionally NOT scraped from DOM — the API interceptor
+  // captures the real wallet balance from authenticated API responses.
+  // DOM balance is unreliable (picks up bet slip "Total Pending" amounts).
 
   // ── Bets: scrape visible bet slip cards from DOM ──
   const domBets = scrapeBetSlipDOM();
