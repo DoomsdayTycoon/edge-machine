@@ -479,6 +479,8 @@ export default function App() {
   const [bankrollInput, setBankrollInput] = useState("");
   const [showBetForm, setShowBetForm] = useState(false);
   const [betForm, setBetForm] = useState({match:"",pick:"",odds:"",stake:"",book:"epicbet"});
+  const [epicbetData, setEpicbetData] = useState(null);
+  const [epicbetTab, setEpicbetTab] = useState("overview"); // overview|open|history
 
   const [settings, setSettings] = useState({
     minOdds:1.20, maxOdds:10.0, minEV:0, maxKellyPct:15,
@@ -508,6 +510,24 @@ export default function App() {
     const iv = setInterval(()=>setLastRefresh(Date.now()), 30000);
     return () => clearInterval(iv);
   }, [autoRefresh]);
+
+  // ── Epicbet sync: read from localStorage (written by Chrome extension) ──
+  useEffect(() => {
+    const SYNC_KEY = '__epicbet_sync__';
+    const load = () => {
+      try {
+        const raw = localStorage.getItem(SYNC_KEY);
+        if (raw) setEpicbetData(JSON.parse(raw));
+      } catch(e) {}
+    };
+    load();
+    // Listen for updates pushed by the extension content script
+    const handler = (e) => { if (e.key === SYNC_KEY) load(); };
+    window.addEventListener('storage', handler);
+    // Also poll every 10s in case StorageEvent doesn't fire (same-tab)
+    const iv = setInterval(load, 10000);
+    return () => { window.removeEventListener('storage', handler); clearInterval(iv); };
+  }, []);
 
   async function connectAPI() {
     if (!apiKey.trim()) return;
@@ -804,7 +824,12 @@ export default function App() {
           <div style={{display:"flex",alignItems:"center",gap:14}}>
             <div>
               <div style={{fontSize:isMobile?13:15,fontWeight:800,letterSpacing:"3px",color:c.g,whiteSpace:"nowrap"}}>◆ EDGE MACHINE</div>
-              <div style={{fontSize:8,color:c.dim,letterSpacing:"1.5px",whiteSpace:"nowrap"}}>v5.4 · {allMatches.length} MATCHES</div>
+              <div style={{fontSize:8,color:c.dim,letterSpacing:"1.5px",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:8}}>
+                <span>v5.4 · {allMatches.length} MATCHES</span>
+                {epicbetData&&<span style={{color:"#00e87b",fontSize:7,letterSpacing:"1px",padding:"1px 6px",border:"1px solid #00e87b40",borderRadius:4}}>
+                  🔗 EPIC {epicbetData.balance!=null?`€${epicbetData.balance.toFixed(2)}`:""}
+                </span>}
+              </div>
             </div>
             <div style={{width:1,height:28,background:c.brd,margin:"0 4px"}}/>
             <div style={{display:"flex",alignItems:"center",gap:6}}>
@@ -1791,6 +1816,202 @@ export default function App() {
 
         {/* ════ BETS ════ */}
         {activeTab==="bets"&&(
+          <div style={{display:"flex",flexDirection:"column",gap:16}}>
+
+          {/* ── Epicbet Sync Panel ── */}
+          {(()=>{
+            const ep = epicbetData;
+            if (!ep) return (
+              <div style={{background:c.card,border:`1px dashed ${c.brd}`,borderRadius:10,padding:20,textAlign:"center"}}>
+                <div style={{fontSize:22,marginBottom:8}}>🔗</div>
+                <div style={{fontSize:11,color:c.w,fontWeight:700,marginBottom:6}}>Connect Epicbet</div>
+                <div style={{fontSize:10,color:c.dim,lineHeight:1.6,maxWidth:400,margin:"0 auto"}}>
+                  Install the <span style={{color:c.g}}>Edge Machine Chrome Extension</span> and visit epicbet.com while logged in — your balance, open bets and results will appear here automatically.
+                </div>
+                <div style={{marginTop:14,fontSize:9,color:c.dimm}}>Extension folder: <span style={{color:c.y}}>epicbet-extension/</span> · Load via chrome://extensions → Developer mode → Load unpacked</div>
+              </div>
+            );
+
+            const open = ep.openBets || [];
+            const settled = ep.settledBets || [];
+            const wins = settled.filter(b=>b.status==='won');
+            const losses = settled.filter(b=>b.status==='lost');
+            const totalStaked = settled.reduce((s,b)=>s+(b.stake||0),0);
+            const totalPayout = settled.filter(b=>b.status==='won').reduce((s,b)=>s+(b.actualPayout||b.potentialPayout||0),0);
+            const totalProfit = totalPayout - totalStaked;
+            const roi = totalStaked>0 ? (totalProfit/totalStaked*100) : 0;
+            const winRate = settled.length>0 ? wins.length/settled.length*100 : 0;
+            const avgOdds = settled.length>0 ? settled.reduce((s,b)=>s+(b.totalOdds||0),0)/settled.length : 0;
+            const syncAgo = ep.lastSync ? Math.round((Date.now()-ep.lastSync)/60000) : null;
+
+            // Build bankroll curve for chart
+            let runningBal = ep.balance != null ? ep.balance - totalProfit : 1000;
+            const curve = [runningBal, ...settled.slice().reverse().map(b => {
+              runningBal += (b.status==='won' ? (b.actualPayout||b.potentialPayout||0) - (b.stake||0) : b.stake||0);
+              return runningBal;
+            })].reverse();
+            const curveMin = Math.min(...curve), curveMax = Math.max(...curve);
+            const curveRange = curveMax - curveMin || 1;
+
+            return (
+              <div style={{background:c.card,border:`1px solid #00e87b30`,borderRadius:10,padding:20}}>
+                {/* Header */}
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16,flexWrap:"wrap",gap:8}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10}}>
+                    <span style={{fontSize:8,letterSpacing:"3px",color:c.g}}>🔗 EPICBET ACCOUNT</span>
+                    {syncAgo!=null&&<span style={{fontSize:8,color:c.dimm}}>synced {syncAgo}m ago</span>}
+                  </div>
+                  <div style={{display:"flex",gap:8}}>
+                    {["overview","open","history"].map(t=>(
+                      <button key={t} onClick={()=>setEpicbetTab(t)}
+                        style={{padding:"4px 12px",borderRadius:5,fontSize:9,fontWeight:700,cursor:"pointer",border:"none",
+                          fontFamily:"inherit",letterSpacing:"1px",
+                          background:epicbetTab===t?c.g:c.bg,color:epicbetTab===t?c.bg:c.dim}}>
+                        {t.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* OVERVIEW tab */}
+                {epicbetTab==="overview"&&(<>
+                  {/* Balance + stats row */}
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))",gap:10,marginBottom:16}}>
+                    {[
+                      {l:"BALANCE",v:ep.balance!=null?`€${ep.balance.toFixed(2)}`:"–",col:c.g,big:true},
+                      {l:"WIN RATE",v:settled.length?`${winRate.toFixed(0)}%`:"–",col:winRate>=50?c.g:c.r},
+                      {l:"ROI",v:settled.length?`${roi>=0?"+":""}${roi.toFixed(1)}%`:"–",col:roi>=0?c.g:c.r},
+                      {l:"TOTAL P/L",v:settled.length?`${totalProfit>=0?"+":""}€${totalProfit.toFixed(2)}`:"–",col:totalProfit>=0?c.g:c.r},
+                      {l:"AVG ODDS",v:settled.length?avgOdds.toFixed(2):"–",col:c.b},
+                      {l:"BETS",v:`${wins.length}W ${losses.length}L ${open.length} open`,col:c.y},
+                    ].map(({l,v,col,big},i)=>(
+                      <div key={i} style={{background:c.bg,borderRadius:8,padding:"10px 14px",border:`1px solid ${c.brd}`}}>
+                        <div style={{fontSize:7,color:c.dim,letterSpacing:"1.5px",marginBottom:4}}>{l}</div>
+                        <div style={{fontSize:big?18:14,fontWeight:800,color:col}}>{v}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Return chart */}
+                  {curve.length>1&&(
+                    <div style={{marginBottom:16,padding:"12px 14px",background:c.bg,borderRadius:8,border:`1px solid ${c.brd}`}}>
+                      <div style={{fontSize:8,color:c.dim,letterSpacing:"1.5px",marginBottom:8}}>BANKROLL CURVE</div>
+                      <div style={{position:"relative",height:80}}>
+                        <svg width="100%" height="80" style={{overflow:"visible"}}>
+                          {/* Grid lines */}
+                          {[0,0.5,1].map(t=>(
+                            <line key={t} x1="0" y1={`${(1-t)*100}%`} x2="100%" y2={`${(1-t)*100}%`}
+                              stroke={c.brd} strokeWidth="1" strokeDasharray="4,4"/>
+                          ))}
+                          {/* Fill */}
+                          <defs>
+                            <linearGradient id="epGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor={totalProfit>=0?"#00e87b":"#ff3b5c"} stopOpacity="0.3"/>
+                              <stop offset="100%" stopColor={totalProfit>=0?"#00e87b":"#ff3b5c"} stopOpacity="0"/>
+                            </linearGradient>
+                          </defs>
+                          <polygon
+                            fill="url(#epGrad)"
+                            points={[
+                              ...curve.map((v,i)=>`${(i/(curve.length-1)*100)}%,${((1-(v-curveMin)/curveRange)*76+2).toFixed(1)}`),
+                              `100%,80`,`0%,80`
+                            ].join(' ')}
+                          />
+                          {/* Line */}
+                          <polyline
+                            fill="none"
+                            stroke={totalProfit>=0?c.g:c.r}
+                            strokeWidth="2"
+                            strokeLinejoin="round"
+                            points={curve.map((v,i)=>`${(i/(curve.length-1)*100)}%,${((1-(v-curveMin)/curveRange)*76+2).toFixed(1)}`).join(' ')}
+                          />
+                          {/* Dots at endpoints */}
+                          {[0,curve.length-1].map(i=>(
+                            <circle key={i} cx={`${(i/(curve.length-1)*100)}%`}
+                              cy={((1-(curve[i]-curveMin)/curveRange)*76+2).toFixed(1)}
+                              r="3" fill={totalProfit>=0?c.g:c.r}/>
+                          ))}
+                        </svg>
+                        <div style={{display:"flex",justifyContent:"space-between",fontSize:8,color:c.dimm,marginTop:4}}>
+                          <span>€{curveMin.toFixed(0)}</span>
+                          <span>€{curveMax.toFixed(0)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>)}
+
+                {/* OPEN BETS tab */}
+                {epicbetTab==="open"&&(
+                  open.length===0
+                    ? <div style={{textAlign:"center",padding:"30px 0",color:c.dim,fontSize:11}}>No open bets</div>
+                    : <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                        {open.map((b,i)=>(
+                          <div key={i} style={{background:c.bg,borderRadius:8,padding:"12px 14px",border:`1px solid ${c.y}30`}}>
+                            <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
+                              <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                                <span style={{fontSize:9,color:c.y,fontWeight:700}}>{b.type?.toUpperCase()} {b.legs>1?`×${b.legs}`:""}</span>
+                                {b.id&&<span style={{fontSize:8,color:c.dimm}}>ID: {b.id}</span>}
+                                <span style={{fontSize:8,color:c.y,padding:"1px 6px",background:`${c.y}15`,borderRadius:3}}>PENDING</span>
+                              </div>
+                              <div style={{textAlign:"right"}}>
+                                <div style={{fontSize:12,fontWeight:800,color:c.g}}>€{(b.potentialPayout||0).toFixed(2)}</div>
+                                <div style={{fontSize:8,color:c.dimm}}>stake €{(b.stake||0).toFixed(2)} · odds {(b.totalOdds||0).toFixed(2)}</div>
+                              </div>
+                            </div>
+                            {(b.selections||[]).map((s,j)=>(
+                              <div key={j} style={{padding:"6px 0",borderTop:`1px solid ${c.brd}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                                <div>
+                                  <div style={{fontSize:11,color:c.w,fontWeight:600}}>{s.player}</div>
+                                  <div style={{fontSize:9,color:c.dim}}>{s.market} · {s.match}</div>
+                                  <div style={{fontSize:8,color:c.dimm}}>{s.datetime}</div>
+                                </div>
+                                <div style={{fontSize:13,fontWeight:800,color:c.b}}>{s.odds?.toFixed(2)||"–"}</div>
+                              </div>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                )}
+
+                {/* HISTORY tab */}
+                {epicbetTab==="history"&&(
+                  settled.length===0
+                    ? <div style={{textAlign:"center",padding:"30px 0",color:c.dim,fontSize:11}}>No settled bets — visit epicbet.com to sync history</div>
+                    : <div style={{overflowX:"auto"}}>
+                        <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+                          <thead><tr>
+                            {["ID","Type","Odds","Stake","P/L","Status"].map(h=>(
+                              <th key={h} style={{padding:"6px 8px",textAlign:"left",color:c.dim,fontSize:8,letterSpacing:"1px",borderBottom:`1px solid ${c.brd}`}}>{h}</th>
+                            ))}
+                          </tr></thead>
+                          <tbody>{settled.slice(0,50).map((b,i)=>{
+                            const pl = b.status==='won' ? (b.actualPayout||b.potentialPayout||0)-(b.stake||0) : -(b.stake||0);
+                            return (
+                              <tr key={i} style={{borderBottom:`1px solid ${c.bg}`}}>
+                                <td style={{padding:"6px 8px",color:c.dimm}}>{b.id||"–"}</td>
+                                <td style={{padding:"6px 8px",color:c.txt}}>{b.type} {b.legs>1?`×${b.legs}`:""}</td>
+                                <td style={{padding:"6px 8px",color:c.b}}>{(b.totalOdds||0).toFixed(2)}</td>
+                                <td style={{padding:"6px 8px",color:c.txt}}>€{(b.stake||0).toFixed(2)}</td>
+                                <td style={{padding:"6px 8px",fontWeight:700,color:pl>=0?c.g:c.r}}>{pl>=0?"+":""}€{pl.toFixed(2)}</td>
+                                <td style={{padding:"6px 8px"}}>
+                                  <span style={{fontSize:8,fontWeight:700,padding:"2px 8px",borderRadius:3,
+                                    background:b.status==='won'?`${c.g}20`:b.status==='lost'?`${c.r}20`:`${c.y}20`,
+                                    color:b.status==='won'?c.g:b.status==='lost'?c.r:c.y}}>
+                                    {b.status.toUpperCase()}
+                                  </span>
+                                </td>
+                              </tr>
+                            );
+                          })}</tbody>
+                        </table>
+                      </div>
+                )}
+              </div>
+            );
+          })()}
+
+          {/* ── Manual Bet Log ── */}
           <div style={{background:c.card,border:`1px solid ${c.brd}`,borderRadius:10,padding:20}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:10}}>
               <div style={{fontSize:9,letterSpacing:"3px",color:c.dim}}>BET LOG</div>
@@ -1901,6 +2122,7 @@ export default function App() {
                 );
               })()}
             </>)}
+          </div>
           </div>
         )}
         {/* ════ RESEARCH ════ */}
