@@ -1,10 +1,16 @@
 {
   "manifest_version": 3,
   "name": "Edge Machine — Epicbet Sync",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Syncs your Epicbet balance, open bets and history to Edge Machine automatically",
   "permissions": ["storage"],
   "content_scripts": [
+    {
+      "matches": ["*://*.epicbet.com/*"],
+      "js": ["interceptor.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
     {
       "matches": ["*://*.epicbet.com/*"],
       "js": ["content_epicbet.js"],
@@ -18,4 +24,5 @@
       "js": ["content_edgemachine.js"],
       "run_at": "document_idle"
     }
-  ]}
+  ]
+}
