@@ -108,8 +108,8 @@ const MOCK_MATCHES = [
       tiebreak_wr:0.44,third_set_wr:0.46,bp_convert:34,style:"aggressive",
       fatigue:0.10,momentum:0.5,h2h:"0-2",recent_form:[1,0,1,0,1],
       surface_wr:0.55,travel_hrs:14,last_match_days:2,altitude_delta:450,sleep_zone_diff:17},
-    odds:{pinnacle:{p1:1.42,p2:2.98},epicbet:{p1:1.45,p2:2.88},bet365:{p1:1.48,p2:2.80},unibet:{p1:1.50,p2:2.72},
-          williamhill:{p1:1.43,p2:2.95},betway:{p1:1.46,p2:2.85},bwin:{p1:1.44,p2:2.92}},
+    odds:{pinnacle:{p1:1.30,p2:3.60},epicbet:{p1:1.33,p2:3.50},bet365:{p1:1.34,p2:3.45},unibet:{p1:1.35,p2:3.40},
+          williamhill:{p1:1.31,p2:3.55},betway:{p1:1.33,p2:3.48},bwin:{p1:1.32,p2:3.52}},
   },
   // ════ INDIAN WELLS WTA 1000 ════
   {
@@ -141,8 +141,8 @@ const MOCK_MATCHES = [
       tiebreak_wr:0.54,third_set_wr:0.56,bp_convert:46,style:"allcourt",
       fatigue:0.14,momentum:0.5,h2h:"1-3",recent_form:[1,1,0,1,0],
       surface_wr:0.65,travel_hrs:11,last_match_days:2,altitude_delta:450,sleep_zone_diff:9},
-    odds:{pinnacle:{p1:1.58,p2:2.45},epicbet:{p1:1.62,p2:2.38},bet365:{p1:1.65,p2:2.32},unibet:{p1:1.67,p2:2.28},
-          williamhill:{p1:1.59,p2:2.42},betway:{p1:1.62,p2:2.36},bwin:{p1:1.60,p2:2.42}},
+    odds:{pinnacle:{p1:1.52,p2:2.65},epicbet:{p1:1.55,p2:2.58},bet365:{p1:1.57,p2:2.54},unibet:{p1:1.59,p2:2.50},
+          williamhill:{p1:1.53,p2:2.62},betway:{p1:1.56,p2:2.56},bwin:{p1:1.54,p2:2.60}},
   },
   {
     id:7, circuit:"WTA", level:"WTA 1000", tournament:"Indian Wells Masters (WTA)", surface:"Hard", round:"R16",
@@ -273,8 +273,8 @@ const MOCK_MATCHES = [
       tiebreak_wr:0.44,third_set_wr:0.46,bp_convert:35,style:"counter",
       fatigue:0.12,momentum:0.3,h2h:"0-2",recent_form:[0,1,1,0,0],
       surface_wr:0.50,travel_hrs:18,last_match_days:2,altitude_delta:150,sleep_zone_diff:12},
-    odds:{pinnacle:{p1:1.32,p2:3.55},epicbet:{p1:1.35,p2:3.40},bet365:{p1:1.37,p2:3.30},unibet:{p1:1.39,p2:3.20},
-          williamhill:{p1:1.33,p2:3.50},betway:{p1:1.36,p2:3.35},bwin:{p1:1.34,p2:3.45}},
+    odds:{pinnacle:{p1:1.68,p2:2.18},epicbet:{p1:1.75,p2:2.10},bet365:{p1:1.72,p2:2.14},unibet:{p1:1.73,p2:2.12},
+          williamhill:{p1:1.67,p2:2.20},betway:{p1:1.70,p2:2.16},bwin:{p1:1.71,p2:2.13}},
   },
   {
     id:16, circuit:"WTA", level:"WTA Challenger", tournament:"Austin Challenger (WTA)", surface:"Hard", round:"R16",
@@ -287,8 +287,8 @@ const MOCK_MATCHES = [
       tiebreak_wr:0.48,third_set_wr:0.50,bp_convert:38,style:"allcourt",
       fatigue:0.14,momentum:0.3,h2h:"0-1",recent_form:[1,0,1,0,1],
       surface_wr:0.56,travel_hrs:9,last_match_days:2,altitude_delta:150,sleep_zone_diff:7},
-    odds:{pinnacle:{p1:1.55,p2:2.55},epicbet:{p1:1.58,p2:2.48},bet365:{p1:1.60,p2:2.45},unibet:{p1:1.63,p2:2.40},
-          williamhill:{p1:1.56,p2:2.52},betway:{p1:1.59,p2:2.46},bwin:{p1:1.57,p2:2.50}},
+    odds:{pinnacle:{p1:1.40,p2:2.98},epicbet:{p1:1.43,p2:2.90},bet365:{p1:1.45,p2:2.85},unibet:{p1:1.46,p2:2.82},
+          williamhill:{p1:1.41,p2:2.95},betway:{p1:1.43,p2:2.92},bwin:{p1:1.42,p2:2.94}},
   },
   {
     id:17, circuit:"WTA", level:"WTA Challenger", tournament:"Austin Challenger (WTA)", surface:"Hard", round:"R16",
