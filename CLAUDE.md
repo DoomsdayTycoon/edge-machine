@@ -81,11 +81,53 @@ Git remote uses token auth:
 https://DoomsdayTycoon:TOKEN@github.com/DoomsdayTycoon/edge-machine.git
 ```
 
+## Auth System
+Login screen shown before the main app. Credentials are hardcoded:
+- **Username:** `Admin`
+- **Password:** `Mega2026`
+- Auth state stored in `localStorage.__em_auth__` = `'1'`
+- `handleLogin` / `handleLogout` in App component
+- Logout button visible in header (ADMIN + LOGOUT)
+
+## Persistent Storage (localStorage)
+All state is saved to localStorage when logged in and reloaded on next login:
+| Key | Contents |
+|-----|----------|
+| `__em_auth__` | `'1'` when logged in |
+| `__em_bets__` | JSON array of betHistory |
+| `__em_bankroll__` | current bankroll number |
+| `__em_starting_bankroll__` | original starting bankroll |
+| `__em_settings__` | settings object |
+| `__em_weights__` | weights object |
+| `__em_kelly__` | kellyFrac number |
+
+## Bankroll
+- Default is **0** (not 1000) — user must set it manually via header
+- Header shows "SET ↗" in yellow when bankroll is 0
+- Setting bankroll for first time sets both `bankroll` and `startingBankroll`
+- ROI and TOTAL P/L show "–" when startingBankroll is 0
+
+## Bets Tab
+Three sections:
+1. **PERFORMANCE panel** — Shows when there are manual bets or Epicbet settled bets:
+   - SVG bankroll curve (full width, labeled min/max, dots at each bet)
+   - Stats grid: WIN / LOSS / PENDING / ROI / AVG ODDS / STREAK
+   - Recent form strip (last 10 bets as W/L colored squares)
+2. **Epicbet Sync Panel** — Shows live data from Chrome extension. Open bets tab now has **match-linking**: each selection is matched against `allMatches` by player name (fuzzy last-name match), and if found shows circuit/surface badge, MODEL probability %, and EV% badge.
+3. **Bet Log** — Manual bet tracking with P/L table and sparkline
+
+## Chrome Extension (`epicbet-extension/`)
+- `manifest.json` v1.1.0 — MV3, two content scripts (MAIN + ISOLATED world)
+- `interceptor.js` — Runs in MAIN world, patches fetch/XHR to capture API JSON responses
+- `content_epicbet.js` — ISOLATED world: listens for API events, DOM scraper for balance + bets
+- `content_edgemachine.js` — Runs on edge-machine app, reads from chrome.storage.local
+- Data flows: epicbet.com API → interceptor → CustomEvent → content_epicbet → chrome.storage → content_edgemachine → localStorage → React app
+
 ## Planned Features
 - [ ] **Automated Screener** — Live data feed replacing MOCK_MATCHES with real API data
 - [ ] **Integrated Results Tracking** — Automatic bet outcome tracking and P/L logging
 - [ ] **Live API Integration** — SportRadar, API-Tennis (RapidAPI), The Odds API, or Flashscore scraper
-- [ ] **Persistent Storage** — Save bankroll, bet history, and settings across sessions
+- [x] **Persistent Storage** — Implemented via localStorage with login gate
 - [ ] **Push Notifications** — Alert when high-value bets are detected
 - [ ] **Historical Backtesting** — Test the edge model against past match data
 - [ ] **Multi-device Sync** — Share state across devices (requires backend/database)

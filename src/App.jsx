@@ -458,8 +458,24 @@ function convertAPIMatch(event, idx) {
 // MAIN COMPONENT
 // ──────────────────────────────────────────────────
 export default function App() {
-  const [bankroll, setBankroll] = useState(1000);
-  const [startingBankroll, setStartingBankroll] = useState(1000);
+  // ── Auth ──
+  const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem('__em_auth__') === '1');
+  const [loginForm, setLoginForm] = useState({u:'', p:''});
+  const [loginError, setLoginError] = useState('');
+
+  const handleLogin = () => {
+    if (loginForm.u === 'Admin' && loginForm.p === 'Mega2026') {
+      localStorage.setItem('__em_auth__', '1');
+      setIsLoggedIn(true);
+    } else { setLoginError('Invalid credentials'); }
+  };
+  const handleLogout = () => {
+    localStorage.removeItem('__em_auth__');
+    setIsLoggedIn(false);
+  };
+
+  const [bankroll, setBankroll] = useState(0);
+  const [startingBankroll, setStartingBankroll] = useState(0);
   const [selectedMatch, setSelectedMatch] = useState(null);
   const [betHistory, setBetHistory] = useState([]);
   const [activeTab, setActiveTab] = useState("feed");
@@ -528,6 +544,30 @@ export default function App() {
     const iv = setInterval(load, 10000);
     return () => { window.removeEventListener('storage', handler); clearInterval(iv); };
   }, []);
+
+  // ── Persistence: load on login ──
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    try {
+      const bets = localStorage.getItem('__em_bets__');
+      if (bets) setBetHistory(JSON.parse(bets));
+      const br = localStorage.getItem('__em_bankroll__');
+      if (br) { setBankroll(+br); setStartingBankroll(+(localStorage.getItem('__em_starting_bankroll__') || br)); }
+      const s = localStorage.getItem('__em_settings__');
+      if (s) setSettings(JSON.parse(s));
+      const w = localStorage.getItem('__em_weights__');
+      if (w) setWeights(JSON.parse(w));
+      const kf = localStorage.getItem('__em_kelly__');
+      if (kf) setKellyFrac(+kf);
+    } catch(e) {}
+  }, [isLoggedIn]);
+
+  // ── Persistence: save on change ──
+  useEffect(() => { if (isLoggedIn) localStorage.setItem('__em_bets__', JSON.stringify(betHistory)); }, [betHistory, isLoggedIn]);
+  useEffect(() => { if (isLoggedIn) { localStorage.setItem('__em_bankroll__', bankroll); localStorage.setItem('__em_starting_bankroll__', startingBankroll); } }, [bankroll, startingBankroll, isLoggedIn]);
+  useEffect(() => { if (isLoggedIn) localStorage.setItem('__em_settings__', JSON.stringify(settings)); }, [settings, isLoggedIn]);
+  useEffect(() => { if (isLoggedIn) localStorage.setItem('__em_weights__', JSON.stringify(weights)); }, [weights, isLoggedIn]);
+  useEffect(() => { if (isLoggedIn) localStorage.setItem('__em_kelly__', kellyFrac); }, [kellyFrac, isLoggedIn]);
 
   async function connectAPI() {
     if (!apiKey.trim()) return;
@@ -814,6 +854,33 @@ export default function App() {
     {id:"bets",    l:"📋 Bets",       hint:"Track your bet history"},
   ];
 
+  // ── Login screen ──
+  if (!isLoggedIn) return (
+    <div style={{fontFamily:"'JetBrains Mono','SF Mono','Fira Code',monospace",background:c.bg,color:c.txt,minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+      <div style={{background:c.card,border:`1px solid ${c.brd}`,borderRadius:14,padding:"40px 48px",width:"100%",maxWidth:380,boxShadow:"0 8px 40px rgba(0,0,0,0.6)"}}>
+        <div style={{textAlign:"center",marginBottom:32}}>
+          <div style={{fontSize:22,fontWeight:800,letterSpacing:"4px",color:c.g,marginBottom:4}}>◆ EDGE MACHINE</div>
+          <div style={{fontSize:8,color:c.dimm,letterSpacing:"2px"}}>v5.5 · SECURE ACCESS</div>
+        </div>
+        {[{k:"u",l:"USERNAME",ph:"Username",type:"text"},{k:"p",l:"PASSWORD",ph:"Password",type:"password"}].map(({k,l,ph,type})=>(
+          <div key={k} style={{marginBottom:14}}>
+            <div style={{fontSize:8,color:c.dim,letterSpacing:"1.5px",marginBottom:6}}>{l}</div>
+            <input type={type} value={loginForm[k]} autoComplete={k==="p"?"current-password":"username"}
+              onChange={e=>setLoginForm(p=>({...p,[k]:e.target.value}))}
+              onKeyDown={e=>{ if(e.key==="Enter") handleLogin(); }}
+              placeholder={ph}
+              style={{width:"100%",padding:"10px 14px",borderRadius:7,background:c.bg,border:`1px solid ${c.brdL}`,
+                color:c.w,fontFamily:"inherit",fontSize:12,outline:"none"}}/>
+          </div>
+        ))}
+        {loginError&&<div style={{fontSize:10,color:c.r,marginBottom:12,textAlign:"center"}}>{loginError}</div>}
+        <Btn variant="g" onClick={handleLogin} style={{width:"100%",padding:"12px",fontSize:11,letterSpacing:"2px",marginTop:4}}>SIGN IN</Btn>
+      </div>
+      <style>{`*{box-sizing:border-box;margin:0;padding:0}`}</style>
+    </div>
+  );
+
   return (
     <div style={{fontFamily:"'JetBrains Mono','SF Mono','Fira Code',monospace",background:c.bg,color:c.txt,minHeight:"100vh"}}>
       <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
@@ -856,12 +923,14 @@ export default function App() {
                     onKeyDown={e=>{if(e.key==="Enter"){const v=parseFloat(bankrollInput);if(!isNaN(v)&&v>0){setBankroll(Math.round(v*100)/100);setStartingBankroll(Math.round(v*100)/100);setBetHistory([]);}setEditingBankroll(false);}else if(e.key==="Escape")setEditingBankroll(false);}}
                     onClick={e=>e.stopPropagation()}
                     style={{fontSize:isMobile?14:18,fontWeight:800,color:c.g,background:"transparent",border:"none",outline:"none",fontFamily:"inherit",width:90,textAlign:"right"}}/>
-                : <span style={{fontSize:isMobile?14:18,fontWeight:800,color:bankroll>=startingBankroll?c.g:c.r}}>{settings.currency}{bankroll.toLocaleString()}</span>
+                : bankroll===0
+                  ? <span style={{fontSize:isMobile?12:14,fontWeight:800,color:c.y}}>SET ↗</span>
+                  : <span style={{fontSize:isMobile?14:18,fontWeight:800,color:bankroll>=startingBankroll?c.g:c.r}}>{settings.currency}{bankroll.toLocaleString()}</span>
               }
               {!editingBankroll&&<span style={{fontSize:9,color:c.dim}}>✏</span>}
             </div>
             {!isMobile&&[
-              {l:"ROI",v:`${((bankroll/startingBankroll-1)*100).toFixed(1)}%`,col:bankroll>=startingBankroll?c.g:c.r},
+              {l:"ROI",v:startingBankroll>0?`${((bankroll/startingBankroll-1)*100).toFixed(1)}%`:"–",col:bankroll>=startingBankroll?c.g:c.r},
               {l:"BETS",v:betHistory.length,col:c.b},
               {l:"VALUE",v:matchEdges.filter(e=>e.best).length,col:c.y},
             ].map((x,i)=>(
@@ -871,6 +940,10 @@ export default function App() {
               </div>
             ))}
             <button onClick={()=>setShowSettings(!showSettings)} style={{background:showSettings?`${c.g}15`:c.card,border:`1px solid ${showSettings?c.g+"40":c.brd}`,borderRadius:8,padding:"8px 12px",cursor:"pointer",color:showSettings?c.g:c.dim,fontSize:14,fontFamily:"inherit",flexShrink:0}}>⚙</button>
+            <div style={{display:"flex",alignItems:"center",gap:6,background:c.card,border:`1px solid ${c.brd}`,borderRadius:8,padding:"6px 10px",flexShrink:0}}>
+              <span style={{fontSize:8,color:c.g,letterSpacing:"1px",fontWeight:700}}>ADMIN</span>
+              <button onClick={handleLogout} style={{background:"transparent",border:`1px solid ${c.r}40`,borderRadius:5,padding:"2px 8px",cursor:"pointer",color:c.r,fontSize:8,fontFamily:"inherit",letterSpacing:"1px",fontWeight:700}}>LOGOUT</button>
+            </div>
           </div>
         </div>
       </div>
@@ -1818,6 +1891,114 @@ export default function App() {
         {activeTab==="bets"&&(
           <div style={{display:"flex",flexDirection:"column",gap:16}}>
 
+          {/* ── PERFORMANCE panel ── */}
+          {(()=>{
+            const allBH = betHistory.filter(b=>b.settled!==false);
+            const epSettled = epicbetData?.settledBets||[];
+            const hasPerfData = allBH.length>0 || epSettled.length>0;
+            if (!hasPerfData && !epicbetData) return null;
+
+            // Combine manual bets into bankroll curve
+            const manualCurve = [startingBankroll||bankroll||0, ...betHistory.filter(b=>b.bankroll!=null).map(b=>b.bankroll)];
+            const manualProfit = manualCurve.length>1 ? manualCurve[manualCurve.length-1]-manualCurve[0] : 0;
+            const wins = allBH.filter(b=>b.win).length;
+            const losses = allBH.filter(b=>!b.win).length;
+            const pending = betHistory.filter(b=>b.settled===false).length;
+            const streak = (() => {
+              const settled = [...betHistory].reverse().filter(b=>b.settled!==false);
+              if (!settled.length) return [];
+              const last10 = settled.slice(0,10).map(b=>b.win?'W':'L');
+              return last10;
+            })();
+            const currentStreak = (() => {
+              const settled = [...betHistory].reverse().filter(b=>b.settled!==false);
+              if (!settled.length) return '';
+              let cnt=0, type=settled[0].win?'W':'L';
+              for (const b of settled) { if ((b.win?'W':'L')===type) cnt++; else break; }
+              return `${type}${cnt}`;
+            })();
+            const avgOddsManual = allBH.length>0 ? allBH.reduce((s,b)=>s+(b.odds||0),0)/allBH.length : 0;
+            const roiManual = (startingBankroll||0)>0 ? ((bankroll/(startingBankroll||1)-1)*100) : null;
+
+            const mc = manualCurve;
+            const mcMin = Math.min(...mc), mcMax = Math.max(...mc);
+            const mcRange = mcMax-mcMin||1;
+
+            return (
+              <div style={{background:c.card,border:`1px solid ${c.brd}`,borderRadius:10,padding:20}}>
+                <div style={{fontSize:9,letterSpacing:"3px",color:c.dim,marginBottom:14}}>📈 PERFORMANCE</div>
+
+                {/* Bankroll curve (manual bets) */}
+                {mc.length>1&&(
+                  <div style={{marginBottom:16,padding:"12px 14px",background:c.bg,borderRadius:8,border:`1px solid ${c.brd}`}}>
+                    <div style={{fontSize:8,color:c.dim,letterSpacing:"1.5px",marginBottom:8}}>BANKROLL CURVE</div>
+                    <div style={{position:"relative",height:100}}>
+                      <svg width="100%" height="100" style={{overflow:"visible"}}>
+                        {[0,0.25,0.5,0.75,1].map(t=>(
+                          <line key={t} x1="0" y1={`${(1-t)*100}%`} x2="100%" y2={`${(1-t)*100}%`}
+                            stroke={c.brd} strokeWidth="1" strokeDasharray="3,5"/>
+                        ))}
+                        <defs>
+                          <linearGradient id="perfGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor={manualProfit>=0?"#00e87b":"#ff3b5c"} stopOpacity="0.3"/>
+                            <stop offset="100%" stopColor={manualProfit>=0?"#00e87b":"#ff3b5c"} stopOpacity="0"/>
+                          </linearGradient>
+                        </defs>
+                        <polygon fill="url(#perfGrad)" points={[
+                          ...mc.map((v,i)=>`${(i/(mc.length-1)*100)}%,${((1-(v-mcMin)/mcRange)*90+2).toFixed(1)}`),
+                          `100%,96`,`0%,96`].join(' ')}/>
+                        <polyline fill="none" stroke={manualProfit>=0?c.g:c.r} strokeWidth="2" strokeLinejoin="round"
+                          points={mc.map((v,i)=>`${(i/(mc.length-1)*100)}%,${((1-(v-mcMin)/mcRange)*90+2).toFixed(1)}`).join(' ')}/>
+                        {mc.map((v,i)=>(
+                          <circle key={i} cx={`${(i/(mc.length-1)*100)}%`}
+                            cy={((1-(v-mcMin)/mcRange)*90+2).toFixed(1)}
+                            r={i===0||i===mc.length-1?3:2} fill={manualProfit>=0?c.g:c.r} opacity={i===0||i===mc.length-1?1:0.5}/>
+                        ))}
+                      </svg>
+                      <div style={{display:"flex",justifyContent:"space-between",fontSize:7,color:c.dimm,marginTop:2}}>
+                        <span>€{mcMin.toFixed(0)}</span>
+                        <span style={{color:c.dim}}>— {mc.length-1} bets —</span>
+                        <span>€{mcMax.toFixed(0)}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Stats grid */}
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(100px,1fr))",gap:8,marginBottom:14}}>
+                  {[
+                    {l:"WIN",v:wins,col:c.g},
+                    {l:"LOSS",v:losses,col:c.r},
+                    {l:"PENDING",v:pending,col:c.y},
+                    {l:"ROI",v:roiManual!=null?`${roiManual>=0?"+":""}${roiManual.toFixed(1)}%`:"–",col:roiManual!=null&&roiManual>=0?c.g:c.r},
+                    {l:"AVG ODDS",v:avgOddsManual>0?avgOddsManual.toFixed(2):"–",col:c.b},
+                    {l:"STREAK",v:currentStreak||"–",col:currentStreak.startsWith('W')?c.g:currentStreak.startsWith('L')?c.r:c.dim},
+                  ].map(({l,v,col},i)=>(
+                    <div key={i} style={{background:c.bg,borderRadius:7,padding:"8px 12px",border:`1px solid ${c.brd}`}}>
+                      <div style={{fontSize:7,color:c.dimm,letterSpacing:"1.5px",marginBottom:3}}>{l}</div>
+                      <div style={{fontSize:14,fontWeight:800,color:col}}>{v}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Recent form strip */}
+                {streak.length>0&&(
+                  <div style={{display:"flex",alignItems:"center",gap:6}}>
+                    <span style={{fontSize:8,color:c.dimm,letterSpacing:"1px"}}>FORM</span>
+                    <div style={{display:"flex",gap:3}}>
+                      {streak.map((r,i)=>(
+                        <div key={i} style={{width:16,height:16,borderRadius:3,background:r==='W'?`${c.g}30`:r==='L'?`${c.r}30`:`${c.y}20`,
+                          border:`1px solid ${r==='W'?c.g:r==='L'?c.r:c.y}`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                          <span style={{fontSize:8,fontWeight:700,color:r==='W'?c.g:r==='L'?c.r:c.y}}>{r}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+
           {/* ── Epicbet Sync Panel ── */}
           {(()=>{
             const ep = epicbetData;
@@ -1959,16 +2140,50 @@ export default function App() {
                                 <div style={{fontSize:8,color:c.dimm}}>stake €{(b.stake||0).toFixed(2)} · odds {(b.totalOdds||0).toFixed(2)}</div>
                               </div>
                             </div>
-                            {(b.selections||[]).map((s,j)=>(
-                              <div key={j} style={{padding:"6px 0",borderTop:`1px solid ${c.brd}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                                <div>
-                                  <div style={{fontSize:11,color:c.w,fontWeight:600}}>{s.player}</div>
-                                  <div style={{fontSize:9,color:c.dim}}>{s.market} · {s.match}</div>
-                                  <div style={{fontSize:8,color:c.dimm}}>{s.datetime}</div>
+                            {(b.selections||[]).map((s,j)=>{
+                              // Match-linking: find match in allMatches by player name
+                              const spl = (s.player||'').toLowerCase();
+                              const linked = spl.length>2 ? allMatches.find(m=>{
+                                const n1=m.p1.name.toLowerCase(), n2=m.p2.name.toLowerCase();
+                                const last1=(n1.split(' ')[1]||n1), last2=(n2.split(' ')[1]||n2);
+                                return n1.includes(spl)||n2.includes(spl)||spl.includes(last1)||spl.includes(last2);
+                              }) : null;
+                              const linkedEdge = linked ? matchEdges.find(e=>e.match.id===linked.id) : null;
+                              const betterProb = linked ? (() => {
+                                if (!linkedEdge) return null;
+                                const nvp = noVigProb(linked);
+                                const p1n = linked.p1.name.toLowerCase();
+                                const isp1 = spl.includes(p1n.split(' ')[1]||p1n) || p1n.includes(spl);
+                                return isp1 ? nvp.p1 : nvp.p2;
+                              })() : null;
+                              const ev = betterProb&&s.odds ? ((betterProb*s.odds)-1)*100 : null;
+                              return (
+                                <div key={j} style={{padding:"6px 0",borderTop:`1px solid ${c.brd}`}}>
+                                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+                                    <div style={{flex:1}}>
+                                      <div style={{fontSize:11,color:c.w,fontWeight:600}}>{s.player}</div>
+                                      <div style={{fontSize:9,color:c.dim}}>{s.market} · {s.match}</div>
+                                      {linked&&(
+                                        <div style={{display:"flex",gap:6,marginTop:4,flexWrap:"wrap"}}>
+                                          <span style={{fontSize:7,color:c.b,padding:"1px 6px",background:`${c.b}15`,border:`1px solid ${c.b}25`,borderRadius:3}}>
+                                            {linked.circuit} {linked.surface}
+                                          </span>
+                                          {betterProb!=null&&<span style={{fontSize:7,color:c.dim,padding:"1px 6px",background:c.card,border:`1px solid ${c.brd}`,borderRadius:3}}>
+                                            MODEL {(betterProb*100).toFixed(0)}%
+                                          </span>}
+                                          {ev!=null&&<span style={{fontSize:7,fontWeight:700,padding:"1px 6px",borderRadius:3,
+                                            background:ev>=0?`${c.g}20`:`${c.r}20`,border:`1px solid ${ev>=0?c.g:c.r}40`,
+                                            color:ev>=0?c.g:c.r}}>
+                                            EV {ev>=0?"+":""}{ ev.toFixed(1)}%
+                                          </span>}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div style={{fontSize:13,fontWeight:800,color:c.b,marginLeft:12}}>{s.odds?.toFixed(2)||"–"}</div>
+                                  </div>
                                 </div>
-                                <div style={{fontSize:13,fontWeight:800,color:c.b}}>{s.odds?.toFixed(2)||"–"}</div>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         ))}
                       </div>
@@ -2017,7 +2232,7 @@ export default function App() {
               <div style={{fontSize:9,letterSpacing:"3px",color:c.dim}}>BET LOG</div>
               <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
                 <Btn variant="g" onClick={()=>setShowBetForm(!showBetForm)} style={{padding:"6px 14px",fontSize:10}}>{showBetForm?"CANCEL":"+ LOG REAL BET"}</Btn>
-                {betHistory.length>0&&<Btn variant="r" onClick={()=>{setBetHistory([]);setBankroll(1000);}} style={{padding:"6px 14px",fontSize:10}}>RESET</Btn>}
+                {betHistory.length>0&&<Btn variant="r" onClick={()=>{setBetHistory([]);setBankroll(startingBankroll);}} style={{padding:"6px 14px",fontSize:10}}>RESET</Btn>}
               </div>
             </div>
             {/* Manual bet form */}
@@ -2060,9 +2275,9 @@ export default function App() {
               <div style={{marginBottom:14,padding:"10px 14px",background:c.bg,borderRadius:8,border:`1px solid ${c.brd}`}}>
                 <div style={{fontSize:8,color:c.dim,letterSpacing:"1px",marginBottom:6}}>BANKROLL HISTORY</div>
                 <div style={{display:"flex",height:50,alignItems:"flex-end",gap:2}}>
-                  {(()=>{const vals=[1000,...betHistory.filter(b=>b.bankroll!=null).map(b=>b.bankroll)];
+                  {(()=>{const vals=[startingBankroll||bankroll||0,...betHistory.filter(b=>b.bankroll!=null).map(b=>b.bankroll)];
                     const mn=Math.min(...vals),mx=Math.max(...vals),rng=mx-mn||1;
-                    return vals.map((v,i)=><div key={i} style={{flex:1,height:`${Math.max(2,(v-mn)/rng*100)}%`,background:v>=1000?c.g:c.r,borderRadius:"1px 1px 0 0",opacity:.8}}/>);
+                    return vals.map((v,i)=><div key={i} style={{flex:1,height:`${Math.max(2,(v-mn)/rng*100)}%`,background:v>=(startingBankroll||0)?c.g:c.r,borderRadius:"1px 1px 0 0",opacity:.8}}/>);
                   })()}
                 </div>
               </div>
@@ -2094,7 +2309,7 @@ export default function App() {
                       <td style={{padding:"7px 8px",fontWeight:700}}>
                         {b.settled===false
                           ? <span style={{fontSize:9,color:c.dim}}>pending</span>
-                          : <span style={{color:b.bankroll>=1000?c.g:c.r}}>{settings.currency}{b.bankroll}</span>
+                          : <span style={{color:b.bankroll>=(startingBankroll||0)?c.g:c.r}}>{settings.currency}{b.bankroll}</span>
                         }
                       </td>
                     </tr>
@@ -2109,7 +2324,7 @@ export default function App() {
                   <div style={{marginTop:14,display:"flex",gap:12,flexWrap:"wrap"}}>
                     {[
                       {l:"WIN RATE",v:sb.length?`${(wins/sb.length*100).toFixed(0)}% (${wins}/${sb.length})`:"–",col:c.y},
-                      {l:"TOTAL P/L",v:`${bankroll>=1000?"+":""}${settings.currency}${(bankroll-1000).toFixed(0)}`,col:bankroll>=1000?c.g:c.r},
+                      {l:"TOTAL P/L",v:startingBankroll>0?`${bankroll>=startingBankroll?"+":""}${settings.currency}${(bankroll-startingBankroll).toFixed(0)}`:"–",col:bankroll>=startingBankroll?c.g:c.r},
                       {l:"AVG STAKE",v:`${settings.currency}${Math.round(betHistory.reduce((a,b)=>a+b.stake,0)/betHistory.length)}`,col:c.b},
                       {l:"PENDING",v:pending,col:pending>0?c.y:c.dimm},
                     ].map(({l,v,col},i)=>(
