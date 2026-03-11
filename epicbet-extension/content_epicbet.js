@@ -19,55 +19,43 @@ window.addEventListener('__epicbet_api__', (e) => {
   } catch (err) {}
 });
 
-// ── 2. DOM SCRAPER — balance (max of all visible €-values) + bets from slip ──
+// ── 2. DOM SCRAPER — balance + bets ──────────────────────────────────────────
 
 function scrapeDOM() {
   const result = {};
   if (!document.body) return result;
 
-  // ── Balance: collect ALL euro amounts in top 300px, take the maximum ──
+  // ── Balance: look in HEADER/NAV only (excludes bet slip drawers) ──
   const amounts = [];
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+  const headerRoot = document.querySelector(
+    'header, nav, [role="banner"], [role="navigation"], .header, .navbar, .topbar'
+  ) || document.body;
+
+  const walker = document.createTreeWalker(headerRoot, NodeFilter.SHOW_TEXT, null);
   let node;
   while ((node = walker.nextNode())) {
     const el = node.parentElement;
     if (!el) continue;
+    // Skip hidden elements
     try {
+      const s = window.getComputedStyle(el);
+      if (s.display === 'none' || s.visibility === 'hidden') continue;
       const rect = el.getBoundingClientRect();
-      if (rect.top > 300 || rect.top < 0 || rect.width < 5) continue;
+      if (rect.width < 5) continue;
     } catch (e) { continue; }
-    const s = window.getComputedStyle(el);
-    if (s.display === 'none' || s.visibility === 'hidden') continue;
 
     const txt = node.textContent.trim();
-    if (!txt || txt.length > 25) continue;
+    if (!txt || txt.length > 20) continue;
 
-    // € on left or right
+    // € on left or right (e.g. "€40.00" or "40.00€")
     let m = txt.match(/^€\s*([\d,]+(?:[.,]\d{1,2})?)\s*$/) ||
              txt.match(/^([\d,]+(?:[.,]\d{1,2})?)\s*€\s*$/);
     if (m) {
       const val = parseFloat((m[1] || m[2]).replace(/,/g, '.'));
       if (!isNaN(val) && val >= 0 && val < 500000) amounts.push(val);
-      continue;
-    }
-
-    // Bare number — check if parent text contains € or "balance"/"wallet"
-    m = txt.match(/^([\d]+[.,]\d{2})$/);
-    if (m) {
-      const val = parseFloat(m[1].replace(',', '.'));
-      if (!isNaN(val) && val >= 0 && val < 500000) {
-        const ctx = (el.closest('header,nav,[role="banner"],[role="navigation"]')
-                    || el.parentElement?.parentElement
-                    || el.parentElement || el);
-        const ctxTxt = (ctx.innerText || ctx.textContent || '').toLowerCase();
-        if (ctxTxt.includes('€') || ctxTxt.includes('balance') || ctxTxt.includes('wallet')) {
-          amounts.push(val);
-        }
-      }
     }
   }
 
-  // Use the maximum value found (covers main + bonus = header total)
   if (amounts.length > 0) {
     result.balance = Math.max(...amounts);
   }
@@ -75,7 +63,7 @@ function scrapeDOM() {
   // ── Bets: scrape visible bet slip cards from DOM ──
   const domBets = scrapeBetSlipDOM();
   if (domBets.length > 0) {
-    result.openBets = domBets.filter(b => b.status === 'pending');
+    result.openBets  = domBets.filter(b => b.status === 'pending');
     result.settledBets = domBets.filter(b => b.status !== 'pending');
   }
 
@@ -88,7 +76,7 @@ function scrapeBetSlipDOM() {
   const bets = [];
   if (!document.body) return bets;
 
-  // Find all text nodes containing "ID: <digits>" — unique bet identifier
+  // Find all text nodes containing "ID: <digits>"
   const idWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
   let node;
   while ((node = idWalker.nextNode())) {
@@ -96,12 +84,11 @@ function scrapeBetSlipDOM() {
     const idMatch = txt.match(/^ID:\s*(\d+)$/i);
     if (!idMatch) continue;
     const betId = idMatch[1];
-    // Avoid duplicates
     if (bets.find(b => b.id === betId)) continue;
 
     // Walk up to find the bet card container
     let container = node.parentElement;
-    for (let i = 0; i < 10 && container; i++) {
+    for (let i = 0; i < 12 && container; i++) {
       const t = (container.innerText || '').toLowerCase();
       if ((t.includes('odds') || t.includes('stake') || t.includes('payout')) &&
           (t.includes('pending') || t.includes('settled') || t.includes('won') || t.includes('lost'))) {
@@ -111,55 +98,101 @@ function scrapeBetSlipDOM() {
     }
     if (!container) continue;
 
-    const inner = container.innerText || '';
-    const lines = inner.split('\n').map(l => l.trim()).filter(Boolean);
+    const inner  = container.innerText || '';
+    const lines  = inner.split('\n').map(l => l.trim()).filter(Boolean);
 
     // Status
     const statusMatch = inner.match(/\b(Pending|Open|Settled|Won|Lost|Void|Cashout)\b/i);
     const status = normalizeStatus(statusMatch?.[1] || 'pending');
 
-    // Financials
-    const oddsMatch = inner.match(/(?:Odds|Total\s*Odds)[^\d]*([\d.]+)/i);
+    // Financials — look for labelled values
+    const oddsMatch  = inner.match(/(?:Odds|Total\s*Odds)[^\d]*([\d.]+)/i);
     const stakeMatch = inner.match(/Stake[^\d]*([\d.]+)/i);
-    const payoutMatch = inner.match(/Payout[^\d€]*([\d.]+)/i);
-    const totalOdds = oddsMatch ? parseFloat(oddsMatch[1]) : 0;
-    const stake = stakeMatch ? parseFloat(stakeMatch[1]) : 0;
-    const payout = payoutMatch ? parseFloat(payoutMatch[1]) : 0;
-    const isBonus = /bonus/i.test(inner);
+    const payoutMatch = inner.match(/Payout[^\d€]*([\d.]+)/i)
+                     || inner.match(/€\s*([\d.]+)\s*$/m);
+    const totalOdds = oddsMatch  ? parseFloat(oddsMatch[1])  : 0;
+    const stake     = stakeMatch ? parseFloat(stakeMatch[1]) : 0;
+    const payout    = payoutMatch ? parseFloat(payoutMatch[1]) : 0;
+    const isBonus   = /bonus/i.test(inner);
 
-    // Extract selections: lines where next line is an odds number (1.01–99.99)
+    // ── Selection parser ──────────────────────────────────────────────────────
+    // Epicbet can render selections in two ways:
+    //   A) "Player Name 1.43\nMoney Line\nMatch Name\nDate"  — odds inline at end of player line
+    //   B) "Player Name\nMoney Line\nMatch Name\nDate\n1.43" — odds on their own line
+    // We handle both.
+
     const selections = [];
-    for (let i = 0; i < lines.length - 1; i++) {
-      const nextOdds = parseFloat(lines[i + 1]);
-      if (!isNaN(nextOdds) && nextOdds >= 1.01 && nextOdds <= 99.99 &&
-          lines[i].length > 2 && !/^\d/.test(lines[i]) &&
-          !/(odds|stake|payout|pending|settled|won|lost|combo|single|today|id:|money|line|match|mar|jan|feb|apr|may|jun|jul|aug|sep|oct|nov|dec)/i.test(lines[i])) {
-        selections.push({
-          player:   lines[i],
-          market:   lines[i + 2] || '',
-          match:    lines[i + 3] || '',
-          datetime: '',
-          odds:     nextOdds,
-          status:   'pending',
-        });
-        i++;
+    const SKIP = /(^odds$|^stake$|^payout$|pending|settled|won|lost|void|combo|single|today|^id:|cashout|minimize|share|bonus|max|€|\d{1,2}:\d{2})/i;
+    const MARKET_PAT = /money\s*line|handicap|set\s*handicap|over|under|total|1x2|asian/i;
+    const DATE_PAT   = /\d{1,2}:\d{2}|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec/i;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      // ── Case A: odds embedded inline "Player Name 1.43" ──────────────────
+      // Match: any text, then whitespace, then a number like 1.43 at end of line
+      const inlineM = line.match(/^(.+?)[\s\t]+([\d]+\.[\d]{1,2})\s*$/);
+      if (inlineM) {
+        const playerPart = inlineM[1].trim();
+        const oddsPart   = parseFloat(inlineM[2]);
+        if (oddsPart >= 1.01 && oddsPart <= 99.99 &&
+            playerPart.length >= 3 && !/^\d/.test(playerPart) &&
+            !SKIP.test(playerPart)) {
+          // Gather context from the next few lines
+          const ctx = lines.slice(i + 1, i + 6);
+          const marketLine = ctx.find(l => MARKET_PAT.test(l)) || ctx[0] || '';
+          const matchLine  = ctx.find(l => l.includes(' - ') || l.includes(' vs ')) || ctx[1] || '';
+          const dtLine     = ctx.find(l => DATE_PAT.test(l)) || '';
+          selections.push({
+            player: playerPart, market: marketLine,
+            match: matchLine,   datetime: dtLine,
+            odds: oddsPart,     status: 'pending',
+          });
+          // Advance past the context lines we consumed (but not too far — next player follows)
+          continue;
+        }
       }
+
+      // ── Case B: player name alone, odds on a later line ───────────────────
+      if (line.length < 3 || /^\d/.test(line) || SKIP.test(line)) continue;
+      let oddsIdx = -1;
+      for (let j = i + 1; j < Math.min(i + 8, lines.length); j++) {
+        const v = parseFloat(lines[j]);
+        if (!isNaN(v) && v >= 1.01 && v <= 99.99) { oddsIdx = j; break; }
+      }
+      if (oddsIdx < 0) continue;
+      const between    = lines.slice(i + 1, oddsIdx);
+      const marketLine = between.find(l => MARKET_PAT.test(l)) || between[0] || '';
+      const matchLine  = between.find(l => l.includes(' - ') || l.includes(' vs ')) || between[1] || '';
+      const dtLine     = between.find(l => DATE_PAT.test(l)) || '';
+      selections.push({
+        player: line,      market: marketLine,
+        match: matchLine,  datetime: dtLine,
+        odds: parseFloat(lines[oddsIdx]), status: 'pending',
+      });
+      i = oddsIdx;
     }
+
+    // Deduplicate selections by player+odds (Case A and B might both fire)
+    const seen = new Set();
+    const uniqueSels = selections.filter(s => {
+      const key = `${s.player}|${s.odds}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
 
     if (stake > 0 || totalOdds > 0) {
       bets.push({
         id: betId,
-        type: selections.length > 1 ? 'combo' : 'single',
-        legs: selections.length || 1,
-        status,
-        stake,
-        totalOdds,
+        type: uniqueSels.length > 1 ? 'combo' : 'single',
+        legs: uniqueSels.length || 1,
+        status, stake, totalOdds,
         potentialPayout: payout,
         actualPayout: 0,
         isBonus,
-        placedAt: '',
-        settledAt: '',
-        selections,
+        placedAt: '', settledAt: '',
+        selections: uniqueSels,
       });
     }
   }
@@ -171,19 +204,22 @@ function scrapeBetSlipDOM() {
 
 function tryParseBalance(data) {
   if (!data || typeof data !== 'object') return null;
-  const BALANCE_KEYS = ['balance', 'amount', 'wallet', 'available', 'availablebalance',
-    'real_balance', 'cash', 'funds', 'credit', 'cashbalance', 'realbalance',
-    'bonusbalance', 'bonus', 'bonusfunds', 'promotionalbalance', 'freebetbalance'];
+  // Only look for real wallet balance keys — NOT totalPending, pendingWin etc.
+  const BALANCE_KEYS = ['balance', 'availablebalance', 'real_balance', 'cashbalance',
+    'realbalance', 'wallet', 'available', 'cash', 'funds', 'credit'];
 
-  let total = 0;
-  let found = false;
+  let best = null;
 
   function search(obj, depth) {
     if (depth > 6 || !obj || typeof obj !== 'object') return;
     for (const k of Object.keys(obj)) {
-      if (BALANCE_KEYS.includes(k.toLowerCase())) {
+      const kl = k.toLowerCase();
+      if (BALANCE_KEYS.includes(kl)) {
         const v = parseFloat(obj[k]);
-        if (!isNaN(v) && v >= 0 && v < 500000) { total += v; found = true; }
+        if (!isNaN(v) && v >= 0 && v < 500000) {
+          // Prefer 'balance' / 'availablebalance' keys
+          if (best === null || kl === 'balance' || kl === 'availablebalance') best = v;
+        }
       }
     }
     for (const val of Object.values(obj)) {
@@ -192,7 +228,7 @@ function tryParseBalance(data) {
   }
 
   search(data, 0);
-  return found ? { balance: total } : null;
+  return best !== null ? { balance: best } : null;
 }
 
 // ── 5. PARSE BETS FROM API RESPONSE ──────────────────────────────────────────
