@@ -940,8 +940,8 @@ export default function App() {
               </div>
             ))}
             <button onClick={()=>setShowSettings(!showSettings)} style={{background:showSettings?`${c.g}15`:c.card,border:`1px solid ${showSettings?c.g+"40":c.brd}`,borderRadius:8,padding:"8px 12px",cursor:"pointer",color:showSettings?c.g:c.dim,fontSize:14,fontFamily:"inherit",flexShrink:0}}>⚙</button>
-            <div style={{display:"flex",alignItems:"center",gap:6,background:c.card,border:`1px solid ${c.brd}`,borderRadius:8,padding:"6px 10px",flexShrink:0}}>
-              <span style={{fontSize:8,color:c.g,letterSpacing:"1px",fontWeight:700}}>ADMIN</span>
+            <div style={{display:"flex",alignItems:"center",gap:5,background:c.card,border:`1px solid ${c.brd}`,borderRadius:8,padding:"6px 10px",flexShrink:0}}>
+              {!isMobile&&<span style={{fontSize:8,color:c.g,letterSpacing:"1px",fontWeight:700}}>ADMIN</span>}
               <button onClick={handleLogout} style={{background:"transparent",border:`1px solid ${c.r}40`,borderRadius:5,padding:"2px 8px",cursor:"pointer",color:c.r,fontSize:8,fontFamily:"inherit",letterSpacing:"1px",fontWeight:700}}>LOGOUT</button>
             </div>
           </div>
@@ -2126,64 +2126,90 @@ export default function App() {
                 {epicbetTab==="open"&&(
                   open.length===0
                     ? <div style={{textAlign:"center",padding:"30px 0",color:c.dim,fontSize:11}}>No open bets</div>
-                    : <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                    : <div style={{display:"flex",flexDirection:"column",gap:12}}>
                         {open.map((b,i)=>(
-                          <div key={i} style={{background:c.bg,borderRadius:8,padding:"12px 14px",border:`1px solid ${c.y}30`}}>
-                            <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
-                              <div style={{display:"flex",gap:8,alignItems:"center"}}>
-                                <span style={{fontSize:9,color:c.y,fontWeight:700}}>{b.type?.toUpperCase()} {b.legs>1?`×${b.legs}`:""}</span>
-                                {b.id&&<span style={{fontSize:8,color:c.dimm}}>ID: {b.id}</span>}
-                                <span style={{fontSize:8,color:c.y,padding:"1px 6px",background:`${c.y}15`,borderRadius:3}}>PENDING</span>
+                          <div key={i} style={{background:c.bg,borderRadius:8,border:`1px solid ${c.y}30`,overflow:"hidden"}}>
+                            {/* Card header */}
+                            <div style={{padding:"10px 14px",borderBottom:`1px solid ${c.brd}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8,background:`${c.y}06`}}>
+                              <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
+                                <span style={{fontSize:10,color:c.y,fontWeight:800,letterSpacing:"1px"}}>
+                                  {(b.type||'single').toUpperCase()}{b.legs>1?` ×${b.legs}`:""}
+                                </span>
+                                {b.id&&<span style={{fontSize:8,color:c.dimm,padding:"1px 6px",background:c.card,borderRadius:3}}>#{b.id}</span>}
+                                <span style={{fontSize:8,color:c.y,padding:"1px 6px",background:`${c.y}20`,borderRadius:3,fontWeight:700}}>PENDING</span>
+                                {b.isBonus&&<span style={{fontSize:8,color:c.b,padding:"1px 6px",background:`${c.b}15`,borderRadius:3}}>BONUS</span>}
                               </div>
-                              <div style={{textAlign:"right"}}>
-                                <div style={{fontSize:12,fontWeight:800,color:c.g}}>€{(b.potentialPayout||0).toFixed(2)}</div>
-                                <div style={{fontSize:8,color:c.dimm}}>stake €{(b.stake||0).toFixed(2)} · odds {(b.totalOdds||0).toFixed(2)}</div>
+                              <div style={{display:"flex",gap:14,alignItems:"baseline"}}>
+                                <div style={{textAlign:"right"}}>
+                                  <div style={{fontSize:8,color:c.dimm,marginBottom:1}}>STAKE</div>
+                                  <div style={{fontSize:12,fontWeight:700,color:c.txt}}>€{(b.stake||0).toFixed(2)}</div>
+                                </div>
+                                <div style={{width:1,height:28,background:c.brd}}/>
+                                <div style={{textAlign:"right"}}>
+                                  <div style={{fontSize:8,color:c.dimm,marginBottom:1}}>ODDS</div>
+                                  <div style={{fontSize:12,fontWeight:700,color:c.b}}>{(b.totalOdds||0).toFixed(2)}</div>
+                                </div>
+                                <div style={{width:1,height:28,background:c.brd}}/>
+                                <div style={{textAlign:"right"}}>
+                                  <div style={{fontSize:8,color:c.dimm,marginBottom:1}}>PAYOUT</div>
+                                  <div style={{fontSize:14,fontWeight:800,color:c.g}}>€{(b.potentialPayout||0).toFixed(2)}</div>
+                                </div>
                               </div>
                             </div>
-                            {(b.selections||[]).map((s,j)=>{
-                              // Match-linking: find match in allMatches by player name
-                              const spl = (s.player||'').toLowerCase();
-                              const linked = spl.length>2 ? allMatches.find(m=>{
-                                const n1=m.p1.name.toLowerCase(), n2=m.p2.name.toLowerCase();
-                                const last1=(n1.split(' ')[1]||n1), last2=(n2.split(' ')[1]||n2);
-                                return n1.includes(spl)||n2.includes(spl)||spl.includes(last1)||spl.includes(last2);
-                              }) : null;
-                              const linkedEdge = linked ? matchEdges.find(e=>e.match.id===linked.id) : null;
-                              const betterProb = linked ? (() => {
-                                if (!linkedEdge) return null;
-                                const nvp = noVigProb(linked);
-                                const p1n = linked.p1.name.toLowerCase();
-                                const isp1 = spl.includes(p1n.split(' ')[1]||p1n) || p1n.includes(spl);
-                                return isp1 ? nvp.p1 : nvp.p2;
-                              })() : null;
-                              const ev = betterProb&&s.odds ? ((betterProb*s.odds)-1)*100 : null;
-                              return (
-                                <div key={j} style={{padding:"6px 0",borderTop:`1px solid ${c.brd}`}}>
-                                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-                                    <div style={{flex:1}}>
-                                      <div style={{fontSize:11,color:c.w,fontWeight:600}}>{s.player}</div>
-                                      <div style={{fontSize:9,color:c.dim}}>{s.market} · {s.match}</div>
-                                      {linked&&(
-                                        <div style={{display:"flex",gap:6,marginTop:4,flexWrap:"wrap"}}>
-                                          <span style={{fontSize:7,color:c.b,padding:"1px 6px",background:`${c.b}15`,border:`1px solid ${c.b}25`,borderRadius:3}}>
-                                            {linked.circuit} {linked.surface}
-                                          </span>
-                                          {betterProb!=null&&<span style={{fontSize:7,color:c.dim,padding:"1px 6px",background:c.card,border:`1px solid ${c.brd}`,borderRadius:3}}>
-                                            MODEL {(betterProb*100).toFixed(0)}%
-                                          </span>}
-                                          {ev!=null&&<span style={{fontSize:7,fontWeight:700,padding:"1px 6px",borderRadius:3,
-                                            background:ev>=0?`${c.g}20`:`${c.r}20`,border:`1px solid ${ev>=0?c.g:c.r}40`,
-                                            color:ev>=0?c.g:c.r}}>
-                                            EV {ev>=0?"+":""}{ ev.toFixed(1)}%
-                                          </span>}
+                            {/* Selections */}
+                            <div style={{padding:"0 14px"}}>
+                              {(b.selections||[]).map((s,j)=>{
+                                const spl = (s.player||'').toLowerCase();
+                                const linked = spl.length>2 ? allMatches.find(m=>{
+                                  const n1=m.p1.name.toLowerCase(), n2=m.p2.name.toLowerCase();
+                                  const last1=(n1.split(' ')[1]||n1), last2=(n2.split(' ')[1]||n2);
+                                  return n1.includes(spl)||n2.includes(spl)||spl.includes(last1)||spl.includes(last2);
+                                }) : null;
+                                const nvp = linked ? noVigProb(linked) : null;
+                                const p1n = linked ? linked.p1.name.toLowerCase() : '';
+                                const isp1 = p1n && (spl.includes(p1n.split(' ')[1]||p1n) || p1n.includes(spl));
+                                const betterProb = nvp ? (isp1 ? nvp.p1 : nvp.p2) : null;
+                                const ev = betterProb&&s.odds ? ((betterProb*s.odds)-1)*100 : null;
+                                return (
+                                  <div key={j} style={{padding:"10px 0",borderBottom:j<(b.selections.length-1)?`1px solid ${c.brd}`:"none"}}>
+                                    {/* Leg number + player + odds */}
+                                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:10}}>
+                                      <div style={{display:"flex",gap:8,alignItems:"flex-start",flex:1,minWidth:0}}>
+                                        {b.legs>1&&<span style={{fontSize:8,color:c.dimm,minWidth:14,paddingTop:2}}>#{j+1}</span>}
+                                        <div style={{flex:1,minWidth:0}}>
+                                          <div style={{fontSize:12,color:c.w,fontWeight:700,marginBottom:2}}>{s.player||"–"}</div>
+                                          {s.market&&<div style={{fontSize:9,color:c.dim,marginBottom:1}}>{s.market}</div>}
+                                          {s.match&&<div style={{fontSize:9,color:c.dimm,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{s.match}</div>}
+                                          {s.datetime&&<div style={{fontSize:8,color:c.dimm,marginTop:1}}>{s.datetime}</div>}
+                                          {linked&&(
+                                            <div style={{display:"flex",gap:5,marginTop:5,flexWrap:"wrap"}}>
+                                              <span style={{fontSize:7,color:c.b,padding:"1px 7px",background:`${c.b}15`,border:`1px solid ${c.b}25`,borderRadius:3}}>
+                                                {linked.circuit} · {linked.surface}
+                                              </span>
+                                              {betterProb!=null&&<span style={{fontSize:7,color:c.dim,padding:"1px 7px",background:c.card,border:`1px solid ${c.brd}`,borderRadius:3}}>
+                                                MODEL {(betterProb*100).toFixed(0)}%
+                                              </span>}
+                                              {ev!=null&&<span style={{fontSize:7,fontWeight:700,padding:"1px 7px",borderRadius:3,
+                                                background:ev>=0?`${c.g}20`:`${c.r}20`,border:`1px solid ${ev>=0?c.g:c.r}40`,
+                                                color:ev>=0?c.g:c.r}}>
+                                                EV {ev>=0?"+":""}{ ev.toFixed(1)}%
+                                              </span>}
+                                            </div>
+                                          )}
                                         </div>
-                                      )}
+                                      </div>
+                                      <div style={{fontSize:14,fontWeight:800,color:c.b,flexShrink:0,paddingTop:2}}>{s.odds?.toFixed(2)||"–"}</div>
                                     </div>
-                                    <div style={{fontSize:13,fontWeight:800,color:c.b,marginLeft:12}}>{s.odds?.toFixed(2)||"–"}</div>
                                   </div>
+                                );
+                              })}
+                              {/* Empty state if no selections parsed yet */}
+                              {(!b.selections||b.selections.length===0)&&(
+                                <div style={{padding:"12px 0",fontSize:9,color:c.dimm,textAlign:"center"}}>
+                                  Reload Epicbet to capture full bet details
                                 </div>
-                              );
-                            })}
+                              )}
+                            </div>
                           </div>
                         ))}
                       </div>
