@@ -34,10 +34,9 @@ function calcStyleClash(s1, s2, surface) {
 
 // ──────────────────────────────────────────────────
 // MATCH DATA — sourced from tennisstats.com + ATP/WTA official, March 13 2026
-// 23 matches across 6 tournaments:
-// Indian Wells Masters 1000 (8 QF), Cap Cana CH175 (4 QF),
-// Phoenix CH175 (4 QF), Santiago CH75 (3 QF),
-// Cherbourg CH50 (2 QF), Austin WTA125 (2 SF)
+// 14 upcoming matches — past matches removed at 21:04 CET
+// Indian Wells 1000 (7 QF), Cap Cana CH175 (1 QF),
+// Phoenix CH175 (3 QF), Santiago CH75 (3 QF)
 // ──────────────────────────────────────────────────
 const MOCK_MATCHES = [
   // ════ INDIAN WELLS ATP MASTERS 1000 — QF ════
@@ -123,29 +122,6 @@ const MOCK_MATCHES = [
   },
   // ════ INDIAN WELLS WTA 1000 — QF ════
   {
-    // Stadium 1, NB 11AM PST / Today 20:00 CET
-    id:5, circuit:"WTA", level:"WTA 1000", tournament:"Indian Wells Masters (WTA)", surface:"Hard", round:"QF",
-    status:"PRE", game:"-", point:"-", startTime:"Today 20:00", updated:Date.now()-30000,
-    p1:{...BP,name:"A. Sabalenka",rank:1,flag:"🇧🇾",age:28,hand:"R",
-      aces:4,df:1,first_pct:68,first_won:73,second_won:57,bp_saved:76,bp_faced:3,service_games:9,return_pts_won:48,
-      tiebreak_wr:0.64,third_set_wr:0.70,bp_convert:52,style:"aggressive",
-      fatigue:0.12,momentum:0.72,h2h:"1-0",recent_form:[1,1,1,1,0],
-      surface_wr:0.80,travel_hrs:11,last_match_days:1,altitude_delta:70,sleep_zone_diff:9},
-    p2:{...BP,name:"V. Mboko",rank:10,flag:"🇨🇦",age:21,hand:"R",
-      aces:3,df:2,first_pct:62,first_won:66,second_won:50,bp_saved:60,bp_faced:5,service_games:7,return_pts_won:43,
-      tiebreak_wr:0.52,third_set_wr:0.54,bp_convert:44,style:"allcourt",
-      fatigue:0.20,momentum:0.62,h2h:"0-1",recent_form:[1,1,0,1,1],
-      surface_wr:0.65,travel_hrs:5,last_match_days:1,altitude_delta:70,sleep_zone_diff:3},
-    odds:{pinnacle:{p1:1.30,p2:3.40},epicbet:{p1:1.32,p2:3.25},bet365:{p1:1.34,p2:3.20},unibet:{p1:1.36,p2:3.10},
-          williamhill:{p1:1.31,p2:3.35},betway:{p1:1.33,p2:3.25},bwin:{p1:1.32,p2:3.30}},
-    markets:[
-      {key:"set_hcp",name:"Set Handicap",lines:[
-        {p1_label:"Sabalenka -1.5 sets",p2_label:"Mboko +1.5 sets",
-         odds:{pinnacle:{p1:2.00,p2:1.82},epicbet:{p1:2.05,p2:1.78},bet365:{p1:2.08,p2:1.75},unibet:{p1:1.98,p2:1.84}}},
-      ]},
-    ],
-  },
-  {
     // Stadium 2, NB 2:30PM PST / Today 23:30 CET
     id:6, circuit:"WTA", level:"WTA 1000", tournament:"Indian Wells Masters (WTA)", surface:"Hard", round:"QF",
     status:"PRE", game:"-", point:"-", startTime:"Today 23:30", updated:Date.now()-180000,
@@ -205,57 +181,6 @@ const MOCK_MATCHES = [
 
   // ════ CAP CANA CHALLENGER 175 — Hard, Dominican Republic — QF ════
   {
-    // Today 19:10 CET
-    id:9, circuit:"CH", level:"Challenger 175", tournament:"Cap Cana Open", surface:"Hard", round:"QF",
-    status:"PRE", game:"-", point:"-", startTime:"Today 19:10", updated:Date.now()-20000,
-    p1:{...BP,name:"A. Blockx",rank:145,flag:"🇧🇪",age:22,hand:"R",
-      aces:4,df:2,first_pct:64,first_won:68,second_won:48,bp_saved:58,bp_faced:4,service_games:7,return_pts_won:40,
-      tiebreak_wr:0.50,third_set_wr:0.52,bp_convert:40,style:"aggressive",
-      fatigue:0.18,momentum:0.55,h2h:"0-0",recent_form:[1,0,1,1,0],
-      surface_wr:0.58,travel_hrs:10,last_match_days:1,altitude_delta:120,sleep_zone_diff:5},
-    p2:{...BP,name:"J. Wong",rank:186,flag:"🇺🇸",age:25,hand:"R",
-      aces:3,df:3,first_pct:60,first_won:64,second_won:46,bp_saved:54,bp_faced:5,service_games:7,return_pts_won:38,
-      tiebreak_wr:0.48,third_set_wr:0.50,bp_convert:38,style:"allcourt",
-      fatigue:0.14,momentum:0.52,h2h:"0-0",recent_form:[1,1,0,1,0],
-      surface_wr:0.54,travel_hrs:4,last_match_days:1,altitude_delta:20,sleep_zone_diff:1},
-    odds:{pinnacle:{p1:1.68,p2:2.18},epicbet:{p1:1.70,p2:2.15},bet365:{p1:1.72,p2:2.10},unibet:{p1:1.70,p2:2.15},
-          williamhill:{p1:1.69,p2:2.17},betway:{p1:1.71,p2:2.12},bwin:{p1:1.70,p2:2.16}},
-  },
-  {
-    // Today 20:30 CET
-    id:10, circuit:"CH", level:"Challenger 175", tournament:"Cap Cana Open", surface:"Hard", round:"QF",
-    status:"PRE", game:"-", point:"-", startTime:"Today 20:30", updated:Date.now()-25000,
-    p1:{...BP,name:"G. Collignon",rank:102,flag:"🇧🇪",age:25,hand:"R",
-      aces:3,df:2,first_pct:63,first_won:67,second_won:50,bp_saved:60,bp_faced:4,service_games:7,return_pts_won:42,
-      tiebreak_wr:0.52,third_set_wr:0.54,bp_convert:42,style:"allcourt",
-      fatigue:0.16,momentum:0.58,h2h:"1-0",recent_form:[1,1,1,0,1],
-      surface_wr:0.60,travel_hrs:10,last_match_days:1,altitude_delta:120,sleep_zone_diff:5},
-    p2:{...BP,name:"T. Bellucci",rank:133,flag:"🇧🇷",age:33,hand:"R",
-      aces:5,df:2,first_pct:67,first_won:70,second_won:48,bp_saved:62,bp_faced:3,service_games:8,return_pts_won:37,
-      tiebreak_wr:0.54,third_set_wr:0.50,bp_convert:38,style:"serve-dom",
-      fatigue:0.20,momentum:0.45,h2h:"0-1",recent_form:[1,0,1,0,1],
-      surface_wr:0.55,travel_hrs:6,last_match_days:1,altitude_delta:35,sleep_zone_diff:0},
-    odds:{pinnacle:{p1:1.43,p2:2.57},epicbet:{p1:1.45,p2:2.51},bet365:{p1:1.47,p2:2.50},unibet:{p1:1.45,p2:2.55},
-          williamhill:{p1:1.44,p2:2.54},betway:{p1:1.46,p2:2.50},bwin:{p1:1.45,p2:2.52}},
-  },
-  {
-    // Today 21:00 CET
-    id:11, circuit:"CH", level:"Challenger 175", tournament:"Cap Cana Open", surface:"Hard", round:"QF",
-    status:"PRE", game:"-", point:"-", startTime:"Today 21:00", updated:Date.now()-30000,
-    p1:{...BP,name:"L. Royer",rank:82,flag:"🇫🇷",age:25,hand:"R",
-      aces:5,df:2,first_pct:65,first_won:69,second_won:50,bp_saved:62,bp_faced:4,service_games:8,return_pts_won:40,
-      tiebreak_wr:0.54,third_set_wr:0.56,bp_convert:42,style:"aggressive",
-      fatigue:0.16,momentum:0.60,h2h:"0-0",recent_form:[1,1,0,1,1],
-      surface_wr:0.62,travel_hrs:10,last_match_days:1,altitude_delta:120,sleep_zone_diff:5},
-    p2:{...BP,name:"F. Navone",rank:94,flag:"🇦🇷",age:23,hand:"R",
-      aces:3,df:2,first_pct:62,first_won:66,second_won:50,bp_saved:60,bp_faced:5,service_games:7,return_pts_won:44,
-      tiebreak_wr:0.50,third_set_wr:0.56,bp_convert:44,style:"counter",
-      fatigue:0.18,momentum:0.55,h2h:"0-0",recent_form:[1,1,1,0,0],
-      surface_wr:0.58,travel_hrs:5,last_match_days:1,altitude_delta:0,sleep_zone_diff:0},
-    odds:{pinnacle:{p1:1.63,p2:2.12},epicbet:{p1:1.65,p2:2.08},bet365:{p1:1.67,p2:2.10},unibet:{p1:1.65,p2:2.08},
-          williamhill:{p1:1.64,p2:2.11},betway:{p1:1.66,p2:2.07},bwin:{p1:1.65,p2:2.09}},
-  },
-  {
     // Today 23:00 CET
     id:12, circuit:"CH", level:"Challenger 175", tournament:"Cap Cana Open", surface:"Hard", round:"QF",
     status:"PRE", game:"-", point:"-", startTime:"Today 23:00", updated:Date.now()-35000,
@@ -274,23 +199,6 @@ const MOCK_MATCHES = [
   },
 
   // ════ PHOENIX CHALLENGER 175 — Hard, Arizona USA — QF ════
-  {
-    // Today 20:05 CET
-    id:13, circuit:"CH", level:"Challenger 175", tournament:"ITF Phoenix Open", surface:"Hard", round:"QF",
-    status:"PRE", game:"-", point:"-", startTime:"Today 20:05", updated:Date.now()-40000,
-    p1:{...BP,name:"A. Mannarino",rank:88,flag:"🇫🇷",age:36,hand:"L",
-      aces:2,df:3,first_pct:61,first_won:66,second_won:52,bp_saved:66,bp_faced:4,service_games:7,return_pts_won:46,
-      tiebreak_wr:0.52,third_set_wr:0.56,bp_convert:46,style:"counter",
-      fatigue:0.24,momentum:0.48,h2h:"2-1",recent_form:[1,1,0,1,0],
-      surface_wr:0.62,travel_hrs:10,last_match_days:1,altitude_delta:190,sleep_zone_diff:8},
-    p2:{...BP,name:"L. Harris",rank:111,flag:"🇿🇦",age:35,hand:"R",
-      aces:7,df:2,first_pct:68,first_won:73,second_won:48,bp_saved:60,bp_faced:4,service_games:8,return_pts_won:38,
-      tiebreak_wr:0.54,third_set_wr:0.52,bp_convert:40,style:"serve-dom",
-      fatigue:0.22,momentum:0.55,h2h:"1-2",recent_form:[1,1,1,0,0],
-      surface_wr:0.58,travel_hrs:17,last_match_days:1,altitude_delta:160,sleep_zone_diff:11},
-    odds:{pinnacle:{p1:1.54,p2:2.50},epicbet:{p1:1.55,p2:2.47},bet365:{p1:1.57,p2:2.45},unibet:{p1:1.56,p2:2.44},
-          williamhill:{p1:1.55,p2:2.48},betway:{p1:1.56,p2:2.45},bwin:{p1:1.55,p2:2.47}},
-  },
   {
     // Today 21:30 CET
     id:14, circuit:"CH", level:"Challenger 175", tournament:"ITF Phoenix Open", surface:"Hard", round:"QF",
@@ -396,77 +304,6 @@ const MOCK_MATCHES = [
           williamhill:{p1:1.64,p2:2.30},betway:{p1:1.66,p2:2.26},bwin:{p1:1.65,p2:2.29}},
   },
 
-  // ════ CHERBOURG CHALLENGER 50 — Indoor Hard, France — QF ════
-  {
-    // Today 18:50 CET
-    id:20, circuit:"CH", level:"Challenger 50", tournament:"Open de Cherbourg", surface:"Hard", round:"QF",
-    status:"PRE", game:"-", point:"-", startTime:"Today 18:50", updated:Date.now()-15000,
-    p1:{...BP,name:"C. Tabur",rank:110,flag:"🇫🇷",age:21,hand:"R",
-      aces:8,df:2,first_pct:68,first_won:74,second_won:52,bp_saved:64,bp_faced:4,service_games:8,return_pts_won:38,
-      tiebreak_wr:0.60,third_set_wr:0.58,bp_convert:40,style:"serve-dom",
-      fatigue:0.12,momentum:0.70,h2h:"0-0",recent_form:[1,1,1,1,0],
-      surface_wr:0.66,travel_hrs:1,last_match_days:1,altitude_delta:5,sleep_zone_diff:0},
-    p2:{...BP,name:"L. Romano",rank:312,flag:"🇮🇹",age:24,hand:"R",
-      aces:3,df:3,first_pct:60,first_won:63,second_won:45,bp_saved:50,bp_faced:6,service_games:6,return_pts_won:36,
-      tiebreak_wr:0.44,third_set_wr:0.46,bp_convert:36,style:"allcourt",
-      fatigue:0.26,momentum:0.48,h2h:"0-0",recent_form:[1,1,0,0,1],
-      surface_wr:0.48,travel_hrs:8,last_match_days:1,altitude_delta:10,sleep_zone_diff:0},
-    odds:{pinnacle:{p1:1.11,p2:5.80},epicbet:{p1:1.12,p2:6.00},bet365:{p1:1.12,p2:5.75},unibet:{p1:1.11,p2:5.90},
-          williamhill:{p1:1.11,p2:6.00},betway:{p1:1.12,p2:5.80},bwin:{p1:1.12,p2:5.85}},
-  },
-  {
-    // Today 20:30 CET
-    id:21, circuit:"CH", level:"Challenger 50", tournament:"Open de Cherbourg", surface:"Hard", round:"QF",
-    status:"PRE", game:"-", point:"-", startTime:"Today 20:30", updated:Date.now()-20000,
-    p1:{...BP,name:"J. Rodionov",rank:100,flag:"🇦🇹",age:26,hand:"R",
-      aces:5,df:2,first_pct:64,first_won:69,second_won:51,bp_saved:62,bp_faced:4,service_games:8,return_pts_won:42,
-      tiebreak_wr:0.54,third_set_wr:0.56,bp_convert:44,style:"allcourt",
-      fatigue:0.16,momentum:0.58,h2h:"0-0",recent_form:[1,1,1,0,1],
-      surface_wr:0.62,travel_hrs:3,last_match_days:1,altitude_delta:50,sleep_zone_diff:0},
-    p2:{...BP,name:"G. Onclin",rank:193,flag:"🇧🇪",age:22,hand:"R",
-      aces:4,df:3,first_pct:63,first_won:66,second_won:48,bp_saved:56,bp_faced:5,service_games:7,return_pts_won:39,
-      tiebreak_wr:0.48,third_set_wr:0.50,bp_convert:40,style:"aggressive",
-      fatigue:0.18,momentum:0.54,h2h:"0-0",recent_form:[1,0,1,1,0],
-      surface_wr:0.54,travel_hrs:2,last_match_days:1,altitude_delta:5,sleep_zone_diff:0},
-    odds:{pinnacle:{p1:1.43,p2:2.68},epicbet:{p1:1.45,p2:2.63},bet365:{p1:1.46,p2:2.60},unibet:{p1:1.44,p2:2.65},
-          williamhill:{p1:1.44,p2:2.66},betway:{p1:1.45,p2:2.62},bwin:{p1:1.45,p2:2.64}},
-  },
-
-  // ════ AUSTIN WTA 125 — Hard, Texas USA — SF ════
-  {
-    // Today 19:00 CET
-    id:22, circuit:"WTA", level:"WTA 125", tournament:"Austin WTA 125", surface:"Hard", round:"SF",
-    status:"PRE", game:"-", point:"-", startTime:"Today 19:00", updated:Date.now()-25000,
-    p1:{...BP,name:"P. Badosa",rank:40,flag:"🇪🇸",age:28,hand:"R",
-      aces:3,df:2,first_pct:64,first_won:69,second_won:53,bp_saved:64,bp_faced:4,service_games:8,return_pts_won:44,
-      tiebreak_wr:0.56,third_set_wr:0.58,bp_convert:47,style:"aggressive",
-      fatigue:0.16,momentum:0.65,h2h:"2-3",recent_form:[1,1,1,0,1],
-      surface_wr:0.66,travel_hrs:10,last_match_days:1,altitude_delta:50,sleep_zone_diff:7},
-    p2:{...BP,name:"B. Andreescu",rank:64,flag:"🇨🇦",age:25,hand:"R",
-      aces:2,df:3,first_pct:62,first_won:67,second_won:52,bp_saved:62,bp_faced:5,service_games:7,return_pts_won:44,
-      tiebreak_wr:0.54,third_set_wr:0.58,bp_convert:46,style:"allcourt",
-      fatigue:0.22,momentum:0.55,h2h:"3-2",recent_form:[1,1,0,1,1],
-      surface_wr:0.64,travel_hrs:3,last_match_days:1,altitude_delta:50,sleep_zone_diff:1},
-    odds:{pinnacle:{p1:1.49,p2:2.62},epicbet:{p1:1.50,p2:2.59},bet365:{p1:1.52,p2:2.55},unibet:{p1:1.50,p2:2.58},
-          williamhill:{p1:1.50,p2:2.60},betway:{p1:1.51,p2:2.56},bwin:{p1:1.50,p2:2.59}},
-  },
-  {
-    // Today 21:00 CET
-    id:23, circuit:"WTA", level:"WTA 125", tournament:"Austin WTA 125", surface:"Hard", round:"SF",
-    status:"PRE", game:"-", point:"-", startTime:"Today 21:00", updated:Date.now()-30000,
-    p1:{...BP,name:"C. McNally",rank:82,flag:"🇺🇸",age:25,hand:"R",
-      aces:3,df:2,first_pct:64,first_won:68,second_won:51,bp_saved:60,bp_faced:4,service_games:7,return_pts_won:43,
-      tiebreak_wr:0.54,third_set_wr:0.56,bp_convert:44,style:"aggressive",
-      fatigue:0.14,momentum:0.60,h2h:"1-1",recent_form:[1,1,1,0,1],
-      surface_wr:0.62,travel_hrs:0,last_match_days:1,altitude_delta:0,sleep_zone_diff:0},
-    p2:{...BP,name:"K. Birrell",rank:86,flag:"🇦🇺",age:28,hand:"R",
-      aces:2,df:2,first_pct:62,first_won:66,second_won:50,bp_saved:60,bp_faced:4,service_games:7,return_pts_won:42,
-      tiebreak_wr:0.50,third_set_wr:0.52,bp_convert:42,style:"allcourt",
-      fatigue:0.20,momentum:0.52,h2h:"1-1",recent_form:[1,0,1,1,1],
-      surface_wr:0.60,travel_hrs:22,last_match_days:1,altitude_delta:0,sleep_zone_diff:16},
-    odds:{pinnacle:{p1:1.58,p2:2.38},epicbet:{p1:1.60,p2:2.35},bet365:{p1:1.62,p2:2.30},unibet:{p1:1.60,p2:2.35},
-          williamhill:{p1:1.59,p2:2.37},betway:{p1:1.61,p2:2.32},bwin:{p1:1.60,p2:2.36}},
-  },
 ];
 
 // ──────────────────────────────────────────────────
