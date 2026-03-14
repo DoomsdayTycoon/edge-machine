@@ -33,18 +33,67 @@ function calcStyleClash(s1, s2, surface) {
 }
 
 // ──────────────────────────────────────────────────
-// MATCH DATA — factchecked vs ATP/WTA/Livesport, March 14 2026 15:30 CET
-// 5 FINALS on Sunday March 15 2026
-// SF results confirmed today: Sinner d.Zverev 6-1 6-2; Alcaraz d.Medvedev 6-3 6-4
-//   Sabalenka d.Noskova 6-3 6-4; Rybakina d.Svitolina 7-5 6-4
-//   Navone d.Blockx; Bellucci d.Walton 6-2 6-4; Moutet d.Basilashvili; Borges d.Giron
-//   Rodionov d.Romano (SF Cherbourg); Gojo d.Kotov (SF Cherbourg) — Final: Rodionov vs Romano
+// MATCH DATA — factchecked vs Epicbet/Sofascore, March 14 2026 15:45 CET
+// TODAY (Sat March 14): 2 IW ATP SFs — confirmed upcoming on Sofascore (21:30 + 23:00 CET)
+// TOMORROW (Sun March 15): 4 Finals — Cherbourg CH75, Cap Cana CH175, IW WTA 1000, Phoenix CH175
+// WTA SFs confirmed done (March 13): Sabalenka d.Noskova 6-3 6-4; Rybakina d.Svitolina 7-5 6-4
+// IW ATP Final NOT included — finalists unknown until tonight
 // ──────────────────────────────────────────────────
 const MOCK_MATCHES = [
-  // ════ CHERBOURG CH75 — Hard, France — FINAL (March 15 14:00 CET) ════
+  // ════ INDIAN WELLS ATP 1000 — SF1 (TODAY Sat 21:30 CET / 12:30 PM PDT) ════
   {
-    // Rodionov dominant all week (1.17–1.47 odds). Romano wildcard fairytale run.
-    id:1, circuit:"CH", level:"Challenger 75", tournament:"Open de Cherbourg", surface:"Hard", round:"F",
+    // Epicbet confirmed: Zverev 5.10 / Sinner 1.17. H2H: Sinner leads 13-9.
+    id:1, circuit:"ATP", level:"Masters 1000", tournament:"Indian Wells Masters", surface:"Hard", round:"SF",
+    status:"PRE", game:"-", point:"-", startTime:"Today 21:30", updated:Date.now()-900000,
+    p1:{...BP,name:"A. Zverev",rank:4,flag:"🇩🇪",age:27,hand:"R",
+      aces:7,df:2,first_pct:66,first_won:73,second_won:53,bp_saved:70,bp_faced:4,service_games:9,return_pts_won:42,
+      tiebreak_wr:0.60,third_set_wr:0.64,bp_convert:44,style:"aggressive",
+      fatigue:0.14,momentum:0.72,h2h:"9-13",recent_form:[1,1,1,1,0],
+      surface_wr:0.73,travel_hrs:9,last_match_days:2,altitude_delta:70,sleep_zone_diff:9},
+    p2:{...BP,name:"J. Sinner",rank:2,flag:"🇮🇹",age:23,hand:"R",
+      aces:6,df:1,first_pct:72,first_won:78,second_won:54,bp_saved:80,bp_faced:3,service_games:9,return_pts_won:45,
+      tiebreak_wr:0.68,third_set_wr:0.74,bp_convert:55,style:"aggressive",
+      fatigue:0.10,momentum:0.86,h2h:"13-9",recent_form:[1,1,1,1,1],
+      surface_wr:0.81,travel_hrs:11,last_match_days:2,altitude_delta:70,sleep_zone_diff:9},
+    odds:{pinnacle:{p1:5.25,p2:1.16},epicbet:{p1:5.10,p2:1.17},bet365:{p1:5.00,p2:1.17},unibet:{p1:4.90,p2:1.18},
+          williamhill:{p1:5.10,p2:1.17},betway:{p1:5.00,p2:1.17},bwin:{p1:5.05,p2:1.17}},
+    markets:[
+      {key:"set_hcp",name:"Set Handicap",lines:[
+        {p1_label:"Zverev +1.5 sets",p2_label:"Sinner -1.5 sets",
+         odds:{pinnacle:{p1:2.05,p2:1.82},epicbet:{p1:2.00,p2:1.84},bet365:{p1:2.02,p2:1.82},unibet:{p1:1.98,p2:1.86}}},
+      ]},
+    ],
+  },
+
+  // ════ INDIAN WELLS ATP 1000 — SF2 (TODAY Sat 23:00 CET / 2:00 PM PDT) ════
+  {
+    // Epicbet confirmed: Alcaraz 1.20 / Medvedev 4.60. H2H: Alcaraz leads 7-5.
+    id:2, circuit:"ATP", level:"Masters 1000", tournament:"Indian Wells Masters", surface:"Hard", round:"SF",
+    status:"PRE", game:"-", point:"-", startTime:"Today 23:00", updated:Date.now()-900000,
+    p1:{...BP,name:"C. Alcaraz",rank:1,flag:"🇪🇸",age:22,hand:"R",
+      aces:5,df:2,first_pct:70,first_won:76,second_won:56,bp_saved:74,bp_faced:4,service_games:9,return_pts_won:47,
+      tiebreak_wr:0.65,third_set_wr:0.71,bp_convert:54,style:"allcourt",
+      fatigue:0.14,momentum:0.80,h2h:"7-5",recent_form:[1,1,1,1,1],
+      surface_wr:0.82,travel_hrs:9,last_match_days:2,altitude_delta:70,sleep_zone_diff:9},
+    p2:{...BP,name:"D. Medvedev",rank:10,flag:"🇷🇺",age:29,hand:"R",
+      aces:6,df:2,first_pct:68,first_won:74,second_won:52,bp_saved:76,bp_faced:3,service_games:9,return_pts_won:43,
+      tiebreak_wr:0.73,third_set_wr:0.60,bp_convert:43,style:"counter",
+      fatigue:0.14,momentum:0.74,h2h:"5-7",recent_form:[1,1,1,0,1],
+      surface_wr:0.74,travel_hrs:11,last_match_days:2,altitude_delta:70,sleep_zone_diff:9},
+    odds:{pinnacle:{p1:1.22,p2:4.70},epicbet:{p1:1.20,p2:4.60},bet365:{p1:1.22,p2:4.50},unibet:{p1:1.23,p2:4.40},
+          williamhill:{p1:1.20,p2:4.60},betway:{p1:1.22,p2:4.50},bwin:{p1:1.21,p2:4.55}},
+    markets:[
+      {key:"set_hcp",name:"Set Handicap",lines:[
+        {p1_label:"Alcaraz -1.5 sets",p2_label:"Medvedev +1.5 sets",
+         odds:{pinnacle:{p1:2.14,p2:1.76},epicbet:{p1:2.10,p2:1.78},bet365:{p1:2.12,p2:1.76},unibet:{p1:2.08,p2:1.80}}},
+      ]},
+    ],
+  },
+
+  // ════ CHERBOURG CH75 — Hard, France — FINAL (Sun March 15 14:00 CET) ════
+  {
+    // Rodionov dominant all week (1.17–1.47). Romano wildcard/qualifier fairytale run.
+    id:3, circuit:"CH", level:"Challenger 75", tournament:"Open de Cherbourg", surface:"Hard", round:"F",
     status:"PRE", game:"-", point:"-", startTime:"Sun 14:00", updated:Date.now()-1800000,
     p1:{...BP,name:"A. Rodionov",rank:118,flag:"🇧🇪",age:25,hand:"R",
       aces:6,df:2,first_pct:66,first_won:71,second_won:49,bp_saved:66,bp_faced:4,service_games:8,return_pts_won:40,
@@ -60,10 +109,10 @@ const MOCK_MATCHES = [
           williamhill:{p1:1.36,p2:3.05},betway:{p1:1.37,p2:3.00},bwin:{p1:1.36,p2:3.08}},
   },
 
-  // ════ CAP CANA CH175 — Clay, Dominican Republic — FINAL (March 15 16:00 CET) ════
+  // ════ CAP CANA CH175 — Clay, Dominican Republic — FINAL (Sun March 15 16:00 CET) ════
   {
-    // Navone (ARG) vs Bellucci (BRA) — close match, both clay court specialists
-    id:2, circuit:"CH", level:"Challenger 175", tournament:"Challenger Cap Cana", surface:"Clay", round:"F",
+    // Navone (ARG) vs Bellucci (BRA) — both clay specialists, near even money
+    id:4, circuit:"CH", level:"Challenger 175", tournament:"Challenger Cap Cana", surface:"Clay", round:"F",
     status:"PRE", game:"-", point:"-", startTime:"Sun 16:00", updated:Date.now()-1800000,
     p1:{...BP,name:"G. Navone",rank:77,flag:"🇦🇷",age:24,hand:"R",
       aces:2,df:2,first_pct:63,first_won:67,second_won:53,bp_saved:66,bp_faced:4,service_games:7,return_pts_won:46,
@@ -79,22 +128,22 @@ const MOCK_MATCHES = [
           williamhill:{p1:1.91,p2:1.91},betway:{p1:1.90,p2:1.90},bwin:{p1:1.93,p2:1.89}},
   },
 
-  // ════ INDIAN WELLS WTA 1000 — FINAL (March 15 19:00 CET / 11:00 AM PDT) ════
+  // ════ INDIAN WELLS WTA 1000 — FINAL (Sun March 15 19:00 CET / 11:00 AM PDT) ════
   {
-    // Sabalenka d.Noskova 6-3 6-4 in SF. Rybakina d.Svitolina 7-5 6-4 (tougher match).
+    // SFs done March 13: Sabalenka d.Noskova 6-3 6-4; Rybakina d.Svitolina 7-5 6-4
     // Bet365 confirmed: Sabalenka 1.67 / Rybakina 2.20
-    id:3, circuit:"WTA", level:"WTA 1000", tournament:"Indian Wells Masters (WTA)", surface:"Hard", round:"F",
+    id:5, circuit:"WTA", level:"WTA 1000", tournament:"Indian Wells Masters (WTA)", surface:"Hard", round:"F",
     status:"PRE", game:"-", point:"-", startTime:"Sun 19:00", updated:Date.now()-1800000,
     p1:{...BP,name:"A. Sabalenka",rank:1,flag:"🇧🇾",age:27,hand:"R",
       aces:4,df:2,first_pct:68,first_won:74,second_won:58,bp_saved:78,bp_faced:3,service_games:9,return_pts_won:49,
       tiebreak_wr:0.66,third_set_wr:0.72,bp_convert:53,style:"aggressive",
       fatigue:0.22,momentum:0.80,h2h:"5-3",recent_form:[1,1,1,1,1],
-      surface_wr:0.80,travel_hrs:11,last_match_days:1,altitude_delta:70,sleep_zone_diff:9},
+      surface_wr:0.80,travel_hrs:11,last_match_days:2,altitude_delta:70,sleep_zone_diff:9},
     p2:{...BP,name:"E. Rybakina",rank:3,flag:"🇰🇿",age:26,hand:"R",
       aces:6,df:2,first_pct:70,first_won:75,second_won:55,bp_saved:74,bp_faced:4,service_games:9,return_pts_won:43,
       tiebreak_wr:0.66,third_set_wr:0.68,bp_convert:50,style:"serve-dom",
       fatigue:0.26,momentum:0.74,h2h:"3-5",recent_form:[1,1,1,0,1],
-      surface_wr:0.76,travel_hrs:14,last_match_days:1,altitude_delta:70,sleep_zone_diff:13},
+      surface_wr:0.76,travel_hrs:14,last_match_days:2,altitude_delta:70,sleep_zone_diff:13},
     odds:{pinnacle:{p1:1.70,p2:2.22},epicbet:{p1:1.68,p2:2.20},bet365:{p1:1.67,p2:2.20},unibet:{p1:1.68,p2:2.18},
           williamhill:{p1:1.67,p2:2.20},betway:{p1:1.68,p2:2.20},bwin:{p1:1.67,p2:2.22}},
     markets:[
@@ -105,10 +154,10 @@ const MOCK_MATCHES = [
     ],
   },
 
-  // ════ PHOENIX CH175 — Hard, Arizona USA — FINAL (March 15 20:00 CET / 12:00 PM PDT) ════
+  // ════ PHOENIX CH175 — Hard, Arizona USA — FINAL (Sun March 15 20:00 CET / 12:00 PM PDT) ════
   {
-    // Moutet (top seed, tricky lefty) d.Basilashvili in QF. Borges d.Giron. Moutet 1.40 fav.
-    id:4, circuit:"CH", level:"Challenger 175", tournament:"ITF Phoenix Open", surface:"Hard", round:"F",
+    // Moutet (top seed, lefty) d.Basilashvili in SF. Borges d.Giron. Moutet 1.40 fav.
+    id:6, circuit:"CH", level:"Challenger 175", tournament:"ITF Phoenix Open", surface:"Hard", round:"F",
     status:"PRE", game:"-", point:"-", startTime:"Sun 20:00", updated:Date.now()-1800000,
     p1:{...BP,name:"C. Moutet",rank:57,flag:"🇫🇷",age:25,hand:"L",
       aces:3,df:2,first_pct:62,first_won:66,second_won:52,bp_saved:66,bp_faced:3,service_games:7,return_pts_won:47,
@@ -122,32 +171,6 @@ const MOCK_MATCHES = [
       surface_wr:0.62,travel_hrs:10,last_match_days:1,altitude_delta:190,sleep_zone_diff:8},
     odds:{pinnacle:{p1:1.42,p2:2.90},epicbet:{p1:1.40,p2:2.88},bet365:{p1:1.40,p2:2.90},unibet:{p1:1.41,p2:2.88},
           williamhill:{p1:1.40,p2:2.90},betway:{p1:1.41,p2:2.85},bwin:{p1:1.40,p2:2.92}},
-  },
-
-  // ════ INDIAN WELLS ATP 1000 — FINAL (March 15 22:00 CET / 2:00 PM PDT) ════
-  {
-    // Sinner d.Zverev 6-1 6-2 (dominant). Alcaraz d.Medvedev 6-3 6-4. Sinner slight fav.
-    // Odds estimated — not yet posted at time of writing (15:30 CET March 14)
-    id:5, circuit:"ATP", level:"Masters 1000", tournament:"Indian Wells Masters", surface:"Hard", round:"F",
-    status:"PRE", game:"-", point:"-", startTime:"Sun 22:00", updated:Date.now()-1800000,
-    p1:{...BP,name:"C. Alcaraz",rank:1,flag:"🇪🇸",age:22,hand:"R",
-      aces:5,df:2,first_pct:70,first_won:76,second_won:56,bp_saved:74,bp_faced:4,service_games:9,return_pts_won:47,
-      tiebreak_wr:0.65,third_set_wr:0.71,bp_convert:54,style:"allcourt",
-      fatigue:0.18,momentum:0.80,h2h:"12-10",recent_form:[1,1,1,1,1],
-      surface_wr:0.82,travel_hrs:9,last_match_days:1,altitude_delta:70,sleep_zone_diff:9},
-    p2:{...BP,name:"J. Sinner",rank:2,flag:"🇮🇹",age:23,hand:"R",
-      aces:7,df:1,first_pct:73,first_won:79,second_won:55,bp_saved:82,bp_faced:2,service_games:9,return_pts_won:46,
-      tiebreak_wr:0.70,third_set_wr:0.76,bp_convert:56,style:"aggressive",
-      fatigue:0.12,momentum:0.94,h2h:"10-12",recent_form:[1,1,1,1,1],
-      surface_wr:0.82,travel_hrs:11,last_match_days:1,altitude_delta:70,sleep_zone_diff:9},
-    odds:{pinnacle:{p1:2.02,p2:1.86},epicbet:{p1:2.00,p2:1.87},bet365:{p1:2.00,p2:1.87},unibet:{p1:1.98,p2:1.88},
-          williamhill:{p1:2.00,p2:1.86},betway:{p1:2.00,p2:1.87},bwin:{p1:2.00,p2:1.87}},
-    markets:[
-      {key:"set_hcp",name:"Set Handicap",lines:[
-        {p1_label:"Alcaraz +1.5 sets",p2_label:"Sinner -1.5 sets",
-         odds:{pinnacle:{p1:1.70,p2:2.20},epicbet:{p1:1.72,p2:2.16},bet365:{p1:1.72,p2:2.18},unibet:{p1:1.70,p2:2.20}}},
-      ]},
-    ],
   },
 ];
 
