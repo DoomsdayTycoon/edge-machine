@@ -33,16 +33,19 @@ function calcStyleClash(s1, s2, surface) {
 }
 
 // ──────────────────────────────────────────────────
-// MATCH DATA — factchecked vs Epicbet/Sofascore, March 14 2026 15:45 CET
-// TODAY (Sat March 14): 2 IW ATP SFs — confirmed upcoming on Sofascore (21:30 + 23:00 CET)
-// TOMORROW (Sun March 15): 4 Finals — Cherbourg CH75, Cap Cana CH175, IW WTA 1000, Phoenix CH175
-// WTA SFs confirmed done (March 13): Sabalenka d.Noskova 6-3 6-4; Rybakina d.Svitolina 7-5 6-4
-// IW ATP Final NOT included — finalists unknown until tonight
+// MATCH DATA — factchecked vs ATP/Sofascore/TennisTonic, March 14 2026 ~16:00 CET
+// TODAY (Sat March 14): IW ATP SF1 21:30, IW ATP SF2 23:00, Phoenix CH175 SF ~23:00
+// TOMORROW (Sun March 15): Cherbourg F (Rodionov/Gojo), Cap Cana F (Navone/Bellucci), IW WTA F
+// SFs done today: Cherbourg — Rodionov d.Romano 4-6 6-1 6-4; other SF: Gojo d.Kotov
+//                 Cap Cana — Navone d.Blockx 3-6 6-3 7-6(3); Bellucci advanced
+// WTA SFs done March 13: Sabalenka d.Noskova 6-3 6-4; Rybakina d.Svitolina 7-5 6-4
+// Phoenix QFs: Giron d.Borges 7-6(8) 6-2; Moutet d.Basilashvili 7-6(5) 6-4
+// IW ATP Final + Phoenix Final NOT listed — finalists unknown until tonight
 // ──────────────────────────────────────────────────
 const MOCK_MATCHES = [
   // ════ INDIAN WELLS ATP 1000 — SF1 (TODAY Sat 21:30 CET / 12:30 PM PDT) ════
   {
-    // Epicbet confirmed: Zverev 5.10 / Sinner 1.17. H2H: Sinner leads 13-9.
+    // Epicbet confirmed: Zverev 5.10 / Sinner 1.17. Sinner leads H2H 13-9.
     id:1, circuit:"ATP", level:"Masters 1000", tournament:"Indian Wells Masters", surface:"Hard", round:"SF",
     status:"PRE", game:"-", point:"-", startTime:"Today 21:30", updated:Date.now()-900000,
     p1:{...BP,name:"A. Zverev",rank:4,flag:"🇩🇪",age:27,hand:"R",
@@ -67,7 +70,7 @@ const MOCK_MATCHES = [
 
   // ════ INDIAN WELLS ATP 1000 — SF2 (TODAY Sat 23:00 CET / 2:00 PM PDT) ════
   {
-    // Epicbet confirmed: Alcaraz 1.20 / Medvedev 4.60. H2H: Alcaraz leads 7-5.
+    // Epicbet confirmed: Alcaraz 1.20 / Medvedev 4.60. Alcaraz leads H2H 7-5.
     id:2, circuit:"ATP", level:"Masters 1000", tournament:"Indian Wells Masters", surface:"Hard", round:"SF",
     status:"PRE", game:"-", point:"-", startTime:"Today 23:00", updated:Date.now()-900000,
     p1:{...BP,name:"C. Alcaraz",rank:1,flag:"🇪🇸",age:22,hand:"R",
@@ -90,40 +93,62 @@ const MOCK_MATCHES = [
     ],
   },
 
+  // ════ PHOENIX CH175 — Hard, Arizona USA — SF (TODAY Sat ~23:00 CET / 3:00 PM PDT) ════
+  {
+    // Giron d.Borges 7-6(8) 6-2 in QF. Moutet d.Basilashvili 7-6(5) 6-4 in QF.
+    // Moutet top seed and local circuit favourite. Giron home crowd advantage.
+    id:3, circuit:"CH", level:"Challenger 175", tournament:"ITF Phoenix Open", surface:"Hard", round:"SF",
+    status:"PRE", game:"-", point:"-", startTime:"Today 23:00", updated:Date.now()-900000,
+    p1:{...BP,name:"C. Moutet",rank:57,flag:"🇫🇷",age:25,hand:"L",
+      aces:3,df:2,first_pct:62,first_won:66,second_won:52,bp_saved:66,bp_faced:3,service_games:7,return_pts_won:47,
+      tiebreak_wr:0.54,third_set_wr:0.59,bp_convert:47,style:"counter",
+      fatigue:0.20,momentum:0.72,h2h:"1-0",recent_form:[1,1,1,1,0],
+      surface_wr:0.60,travel_hrs:10,last_match_days:1,altitude_delta:190,sleep_zone_diff:8},
+    p2:{...BP,name:"M. Giron",rank:106,flag:"🇺🇸",age:32,hand:"R",
+      aces:3,df:2,first_pct:63,first_won:67,second_won:49,bp_saved:62,bp_faced:4,service_games:7,return_pts_won:42,
+      tiebreak_wr:0.52,third_set_wr:0.54,bp_convert:42,style:"allcourt",
+      fatigue:0.22,momentum:0.70,h2h:"0-1",recent_form:[1,1,1,0,1],
+      surface_wr:0.60,travel_hrs:0,last_match_days:1,altitude_delta:200,sleep_zone_diff:0},
+    odds:{pinnacle:{p1:1.56,p2:2.44},epicbet:{p1:1.55,p2:2.42},bet365:{p1:1.55,p2:2.40},unibet:{p1:1.54,p2:2.45},
+          williamhill:{p1:1.55,p2:2.44},betway:{p1:1.56,p2:2.40},bwin:{p1:1.55,p2:2.42}},
+  },
+
   // ════ CHERBOURG CH75 — Hard, France — FINAL (Sun March 15 14:00 CET) ════
   {
-    // Rodionov dominant all week (1.17–1.47). Romano wildcard/qualifier fairytale run.
-    id:3, circuit:"CH", level:"Challenger 75", tournament:"Open de Cherbourg", surface:"Hard", round:"F",
+    // Rodionov d.Romano 4-6 6-1 6-4 today (SF). Gojo d.Kotov in other SF.
+    // Rodionov: AUT 🇦🇹 LEFT-handed #177, ranked lower but dominant all week.
+    id:4, circuit:"CH", level:"Challenger 75", tournament:"Open de Cherbourg", surface:"Hard", round:"F",
     status:"PRE", game:"-", point:"-", startTime:"Sun 14:00", updated:Date.now()-1800000,
-    p1:{...BP,name:"A. Rodionov",rank:118,flag:"🇧🇪",age:25,hand:"R",
-      aces:6,df:2,first_pct:66,first_won:71,second_won:49,bp_saved:66,bp_faced:4,service_games:8,return_pts_won:40,
-      tiebreak_wr:0.56,third_set_wr:0.58,bp_convert:43,style:"aggressive",
-      fatigue:0.26,momentum:0.72,h2h:"0-0",recent_form:[1,1,1,1,1],
-      surface_wr:0.60,travel_hrs:2,last_match_days:1,altitude_delta:0,sleep_zone_diff:0},
-    p2:{...BP,name:"F. Romano",rank:272,flag:"🇮🇹",age:23,hand:"R",
-      aces:3,df:3,first_pct:61,first_won:65,second_won:47,bp_saved:58,bp_faced:5,service_games:7,return_pts_won:40,
-      tiebreak_wr:0.46,third_set_wr:0.50,bp_convert:38,style:"baseline",
-      fatigue:0.30,momentum:0.78,h2h:"0-0",recent_form:[1,1,1,1,0],
-      surface_wr:0.55,travel_hrs:6,last_match_days:1,altitude_delta:0,sleep_zone_diff:1},
-    odds:{pinnacle:{p1:1.37,p2:3.10},epicbet:{p1:1.36,p2:3.05},bet365:{p1:1.36,p2:3.00},unibet:{p1:1.35,p2:3.10},
-          williamhill:{p1:1.36,p2:3.05},betway:{p1:1.37,p2:3.00},bwin:{p1:1.36,p2:3.08}},
+    p1:{...BP,name:"J. Rodionov",rank:177,flag:"🇦🇹",age:25,hand:"L",
+      aces:5,df:2,first_pct:64,first_won:70,second_won:50,bp_saved:66,bp_faced:4,service_games:8,return_pts_won:41,
+      tiebreak_wr:0.56,third_set_wr:0.60,bp_convert:43,style:"aggressive",
+      fatigue:0.30,momentum:0.74,h2h:"0-1",recent_form:[1,1,1,1,1],
+      surface_wr:0.60,travel_hrs:2,last_match_days:0,altitude_delta:0,sleep_zone_diff:0},
+    p2:{...BP,name:"B. Gojo",rank:101,flag:"🇭🇷",age:26,hand:"R",
+      aces:5,df:2,first_pct:65,first_won:69,second_won:50,bp_saved:62,bp_faced:4,service_games:8,return_pts_won:41,
+      tiebreak_wr:0.54,third_set_wr:0.56,bp_convert:41,style:"allcourt",
+      fatigue:0.28,momentum:0.70,h2h:"1-0",recent_form:[1,1,0,1,1],
+      surface_wr:0.58,travel_hrs:3,last_match_days:0,altitude_delta:0,sleep_zone_diff:1},
+    odds:{pinnacle:{p1:1.78,p2:2.05},epicbet:{p1:1.76,p2:2.02},bet365:{p1:1.75,p2:2.05},unibet:{p1:1.76,p2:2.02},
+          williamhill:{p1:1.75,p2:2.05},betway:{p1:1.77,p2:2.02},bwin:{p1:1.76,p2:2.04}},
   },
 
   // ════ CAP CANA CH175 — Clay, Dominican Republic — FINAL (Sun March 15 16:00 CET) ════
   {
-    // Navone (ARG) vs Bellucci (BRA) — both clay specialists, near even money
-    id:4, circuit:"CH", level:"Challenger 175", tournament:"Challenger Cap Cana", surface:"Clay", round:"F",
+    // Navone d.Blockx 3-6 6-3 7-6(3) (tough 3-setter → higher fatigue).
+    // Bellucci d.Walton 6-2 6-4 (clean win). First-ever meeting.
+    id:5, circuit:"CH", level:"Challenger 175", tournament:"Challenger Cap Cana", surface:"Clay", round:"F",
     status:"PRE", game:"-", point:"-", startTime:"Sun 16:00", updated:Date.now()-1800000,
     p1:{...BP,name:"G. Navone",rank:77,flag:"🇦🇷",age:24,hand:"R",
       aces:2,df:2,first_pct:63,first_won:67,second_won:53,bp_saved:66,bp_faced:4,service_games:7,return_pts_won:46,
       tiebreak_wr:0.52,third_set_wr:0.60,bp_convert:49,style:"counter",
-      fatigue:0.26,momentum:0.68,h2h:"1-1",recent_form:[1,1,1,0,1],
-      surface_wr:0.71,travel_hrs:9,last_match_days:1,altitude_delta:10,sleep_zone_diff:6},
-    p2:{...BP,name:"M. Bellucci",rank:84,flag:"🇧🇷",age:22,hand:"R",
+      fatigue:0.32,momentum:0.66,h2h:"0-0",recent_form:[1,1,1,0,1],
+      surface_wr:0.71,travel_hrs:9,last_match_days:0,altitude_delta:10,sleep_zone_diff:6},
+    p2:{...BP,name:"M. Bellucci",rank:84,flag:"🇮🇹",age:22,hand:"R",
       aces:4,df:2,first_pct:65,first_won:70,second_won:52,bp_saved:60,bp_faced:3,service_games:8,return_pts_won:44,
       tiebreak_wr:0.54,third_set_wr:0.57,bp_convert:45,style:"aggressive",
-      fatigue:0.20,momentum:0.74,h2h:"1-1",recent_form:[1,1,1,1,0],
-      surface_wr:0.67,travel_hrs:7,last_match_days:1,altitude_delta:10,sleep_zone_diff:5},
+      fatigue:0.22,momentum:0.76,h2h:"0-0",recent_form:[1,1,1,1,0],
+      surface_wr:0.67,travel_hrs:7,last_match_days:0,altitude_delta:10,sleep_zone_diff:5},
     odds:{pinnacle:{p1:1.94,p2:1.90},epicbet:{p1:1.92,p2:1.88},bet365:{p1:1.91,p2:1.90},unibet:{p1:1.92,p2:1.88},
           williamhill:{p1:1.91,p2:1.91},betway:{p1:1.90,p2:1.90},bwin:{p1:1.93,p2:1.89}},
   },
@@ -131,8 +156,8 @@ const MOCK_MATCHES = [
   // ════ INDIAN WELLS WTA 1000 — FINAL (Sun March 15 19:00 CET / 11:00 AM PDT) ════
   {
     // SFs done March 13: Sabalenka d.Noskova 6-3 6-4; Rybakina d.Svitolina 7-5 6-4
-    // Bet365 confirmed: Sabalenka 1.67 / Rybakina 2.20
-    id:5, circuit:"WTA", level:"WTA 1000", tournament:"Indian Wells Masters (WTA)", surface:"Hard", round:"F",
+    // Bet365 confirmed: Sabalenka 1.67 / Rybakina 2.20. Sabalenka leads H2H 5-3.
+    id:6, circuit:"WTA", level:"WTA 1000", tournament:"Indian Wells Masters (WTA)", surface:"Hard", round:"F",
     status:"PRE", game:"-", point:"-", startTime:"Sun 19:00", updated:Date.now()-1800000,
     p1:{...BP,name:"A. Sabalenka",rank:1,flag:"🇧🇾",age:27,hand:"R",
       aces:4,df:2,first_pct:68,first_won:74,second_won:58,bp_saved:78,bp_faced:3,service_games:9,return_pts_won:49,
@@ -152,25 +177,6 @@ const MOCK_MATCHES = [
          odds:{pinnacle:{p1:2.18,p2:1.72},epicbet:{p1:2.12,p2:1.76},bet365:{p1:2.10,p2:1.76},unibet:{p1:2.10,p2:1.78}}},
       ]},
     ],
-  },
-
-  // ════ PHOENIX CH175 — Hard, Arizona USA — FINAL (Sun March 15 20:00 CET / 12:00 PM PDT) ════
-  {
-    // Moutet (top seed, lefty) d.Basilashvili in SF. Borges d.Giron. Moutet 1.40 fav.
-    id:6, circuit:"CH", level:"Challenger 175", tournament:"ITF Phoenix Open", surface:"Hard", round:"F",
-    status:"PRE", game:"-", point:"-", startTime:"Sun 20:00", updated:Date.now()-1800000,
-    p1:{...BP,name:"C. Moutet",rank:57,flag:"🇫🇷",age:25,hand:"L",
-      aces:3,df:2,first_pct:62,first_won:66,second_won:52,bp_saved:66,bp_faced:3,service_games:7,return_pts_won:47,
-      tiebreak_wr:0.54,third_set_wr:0.59,bp_convert:47,style:"counter",
-      fatigue:0.24,momentum:0.72,h2h:"1-0",recent_form:[1,1,1,1,0],
-      surface_wr:0.60,travel_hrs:10,last_match_days:1,altitude_delta:190,sleep_zone_diff:8},
-    p2:{...BP,name:"N. Borges",rank:81,flag:"🇵🇹",age:25,hand:"L",
-      aces:4,df:2,first_pct:64,first_won:69,second_won:51,bp_saved:62,bp_faced:4,service_games:8,return_pts_won:42,
-      tiebreak_wr:0.54,third_set_wr:0.56,bp_convert:44,style:"aggressive",
-      fatigue:0.28,momentum:0.68,h2h:"0-1",recent_form:[1,1,1,0,1],
-      surface_wr:0.62,travel_hrs:10,last_match_days:1,altitude_delta:190,sleep_zone_diff:8},
-    odds:{pinnacle:{p1:1.42,p2:2.90},epicbet:{p1:1.40,p2:2.88},bet365:{p1:1.40,p2:2.90},unibet:{p1:1.41,p2:2.88},
-          williamhill:{p1:1.40,p2:2.90},betway:{p1:1.41,p2:2.85},bwin:{p1:1.40,p2:2.92}},
   },
 ];
 
