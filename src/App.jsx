@@ -33,150 +33,321 @@ function calcStyleClash(s1, s2, surface) {
 }
 
 // ──────────────────────────────────────────────────
-// MATCH DATA — factchecked vs ATP/Sofascore/TennisTonic, March 14 2026 ~16:00 CET
-// TODAY (Sat March 14): IW ATP SF1 21:30, IW ATP SF2 23:00, Phoenix CH175 SF ~23:00
-// TOMORROW (Sun March 15): Cherbourg F (Rodionov/Gojo), Cap Cana F (Navone/Bellucci), IW WTA F
-// SFs done today: Cherbourg — Rodionov d.Romano 4-6 6-1 6-4; other SF: Gojo d.Kotov
-//                 Cap Cana — Navone d.Blockx 3-6 6-3 7-6(3); Bellucci advanced
-// WTA SFs done March 13: Sabalenka d.Noskova 6-3 6-4; Rybakina d.Svitolina 7-5 6-4
-// Phoenix QFs: Giron d.Borges 7-6(8) 6-2; Moutet d.Basilashvili 7-6(5) 6-4
-// IW ATP Final + Phoenix Final NOT listed — finalists unknown until tonight
+// MATCH DATA — factchecked vs ATP/WTA draws, March 17 2026
+// MURCIA CH75 (Clay, Spain) — R1: 9 matches 11:00–18:30 CET
+// MIAMI OPEN WTA 1000 (Hard, Miami) — R1: 8 matches 17:30–20:30 CET
+// Seeds: Murcia — De Jong (1), Carreno Busta (3), Ofner (4)
+// Miami WTA starts today (Mar 17), seeded players get bye to R2
 // ──────────────────────────────────────────────────
 const MOCK_MATCHES = [
-  // ════ INDIAN WELLS ATP 1000 — SF1 (TODAY Sat 21:30 CET / 12:30 PM PDT) ════
+  // ════ MURCIA CH75 — Clay, Spain — R1 ════
+
+  // 1. De Jong vs Hassan (11:00 CET) — top seed opener
   {
-    // Epicbet confirmed: Zverev 5.10 / Sinner 1.17. Sinner leads H2H 13-9.
-    id:1, circuit:"ATP", level:"Masters 1000", tournament:"Indian Wells Masters", surface:"Hard", round:"SF",
-    status:"PRE", game:"-", point:"-", startTime:"Today 21:30", updated:Date.now()-900000,
-    p1:{...BP,name:"A. Zverev",rank:4,flag:"🇩🇪",age:27,hand:"R",
-      aces:7,df:2,first_pct:66,first_won:73,second_won:53,bp_saved:70,bp_faced:4,service_games:9,return_pts_won:42,
-      tiebreak_wr:0.60,third_set_wr:0.64,bp_convert:44,style:"aggressive",
-      fatigue:0.14,momentum:0.72,h2h:"9-13",recent_form:[1,1,1,1,0],
-      surface_wr:0.73,travel_hrs:9,last_match_days:2,altitude_delta:70,sleep_zone_diff:9},
-    p2:{...BP,name:"J. Sinner",rank:2,flag:"🇮🇹",age:23,hand:"R",
-      aces:6,df:1,first_pct:72,first_won:78,second_won:54,bp_saved:80,bp_faced:3,service_games:9,return_pts_won:45,
-      tiebreak_wr:0.68,third_set_wr:0.74,bp_convert:55,style:"aggressive",
-      fatigue:0.10,momentum:0.86,h2h:"13-9",recent_form:[1,1,1,1,1],
-      surface_wr:0.81,travel_hrs:11,last_match_days:2,altitude_delta:70,sleep_zone_diff:9},
-    odds:{pinnacle:{p1:5.25,p2:1.16},epicbet:{p1:5.10,p2:1.17},bet365:{p1:5.00,p2:1.17},unibet:{p1:4.90,p2:1.18},
-          williamhill:{p1:5.10,p2:1.17},betway:{p1:5.00,p2:1.17},bwin:{p1:5.05,p2:1.17}},
-    markets:[
-      {key:"set_hcp",name:"Set Handicap",lines:[
-        {p1_label:"Zverev +1.5 sets",p2_label:"Sinner -1.5 sets",
-         odds:{pinnacle:{p1:2.05,p2:1.82},epicbet:{p1:2.00,p2:1.84},bet365:{p1:2.02,p2:1.82},unibet:{p1:1.98,p2:1.86}}},
-      ]},
-    ],
+    id:1, circuit:"CH", level:"Challenger 75", tournament:"Murcia Challenger", surface:"Clay", round:"R1",
+    status:"PRE", game:"-", point:"-", startTime:"Today 11:00", updated:Date.now()-3600000,
+    p1:{...BP,name:"J. De Jong",rank:140,flag:"🇳🇱",age:24,hand:"R",
+      aces:3,df:2,first_pct:63,first_won:68,second_won:50,bp_saved:62,bp_faced:3,service_games:7,return_pts_won:43,
+      tiebreak_wr:0.54,third_set_wr:0.58,bp_convert:45,style:"counter",
+      fatigue:0.10,momentum:0.65,h2h:"0-0",recent_form:[1,0,1,1,1],
+      surface_wr:0.57,travel_hrs:3,last_match_days:3,altitude_delta:0,sleep_zone_diff:0},
+    p2:{...BP,name:"B. Hassan",rank:195,flag:"🇩🇪",age:27,hand:"R",
+      aces:3,df:2,first_pct:61,first_won:66,second_won:48,bp_saved:58,bp_faced:4,service_games:7,return_pts_won:40,
+      tiebreak_wr:0.51,third_set_wr:0.50,bp_convert:40,style:"allcourt",
+      fatigue:0.12,momentum:0.55,h2h:"0-0",recent_form:[0,1,1,0,1],
+      surface_wr:0.52,travel_hrs:2,last_match_days:3,altitude_delta:0,sleep_zone_diff:0},
+    odds:{pinnacle:{p1:1.42,p2:2.90},epicbet:{p1:1.40,p2:2.87},bet365:{p1:1.40,p2:2.84},unibet:{p1:1.39,p2:2.90},
+          williamhill:{p1:1.41,p2:2.83},betway:{p1:1.40,p2:2.86},bwin:{p1:1.41,p2:2.87}},
   },
 
-  // ════ INDIAN WELLS ATP 1000 — SF2 (TODAY Sat 23:00 CET / 2:00 PM PDT) ════
+  // 2. Carballes Baena vs Sanchez-Izquierdo (11:00 CET)
   {
-    // Epicbet confirmed: Alcaraz 1.20 / Medvedev 4.60. Alcaraz leads H2H 7-5.
-    id:2, circuit:"ATP", level:"Masters 1000", tournament:"Indian Wells Masters", surface:"Hard", round:"SF",
-    status:"PRE", game:"-", point:"-", startTime:"Today 23:00", updated:Date.now()-900000,
-    p1:{...BP,name:"C. Alcaraz",rank:1,flag:"🇪🇸",age:22,hand:"R",
-      aces:5,df:2,first_pct:70,first_won:76,second_won:56,bp_saved:74,bp_faced:4,service_games:9,return_pts_won:47,
-      tiebreak_wr:0.65,third_set_wr:0.71,bp_convert:54,style:"allcourt",
-      fatigue:0.14,momentum:0.80,h2h:"7-5",recent_form:[1,1,1,1,1],
-      surface_wr:0.82,travel_hrs:9,last_match_days:2,altitude_delta:70,sleep_zone_diff:9},
-    p2:{...BP,name:"D. Medvedev",rank:10,flag:"🇷🇺",age:29,hand:"R",
-      aces:6,df:2,first_pct:68,first_won:74,second_won:52,bp_saved:76,bp_faced:3,service_games:9,return_pts_won:43,
-      tiebreak_wr:0.73,third_set_wr:0.60,bp_convert:43,style:"counter",
-      fatigue:0.14,momentum:0.74,h2h:"5-7",recent_form:[1,1,1,0,1],
-      surface_wr:0.74,travel_hrs:11,last_match_days:2,altitude_delta:70,sleep_zone_diff:9},
-    odds:{pinnacle:{p1:1.22,p2:4.70},epicbet:{p1:1.20,p2:4.60},bet365:{p1:1.22,p2:4.50},unibet:{p1:1.23,p2:4.40},
-          williamhill:{p1:1.20,p2:4.60},betway:{p1:1.22,p2:4.50},bwin:{p1:1.21,p2:4.55}},
-    markets:[
-      {key:"set_hcp",name:"Set Handicap",lines:[
-        {p1_label:"Alcaraz -1.5 sets",p2_label:"Medvedev +1.5 sets",
-         odds:{pinnacle:{p1:2.14,p2:1.76},epicbet:{p1:2.10,p2:1.78},bet365:{p1:2.12,p2:1.76},unibet:{p1:2.08,p2:1.80}}},
-      ]},
-    ],
+    id:2, circuit:"CH", level:"Challenger 75", tournament:"Murcia Challenger", surface:"Clay", round:"R1",
+    status:"PRE", game:"-", point:"-", startTime:"Today 11:00", updated:Date.now()-3600000,
+    p1:{...BP,name:"R. Carballes Baena",rank:164,flag:"🇪🇸",age:32,hand:"R",
+      aces:2,df:2,first_pct:61,first_won:65,second_won:52,bp_saved:64,bp_faced:4,service_games:7,return_pts_won:45,
+      tiebreak_wr:0.50,third_set_wr:0.56,bp_convert:47,style:"counter",
+      fatigue:0.10,momentum:0.60,h2h:"0-0",recent_form:[1,0,1,0,1],
+      surface_wr:0.68,travel_hrs:1,last_match_days:4,altitude_delta:0,sleep_zone_diff:0},
+    p2:{...BP,name:"N. Sanchez-Izquierdo",rank:322,flag:"🇪🇸",age:30,hand:"R",
+      aces:2,df:3,first_pct:60,first_won:63,second_won:47,bp_saved:56,bp_faced:4,service_games:7,return_pts_won:38,
+      tiebreak_wr:0.48,third_set_wr:0.48,bp_convert:38,style:"baseline",
+      fatigue:0.08,momentum:0.45,h2h:"0-0",recent_form:[0,1,0,1,1],
+      surface_wr:0.58,travel_hrs:1,last_match_days:4,altitude_delta:0,sleep_zone_diff:0},
+    odds:{pinnacle:{p1:1.44,p2:2.74},epicbet:{p1:1.42,p2:2.70},bet365:{p1:1.42,p2:2.68},unibet:{p1:1.43,p2:2.72},
+          williamhill:{p1:1.43,p2:2.68},betway:{p1:1.42,p2:2.72},bwin:{p1:1.43,p2:2.70}},
   },
 
-  // ════ PHOENIX CH175 — Hard, Arizona USA — SF (TODAY Sat ~23:00 CET / 3:00 PM PDT) ════
+  // 3. Carreno Busta vs Sanchez Jover (13:30 CET) — seed 3
   {
-    // Giron d.Borges 7-6(8) 6-2 in QF. Moutet d.Basilashvili 7-6(5) 6-4 in QF.
-    // Moutet top seed and local circuit favourite. Giron home crowd advantage.
-    id:3, circuit:"CH", level:"Challenger 175", tournament:"ITF Phoenix Open", surface:"Hard", round:"SF",
-    status:"PRE", game:"-", point:"-", startTime:"Today 23:00", updated:Date.now()-900000,
-    p1:{...BP,name:"C. Moutet",rank:57,flag:"🇫🇷",age:25,hand:"L",
-      aces:3,df:2,first_pct:62,first_won:66,second_won:52,bp_saved:66,bp_faced:3,service_games:7,return_pts_won:47,
-      tiebreak_wr:0.54,third_set_wr:0.59,bp_convert:47,style:"counter",
-      fatigue:0.20,momentum:0.72,h2h:"1-0",recent_form:[1,1,1,1,0],
-      surface_wr:0.60,travel_hrs:10,last_match_days:1,altitude_delta:190,sleep_zone_diff:8},
-    p2:{...BP,name:"M. Giron",rank:106,flag:"🇺🇸",age:32,hand:"R",
-      aces:3,df:2,first_pct:63,first_won:67,second_won:49,bp_saved:62,bp_faced:4,service_games:7,return_pts_won:42,
-      tiebreak_wr:0.52,third_set_wr:0.54,bp_convert:42,style:"allcourt",
-      fatigue:0.22,momentum:0.70,h2h:"0-1",recent_form:[1,1,1,0,1],
-      surface_wr:0.60,travel_hrs:0,last_match_days:1,altitude_delta:200,sleep_zone_diff:0},
-    odds:{pinnacle:{p1:1.56,p2:2.44},epicbet:{p1:1.55,p2:2.42},bet365:{p1:1.55,p2:2.40},unibet:{p1:1.54,p2:2.45},
-          williamhill:{p1:1.55,p2:2.44},betway:{p1:1.56,p2:2.40},bwin:{p1:1.55,p2:2.42}},
+    id:3, circuit:"CH", level:"Challenger 75", tournament:"Murcia Challenger", surface:"Clay", round:"R1",
+    status:"PRE", game:"-", point:"-", startTime:"Today 13:30", updated:Date.now()-3600000,
+    p1:{...BP,name:"P. Carreno Busta",rank:117,flag:"🇪🇸",age:34,hand:"R",
+      aces:4,df:2,first_pct:66,first_won:70,second_won:53,bp_saved:70,bp_faced:3,service_games:8,return_pts_won:46,
+      tiebreak_wr:0.58,third_set_wr:0.64,bp_convert:50,style:"counter",
+      fatigue:0.12,momentum:0.62,h2h:"0-0",recent_form:[1,1,0,1,1],
+      surface_wr:0.72,travel_hrs:1,last_match_days:4,altitude_delta:0,sleep_zone_diff:0},
+    p2:{...BP,name:"C. Sanchez Jover",rank:340,flag:"🇪🇸",age:27,hand:"R",
+      aces:2,df:3,first_pct:59,first_won:62,second_won:46,bp_saved:54,bp_faced:4,service_games:7,return_pts_won:37,
+      tiebreak_wr:0.46,third_set_wr:0.46,bp_convert:37,style:"baseline",
+      fatigue:0.08,momentum:0.40,h2h:"0-0",recent_form:[0,1,1,0,0],
+      surface_wr:0.54,travel_hrs:0,last_match_days:4,altitude_delta:0,sleep_zone_diff:0},
+    odds:{pinnacle:{p1:1.28,p2:3.62},epicbet:{p1:1.25,p2:3.55},bet365:{p1:1.25,p2:3.50},unibet:{p1:1.27,p2:3.57},
+          williamhill:{p1:1.25,p2:3.52},betway:{p1:1.27,p2:3.55},bwin:{p1:1.26,p2:3.57}},
   },
 
-  // ════ CHERBOURG CH75 — Hard, France — FINAL (Sun March 15 14:00 CET) ════
+  // 4. Ofner vs Ferreira Silva (13:30 CET) — seed 4
   {
-    // Rodionov d.Romano 4-6 6-1 6-4 today (SF). Gojo d.Kotov in other SF.
-    // Rodionov: AUT 🇦🇹 LEFT-handed #177, ranked lower but dominant all week.
-    id:4, circuit:"CH", level:"Challenger 75", tournament:"Open de Cherbourg", surface:"Hard", round:"F",
-    status:"PRE", game:"-", point:"-", startTime:"Sun 14:00", updated:Date.now()-1800000,
-    p1:{...BP,name:"J. Rodionov",rank:177,flag:"🇦🇹",age:25,hand:"L",
-      aces:5,df:2,first_pct:64,first_won:70,second_won:50,bp_saved:66,bp_faced:4,service_games:8,return_pts_won:41,
-      tiebreak_wr:0.56,third_set_wr:0.60,bp_convert:43,style:"aggressive",
-      fatigue:0.30,momentum:0.74,h2h:"0-1",recent_form:[1,1,1,1,1],
-      surface_wr:0.60,travel_hrs:2,last_match_days:0,altitude_delta:0,sleep_zone_diff:0},
-    p2:{...BP,name:"B. Gojo",rank:101,flag:"🇭🇷",age:26,hand:"R",
-      aces:5,df:2,first_pct:65,first_won:69,second_won:50,bp_saved:62,bp_faced:4,service_games:8,return_pts_won:41,
-      tiebreak_wr:0.54,third_set_wr:0.56,bp_convert:41,style:"allcourt",
-      fatigue:0.28,momentum:0.70,h2h:"1-0",recent_form:[1,1,0,1,1],
-      surface_wr:0.58,travel_hrs:3,last_match_days:0,altitude_delta:0,sleep_zone_diff:1},
-    odds:{pinnacle:{p1:1.78,p2:2.05},epicbet:{p1:1.76,p2:2.02},bet365:{p1:1.75,p2:2.05},unibet:{p1:1.76,p2:2.02},
-          williamhill:{p1:1.75,p2:2.05},betway:{p1:1.77,p2:2.02},bwin:{p1:1.76,p2:2.04}},
+    id:4, circuit:"CH", level:"Challenger 75", tournament:"Murcia Challenger", surface:"Clay", round:"R1",
+    status:"PRE", game:"-", point:"-", startTime:"Today 13:30", updated:Date.now()-3600000,
+    p1:{...BP,name:"S. Ofner",rank:132,flag:"🇦🇹",age:27,hand:"R",
+      aces:5,df:2,first_pct:65,first_won:70,second_won:52,bp_saved:66,bp_faced:3,service_games:8,return_pts_won:42,
+      tiebreak_wr:0.55,third_set_wr:0.58,bp_convert:44,style:"aggressive",
+      fatigue:0.12,momentum:0.63,h2h:"0-0",recent_form:[1,1,0,1,1],
+      surface_wr:0.58,travel_hrs:3,last_match_days:4,altitude_delta:0,sleep_zone_diff:0},
+    p2:{...BP,name:"F. Ferreira Silva",rank:298,flag:"🇵🇹",age:28,hand:"R",
+      aces:3,df:3,first_pct:60,first_won:64,second_won:47,bp_saved:55,bp_faced:4,service_games:7,return_pts_won:39,
+      tiebreak_wr:0.48,third_set_wr:0.49,bp_convert:39,style:"baseline",
+      fatigue:0.10,momentum:0.48,h2h:"0-0",recent_form:[1,0,1,1,0],
+      surface_wr:0.57,travel_hrs:1,last_match_days:4,altitude_delta:0,sleep_zone_diff:0},
+    odds:{pinnacle:{p1:1.48,p2:2.66},epicbet:{p1:1.46,p2:2.62},bet365:{p1:1.46,p2:2.60},unibet:{p1:1.47,p2:2.64},
+          williamhill:{p1:1.46,p2:2.62},betway:{p1:1.47,p2:2.60},bwin:{p1:1.47,p2:2.61}},
   },
 
-  // ════ CAP CANA CH175 — Clay, Dominican Republic — FINAL (Sun March 15 16:00 CET) ════
+  // 5. Bailly vs Purtseladze (16:00 CET)
   {
-    // Navone d.Blockx 3-6 6-3 7-6(3) (tough 3-setter → higher fatigue).
-    // Bellucci d.Walton 6-2 6-4 (clean win). First-ever meeting.
-    id:5, circuit:"CH", level:"Challenger 175", tournament:"Challenger Cap Cana", surface:"Clay", round:"F",
-    status:"PRE", game:"-", point:"-", startTime:"Sun 16:00", updated:Date.now()-1800000,
-    p1:{...BP,name:"G. Navone",rank:77,flag:"🇦🇷",age:24,hand:"R",
-      aces:2,df:2,first_pct:63,first_won:67,second_won:53,bp_saved:66,bp_faced:4,service_games:7,return_pts_won:46,
-      tiebreak_wr:0.52,third_set_wr:0.60,bp_convert:49,style:"counter",
-      fatigue:0.32,momentum:0.66,h2h:"0-0",recent_form:[1,1,1,0,1],
-      surface_wr:0.71,travel_hrs:9,last_match_days:0,altitude_delta:10,sleep_zone_diff:6},
-    p2:{...BP,name:"M. Bellucci",rank:84,flag:"🇮🇹",age:22,hand:"R",
-      aces:4,df:2,first_pct:65,first_won:70,second_won:52,bp_saved:60,bp_faced:3,service_games:8,return_pts_won:44,
-      tiebreak_wr:0.54,third_set_wr:0.57,bp_convert:45,style:"aggressive",
-      fatigue:0.22,momentum:0.76,h2h:"0-0",recent_form:[1,1,1,1,0],
-      surface_wr:0.67,travel_hrs:7,last_match_days:0,altitude_delta:10,sleep_zone_diff:5},
-    odds:{pinnacle:{p1:1.94,p2:1.90},epicbet:{p1:1.92,p2:1.88},bet365:{p1:1.91,p2:1.90},unibet:{p1:1.92,p2:1.88},
-          williamhill:{p1:1.91,p2:1.91},betway:{p1:1.90,p2:1.90},bwin:{p1:1.93,p2:1.89}},
+    id:5, circuit:"CH", level:"Challenger 75", tournament:"Murcia Challenger", surface:"Clay", round:"R1",
+    status:"PRE", game:"-", point:"-", startTime:"Today 16:00", updated:Date.now()-1800000,
+    p1:{...BP,name:"G.A. Bailly",rank:211,flag:"🇫🇷",age:25,hand:"R",
+      aces:4,df:2,first_pct:62,first_won:67,second_won:49,bp_saved:60,bp_faced:3,service_games:7,return_pts_won:40,
+      tiebreak_wr:0.52,third_set_wr:0.53,bp_convert:41,style:"allcourt",
+      fatigue:0.10,momentum:0.57,h2h:"0-0",recent_form:[1,0,1,1,0],
+      surface_wr:0.55,travel_hrs:2,last_match_days:4,altitude_delta:0,sleep_zone_diff:0},
+    p2:{...BP,name:"S. Purtseladze",rank:268,flag:"🇬🇪",age:24,hand:"R",
+      aces:3,df:3,first_pct:60,first_won:64,second_won:46,bp_saved:56,bp_faced:4,service_games:7,return_pts_won:38,
+      tiebreak_wr:0.49,third_set_wr:0.50,bp_convert:38,style:"baseline",
+      fatigue:0.10,momentum:0.50,h2h:"0-0",recent_form:[0,1,1,0,1],
+      surface_wr:0.52,travel_hrs:4,last_match_days:4,altitude_delta:0,sleep_zone_diff:2},
+    odds:{pinnacle:{p1:1.57,p2:2.46},epicbet:{p1:1.55,p2:2.42},bet365:{p1:1.54,p2:2.42},unibet:{p1:1.55,p2:2.44},
+          williamhill:{p1:1.55,p2:2.44},betway:{p1:1.54,p2:2.44},bwin:{p1:1.56,p2:2.43}},
   },
 
-  // ════ INDIAN WELLS WTA 1000 — FINAL (Sun March 15 19:00 CET / 11:00 AM PDT) ════
+  // 6. Pellegrino vs Martin Tiffon (17:00 CET)
   {
-    // SFs done March 13: Sabalenka d.Noskova 6-3 6-4; Rybakina d.Svitolina 7-5 6-4
-    // Bet365 confirmed: Sabalenka 1.67 / Rybakina 2.20. Sabalenka leads H2H 5-3.
-    id:6, circuit:"WTA", level:"WTA 1000", tournament:"Indian Wells Masters (WTA)", surface:"Hard", round:"F",
-    status:"PRE", game:"-", point:"-", startTime:"Sun 19:00", updated:Date.now()-1800000,
-    p1:{...BP,name:"A. Sabalenka",rank:1,flag:"🇧🇾",age:27,hand:"R",
-      aces:4,df:2,first_pct:68,first_won:74,second_won:58,bp_saved:78,bp_faced:3,service_games:9,return_pts_won:49,
-      tiebreak_wr:0.66,third_set_wr:0.72,bp_convert:53,style:"aggressive",
-      fatigue:0.22,momentum:0.80,h2h:"5-3",recent_form:[1,1,1,1,1],
-      surface_wr:0.80,travel_hrs:11,last_match_days:2,altitude_delta:70,sleep_zone_diff:9},
-    p2:{...BP,name:"E. Rybakina",rank:3,flag:"🇰🇿",age:26,hand:"R",
-      aces:6,df:2,first_pct:70,first_won:75,second_won:55,bp_saved:74,bp_faced:4,service_games:9,return_pts_won:43,
-      tiebreak_wr:0.66,third_set_wr:0.68,bp_convert:50,style:"serve-dom",
-      fatigue:0.26,momentum:0.74,h2h:"3-5",recent_form:[1,1,1,0,1],
-      surface_wr:0.76,travel_hrs:14,last_match_days:2,altitude_delta:70,sleep_zone_diff:13},
-    odds:{pinnacle:{p1:1.70,p2:2.22},epicbet:{p1:1.68,p2:2.20},bet365:{p1:1.67,p2:2.20},unibet:{p1:1.68,p2:2.18},
-          williamhill:{p1:1.67,p2:2.20},betway:{p1:1.68,p2:2.20},bwin:{p1:1.67,p2:2.22}},
-    markets:[
-      {key:"set_hcp",name:"Set Handicap",lines:[
-        {p1_label:"Sabalenka -1.5 sets",p2_label:"Rybakina +1.5 sets",
-         odds:{pinnacle:{p1:2.18,p2:1.72},epicbet:{p1:2.12,p2:1.76},bet365:{p1:2.10,p2:1.76},unibet:{p1:2.10,p2:1.78}}},
-      ]},
-    ],
+    id:6, circuit:"CH", level:"Challenger 75", tournament:"Murcia Challenger", surface:"Clay", round:"R1",
+    status:"PRE", game:"-", point:"-", startTime:"Today 17:00", updated:Date.now()-1800000,
+    p1:{...BP,name:"A. Pellegrino",rank:137,flag:"🇮🇹",age:28,hand:"R",
+      aces:3,df:2,first_pct:62,first_won:66,second_won:50,bp_saved:63,bp_faced:3,service_games:7,return_pts_won:41,
+      tiebreak_wr:0.52,third_set_wr:0.55,bp_convert:43,style:"allcourt",
+      fatigue:0.10,momentum:0.60,h2h:"0-0",recent_form:[1,1,0,1,0],
+      surface_wr:0.57,travel_hrs:2,last_match_days:4,altitude_delta:0,sleep_zone_diff:0},
+    p2:{...BP,name:"P. Martin Tiffon",rank:228,flag:"🇪🇸",age:26,hand:"R",
+      aces:2,df:2,first_pct:60,first_won:64,second_won:47,bp_saved:57,bp_faced:4,service_games:7,return_pts_won:39,
+      tiebreak_wr:0.49,third_set_wr:0.51,bp_convert:39,style:"baseline",
+      fatigue:0.08,momentum:0.48,h2h:"0-0",recent_form:[0,1,0,1,0],
+      surface_wr:0.60,travel_hrs:0,last_match_days:4,altitude_delta:0,sleep_zone_diff:0},
+    odds:{pinnacle:{p1:1.55,p2:2.48},epicbet:{p1:1.53,p2:2.45},bet365:{p1:1.53,p2:2.44},unibet:{p1:1.52,p2:2.47},
+          williamhill:{p1:1.53,p2:2.45},betway:{p1:1.54,p2:2.44},bwin:{p1:1.53,p2:2.46}},
+  },
+
+  // 7. Gakhov vs Negritu (18:30 CET)
+  {
+    id:7, circuit:"CH", level:"Challenger 75", tournament:"Murcia Challenger", surface:"Clay", round:"R1",
+    status:"PRE", game:"-", point:"-", startTime:"Today 18:30", updated:Date.now()-1800000,
+    p1:{...BP,name:"I. Gakhov",rank:253,flag:"🇷🇺",age:27,hand:"R",
+      aces:4,df:2,first_pct:62,first_won:66,second_won:48,bp_saved:60,bp_faced:3,service_games:7,return_pts_won:40,
+      tiebreak_wr:0.51,third_set_wr:0.53,bp_convert:41,style:"counter",
+      fatigue:0.10,momentum:0.53,h2h:"0-0",recent_form:[1,1,0,0,1],
+      surface_wr:0.54,travel_hrs:3,last_match_days:4,altitude_delta:0,sleep_zone_diff:2},
+    p2:{...BP,name:"L. Negritu",rank:282,flag:"🇷🇴",age:22,hand:"R",
+      aces:3,df:3,first_pct:60,first_won:63,second_won:46,bp_saved:55,bp_faced:4,service_games:7,return_pts_won:38,
+      tiebreak_wr:0.47,third_set_wr:0.48,bp_convert:37,style:"allcourt",
+      fatigue:0.08,momentum:0.48,h2h:"0-0",recent_form:[0,0,1,1,1],
+      surface_wr:0.52,travel_hrs:2,last_match_days:4,altitude_delta:0,sleep_zone_diff:0},
+    odds:{pinnacle:{p1:1.42,p2:2.87},epicbet:{p1:1.40,p2:2.84},bet365:{p1:1.39,p2:2.82},unibet:{p1:1.40,p2:2.86},
+          williamhill:{p1:1.40,p2:2.84},betway:{p1:1.40,p2:2.83},bwin:{p1:1.41,p2:2.84}},
+  },
+
+  // 8. Gill vs Pieczonka (18:30 CET) — qualifiers
+  {
+    id:8, circuit:"CH", level:"Challenger 75", tournament:"Murcia Challenger", surface:"Clay", round:"R1",
+    status:"PRE", game:"-", point:"-", startTime:"Today 18:30", updated:Date.now()-1800000,
+    p1:{...BP,name:"F. Gill",rank:232,flag:"🇦🇺",age:25,hand:"R",
+      aces:5,df:2,first_pct:63,first_won:68,second_won:49,bp_saved:59,bp_faced:3,service_games:7,return_pts_won:39,
+      tiebreak_wr:0.52,third_set_wr:0.52,bp_convert:40,style:"aggressive",
+      fatigue:0.14,momentum:0.52,h2h:"0-0",recent_form:[1,0,1,0,1],
+      surface_wr:0.50,travel_hrs:24,last_match_days:1,altitude_delta:0,sleep_zone_diff:9},
+    p2:{...BP,name:"F. Pieczonka",rank:285,flag:"🇵🇱",age:24,hand:"R",
+      aces:3,df:2,first_pct:60,first_won:64,second_won:47,bp_saved:56,bp_faced:4,service_games:7,return_pts_won:38,
+      tiebreak_wr:0.48,third_set_wr:0.49,bp_convert:38,style:"baseline",
+      fatigue:0.10,momentum:0.49,h2h:"0-0",recent_form:[0,1,1,0,0],
+      surface_wr:0.52,travel_hrs:3,last_match_days:1,altitude_delta:0,sleep_zone_diff:0},
+    odds:{pinnacle:{p1:1.58,p2:2.38},epicbet:{p1:1.56,p2:2.35},bet365:{p1:1.55,p2:2.34},unibet:{p1:1.57,p2:2.37},
+          williamhill:{p1:1.56,p2:2.36},betway:{p1:1.56,p2:2.35},bwin:{p1:1.57,p2:2.36}},
+  },
+
+  // 9. Engel vs Shelbayh (18:30 CET)
+  {
+    id:9, circuit:"CH", level:"Challenger 75", tournament:"Murcia Challenger", surface:"Clay", round:"R1",
+    status:"PRE", game:"-", point:"-", startTime:"Today 18:30", updated:Date.now()-1800000,
+    p1:{...BP,name:"J. Engel",rank:193,flag:"🇿🇦",age:27,hand:"R",
+      aces:5,df:2,first_pct:64,first_won:68,second_won:49,bp_saved:60,bp_faced:3,service_games:7,return_pts_won:40,
+      tiebreak_wr:0.52,third_set_wr:0.53,bp_convert:41,style:"allcourt",
+      fatigue:0.10,momentum:0.55,h2h:"0-0",recent_form:[1,0,1,1,0],
+      surface_wr:0.51,travel_hrs:10,last_match_days:4,altitude_delta:0,sleep_zone_diff:0},
+    p2:{...BP,name:"A. Shelbayh",rank:247,flag:"🇯🇴",age:21,hand:"R",
+      aces:4,df:2,first_pct:62,first_won:66,second_won:47,bp_saved:58,bp_faced:4,service_games:7,return_pts_won:39,
+      tiebreak_wr:0.49,third_set_wr:0.50,bp_convert:39,style:"baseline",
+      fatigue:0.08,momentum:0.50,h2h:"0-0",recent_form:[1,1,0,1,0],
+      surface_wr:0.50,travel_hrs:4,last_match_days:4,altitude_delta:0,sleep_zone_diff:1},
+    odds:{pinnacle:{p1:1.49,p2:2.65},epicbet:{p1:1.47,p2:2.62},bet365:{p1:1.46,p2:2.60},unibet:{p1:1.47,p2:2.63},
+          williamhill:{p1:1.47,p2:2.61},betway:{p1:1.46,p2:2.62},bwin:{p1:1.47,p2:2.61}},
+  },
+
+  // ════ MIAMI OPEN WTA 1000 — Hard, Miami — R1 ════
+
+  // 10. Linette vs Gracheva (17:30 CET / 11:30 AM EDT)
+  {
+    id:10, circuit:"WTA", level:"WTA 1000", tournament:"Miami Open (WTA)", surface:"Hard", round:"R1",
+    status:"PRE", game:"-", point:"-", startTime:"Today 17:30", updated:Date.now()-1800000,
+    p1:{...BP,name:"M. Linette",rank:55,flag:"🇵🇱",age:32,hand:"R",
+      aces:3,df:2,first_pct:64,first_won:68,second_won:52,bp_saved:66,bp_faced:3,service_games:8,return_pts_won:44,
+      tiebreak_wr:0.54,third_set_wr:0.58,bp_convert:47,style:"counter",
+      fatigue:0.14,momentum:0.62,h2h:"0-0",recent_form:[1,0,1,1,1],
+      surface_wr:0.63,travel_hrs:9,last_match_days:3,altitude_delta:0,sleep_zone_diff:6},
+    p2:{...BP,name:"V. Gracheva",rank:77,flag:"🇷🇺",age:24,hand:"R",
+      aces:2,df:2,first_pct:62,first_won:65,second_won:50,bp_saved:62,bp_faced:4,service_games:7,return_pts_won:42,
+      tiebreak_wr:0.51,third_set_wr:0.53,bp_convert:43,style:"counter",
+      fatigue:0.14,momentum:0.55,h2h:"0-0",recent_form:[0,1,1,0,1],
+      surface_wr:0.59,travel_hrs:9,last_match_days:3,altitude_delta:0,sleep_zone_diff:6},
+    odds:{pinnacle:{p1:1.72,p2:2.15},epicbet:{p1:1.70,p2:2.12},bet365:{p1:1.69,p2:2.14},unibet:{p1:1.70,p2:2.12},
+          williamhill:{p1:1.69,p2:2.14},betway:{p1:1.70,p2:2.12},bwin:{p1:1.70,p2:2.13}},
+  },
+
+  // 11. Waltert vs Tomljanovic (17:30 CET)
+  {
+    id:11, circuit:"WTA", level:"WTA 1000", tournament:"Miami Open (WTA)", surface:"Hard", round:"R1",
+    status:"PRE", game:"-", point:"-", startTime:"Today 17:30", updated:Date.now()-1800000,
+    p1:{...BP,name:"S. Waltert",rank:82,flag:"🇨🇭",age:23,hand:"R",
+      aces:3,df:2,first_pct:63,first_won:67,second_won:51,bp_saved:63,bp_faced:3,service_games:8,return_pts_won:42,
+      tiebreak_wr:0.52,third_set_wr:0.56,bp_convert:44,style:"allcourt",
+      fatigue:0.14,momentum:0.60,h2h:"0-0",recent_form:[1,1,0,1,0],
+      surface_wr:0.60,travel_hrs:9,last_match_days:3,altitude_delta:0,sleep_zone_diff:6},
+    p2:{...BP,name:"A. Tomljanovic",rank:122,flag:"🇦🇺",age:32,hand:"R",
+      aces:4,df:2,first_pct:62,first_won:65,second_won:50,bp_saved:62,bp_faced:3,service_games:8,return_pts_won:41,
+      tiebreak_wr:0.52,third_set_wr:0.55,bp_convert:43,style:"aggressive",
+      fatigue:0.14,momentum:0.53,h2h:"0-0",recent_form:[0,1,1,0,1],
+      surface_wr:0.61,travel_hrs:16,last_match_days:3,altitude_delta:0,sleep_zone_diff:14},
+    odds:{pinnacle:{p1:1.50,p2:2.62},epicbet:{p1:1.48,p2:2.58},bet365:{p1:1.47,p2:2.58},unibet:{p1:1.48,p2:2.60},
+          williamhill:{p1:1.48,p2:2.59},betway:{p1:1.48,p2:2.58},bwin:{p1:1.49,p2:2.59}},
+  },
+
+  // 12. Vidmanova vs Jacquemot (17:30 CET)
+  {
+    id:12, circuit:"WTA", level:"WTA 1000", tournament:"Miami Open (WTA)", surface:"Hard", round:"R1",
+    status:"PRE", game:"-", point:"-", startTime:"Today 17:30", updated:Date.now()-1800000,
+    p1:{...BP,name:"D. Vidmanova",rank:134,flag:"🇨🇿",age:19,hand:"R",
+      aces:3,df:3,first_pct:60,first_won:64,second_won:48,bp_saved:60,bp_faced:4,service_games:7,return_pts_won:40,
+      tiebreak_wr:0.50,third_set_wr:0.52,bp_convert:42,style:"baseline",
+      fatigue:0.10,momentum:0.54,h2h:"0-0",recent_form:[1,0,1,0,1],
+      surface_wr:0.57,travel_hrs:9,last_match_days:3,altitude_delta:0,sleep_zone_diff:6},
+    p2:{...BP,name:"E. Jacquemot",rank:98,flag:"🇫🇷",age:22,hand:"R",
+      aces:3,df:2,first_pct:62,first_won:65,second_won:50,bp_saved:62,bp_faced:3,service_games:8,return_pts_won:42,
+      tiebreak_wr:0.52,third_set_wr:0.54,bp_convert:43,style:"allcourt",
+      fatigue:0.12,momentum:0.56,h2h:"0-0",recent_form:[0,1,1,1,0],
+      surface_wr:0.58,travel_hrs:9,last_match_days:3,altitude_delta:0,sleep_zone_diff:6},
+    odds:{pinnacle:{p1:1.68,p2:2.22},epicbet:{p1:1.66,p2:2.18},bet365:{p1:1.65,p2:2.20},unibet:{p1:1.66,p2:2.20},
+          williamhill:{p1:1.65,p2:2.20},betway:{p1:1.66,p2:2.19},bwin:{p1:1.66,p2:2.19}},
+  },
+
+  // 13. Kessler vs Frech (19:00 CET / 1:00 PM EDT)
+  {
+    id:13, circuit:"WTA", level:"WTA 1000", tournament:"Miami Open (WTA)", surface:"Hard", round:"R1",
+    status:"PRE", game:"-", point:"-", startTime:"Today 19:00", updated:Date.now()-1800000,
+    p1:{...BP,name:"M. Kessler",rank:51,flag:"🇺🇸",age:24,hand:"R",
+      aces:4,df:2,first_pct:65,first_won:69,second_won:53,bp_saved:66,bp_faced:3,service_games:8,return_pts_won:43,
+      tiebreak_wr:0.55,third_set_wr:0.57,bp_convert:47,style:"allcourt",
+      fatigue:0.10,momentum:0.65,h2h:"0-0",recent_form:[1,1,1,0,1],
+      surface_wr:0.65,travel_hrs:2,last_match_days:4,altitude_delta:0,sleep_zone_diff:0},
+    p2:{...BP,name:"M. Frech",rank:58,flag:"🇵🇱",age:26,hand:"R",
+      aces:3,df:2,first_pct:63,first_won:66,second_won:50,bp_saved:64,bp_faced:3,service_games:8,return_pts_won:42,
+      tiebreak_wr:0.53,third_set_wr:0.55,bp_convert:45,style:"counter",
+      fatigue:0.14,momentum:0.60,h2h:"0-0",recent_form:[1,0,1,1,0],
+      surface_wr:0.61,travel_hrs:9,last_match_days:4,altitude_delta:0,sleep_zone_diff:6},
+    odds:{pinnacle:{p1:1.62,p2:2.33},epicbet:{p1:1.60,p2:2.30},bet365:{p1:1.60,p2:2.28},unibet:{p1:1.60,p2:2.31},
+          williamhill:{p1:1.60,p2:2.30},betway:{p1:1.60,p2:2.30},bwin:{p1:1.60,p2:2.31}},
+  },
+
+  // 14. Boulter vs Bouzas Maneiro (19:00 CET)
+  {
+    id:14, circuit:"WTA", level:"WTA 1000", tournament:"Miami Open (WTA)", surface:"Hard", round:"R1",
+    status:"PRE", game:"-", point:"-", startTime:"Today 19:00", updated:Date.now()-1800000,
+    p1:{...BP,name:"K. Boulter",rank:33,flag:"🇬🇧",age:27,hand:"R",
+      aces:5,df:2,first_pct:65,first_won:70,second_won:53,bp_saved:68,bp_faced:3,service_games:8,return_pts_won:44,
+      tiebreak_wr:0.57,third_set_wr:0.60,bp_convert:48,style:"aggressive",
+      fatigue:0.14,momentum:0.68,h2h:"0-0",recent_form:[1,1,1,0,1],
+      surface_wr:0.67,travel_hrs:9,last_match_days:4,altitude_delta:0,sleep_zone_diff:6},
+    p2:{...BP,name:"J. Bouzas Maneiro",rank:72,flag:"🇪🇸",age:23,hand:"R",
+      aces:3,df:2,first_pct:62,first_won:65,second_won:51,bp_saved:62,bp_faced:3,service_games:8,return_pts_won:42,
+      tiebreak_wr:0.51,third_set_wr:0.53,bp_convert:43,style:"counter",
+      fatigue:0.14,momentum:0.57,h2h:"0-0",recent_form:[0,1,1,0,0],
+      surface_wr:0.59,travel_hrs:9,last_match_days:4,altitude_delta:0,sleep_zone_diff:6},
+    odds:{pinnacle:{p1:1.72,p2:2.20},epicbet:{p1:1.69,p2:2.18},bet365:{p1:1.68,p2:2.20},unibet:{p1:1.70,p2:2.18},
+          williamhill:{p1:1.68,p2:2.20},betway:{p1:1.69,p2:2.18},bwin:{p1:1.70,p2:2.18}},
+  },
+
+  // 15. Siegemund vs Marcinko (19:00 CET)
+  {
+    id:15, circuit:"WTA", level:"WTA 1000", tournament:"Miami Open (WTA)", surface:"Hard", round:"R1",
+    status:"PRE", game:"-", point:"-", startTime:"Today 19:00", updated:Date.now()-1800000,
+    p1:{...BP,name:"L. Siegemund",rank:53,flag:"🇩🇪",age:36,hand:"R",
+      aces:3,df:2,first_pct:63,first_won:67,second_won:51,bp_saved:65,bp_faced:3,service_games:8,return_pts_won:44,
+      tiebreak_wr:0.54,third_set_wr:0.57,bp_convert:47,style:"allcourt",
+      fatigue:0.14,momentum:0.60,h2h:"0-0",recent_form:[1,0,1,1,0],
+      surface_wr:0.62,travel_hrs:9,last_match_days:4,altitude_delta:0,sleep_zone_diff:6},
+    p2:{...BP,name:"P. Marcinko",rank:112,flag:"🇸🇮",age:29,hand:"R",
+      aces:3,df:2,first_pct:61,first_won:64,second_won:49,bp_saved:60,bp_faced:4,service_games:7,return_pts_won:40,
+      tiebreak_wr:0.50,third_set_wr:0.51,bp_convert:40,style:"counter",
+      fatigue:0.14,momentum:0.50,h2h:"0-0",recent_form:[0,1,0,1,0],
+      surface_wr:0.57,travel_hrs:9,last_match_days:4,altitude_delta:0,sleep_zone_diff:6},
+    odds:{pinnacle:{p1:1.78,p2:2.08},epicbet:{p1:1.75,p2:2.05},bet365:{p1:1.74,p2:2.06},unibet:{p1:1.76,p2:2.06},
+          williamhill:{p1:1.74,p2:2.08},betway:{p1:1.75,p2:2.06},bwin:{p1:1.76,p2:2.07}},
+  },
+
+  // 16. Zhang vs Cirstea (20:30 CET / 2:30 PM EDT)
+  {
+    id:16, circuit:"WTA", level:"WTA 1000", tournament:"Miami Open (WTA)", surface:"Hard", round:"R1",
+    status:"PRE", game:"-", point:"-", startTime:"Today 20:30", updated:Date.now()-1800000,
+    p1:{...BP,name:"S. Zhang",rank:39,flag:"🇨🇳",age:35,hand:"R",
+      aces:3,df:2,first_pct:63,first_won:67,second_won:51,bp_saved:64,bp_faced:3,service_games:8,return_pts_won:44,
+      tiebreak_wr:0.54,third_set_wr:0.56,bp_convert:46,style:"counter",
+      fatigue:0.14,momentum:0.60,h2h:"0-0",recent_form:[1,0,1,1,1],
+      surface_wr:0.63,travel_hrs:16,last_match_days:4,altitude_delta:0,sleep_zone_diff:12},
+    p2:{...BP,name:"S. Cirstea",rank:43,flag:"🇷🇴",age:34,hand:"R",
+      aces:4,df:2,first_pct:65,first_won:69,second_won:52,bp_saved:66,bp_faced:3,service_games:8,return_pts_won:43,
+      tiebreak_wr:0.53,third_set_wr:0.55,bp_convert:45,style:"aggressive",
+      fatigue:0.14,momentum:0.60,h2h:"0-0",recent_form:[1,1,0,1,0],
+      surface_wr:0.62,travel_hrs:9,last_match_days:4,altitude_delta:0,sleep_zone_diff:6},
+    odds:{pinnacle:{p1:1.66,p2:2.26},epicbet:{p1:1.64,p2:2.22},bet365:{p1:1.63,p2:2.24},unibet:{p1:1.64,p2:2.23},
+          williamhill:{p1:1.63,p2:2.24},betway:{p1:1.64,p2:2.22},bwin:{p1:1.64,p2:2.23}},
+  },
+
+  // 17. Kenin vs Blinkova (20:30 CET / 2:30 PM EDT)
+  {
+    id:17, circuit:"WTA", level:"WTA 1000", tournament:"Miami Open (WTA)", surface:"Hard", round:"R1",
+    status:"PRE", game:"-", point:"-", startTime:"Today 20:30", updated:Date.now()-1800000,
+    p1:{...BP,name:"S. Kenin",rank:46,flag:"🇺🇸",age:24,hand:"R",
+      aces:4,df:2,first_pct:64,first_won:68,second_won:52,bp_saved:66,bp_faced:3,service_games:8,return_pts_won:43,
+      tiebreak_wr:0.55,third_set_wr:0.58,bp_convert:46,style:"allcourt",
+      fatigue:0.10,momentum:0.65,h2h:"0-0",recent_form:[1,1,0,1,1],
+      surface_wr:0.64,travel_hrs:2,last_match_days:4,altitude_delta:0,sleep_zone_diff:0},
+    p2:{...BP,name:"A. Blinkova",rank:62,flag:"🇷🇺",age:25,hand:"R",
+      aces:3,df:2,first_pct:62,first_won:65,second_won:50,bp_saved:63,bp_faced:3,service_games:8,return_pts_won:42,
+      tiebreak_wr:0.52,third_set_wr:0.53,bp_convert:43,style:"aggressive",
+      fatigue:0.14,momentum:0.58,h2h:"0-0",recent_form:[0,1,1,0,1],
+      surface_wr:0.61,travel_hrs:9,last_match_days:4,altitude_delta:0,sleep_zone_diff:6},
+    odds:{pinnacle:{p1:1.62,p2:2.32},epicbet:{p1:1.59,p2:2.28},bet365:{p1:1.58,p2:2.30},unibet:{p1:1.59,p2:2.30},
+          williamhill:{p1:1.58,p2:2.30},betway:{p1:1.59,p2:2.29},bwin:{p1:1.59,p2:2.30}},
   },
 ];
 
